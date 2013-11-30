@@ -54,9 +54,14 @@ public interface IBarrelStorage {
     public void setInventorySlotContents(int islot, ItemStack stack);
 	public boolean isStackValidForSlot(int i, ItemStack itemstack);    
     
-	public int[] getAccessibleSlotsFromSide(int var1);
-	public boolean  canInsertItem(int slot, ItemStack itemstack, int side);
-	public boolean canExtractItem(int slot, ItemStack itemstack, int side);
+	//public int[] getAccessibleSlotsFromSide(int var1);
+	//public boolean  canInsertItem(int slot, ItemStack itemstack, int side);
+	//public boolean canExtractItem(int slot, ItemStack itemstack, int side);
+	
+    ItemStack getStoredItemType();
+    void setStoredItemCount(int amount);
+    void setStoredItemType(ItemStack type, int amount);
+    int  getMaxStoredCount();	
 	
 	/*
 	public int       getAmount();

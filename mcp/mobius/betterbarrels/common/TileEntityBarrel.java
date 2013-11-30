@@ -2,6 +2,7 @@ package mcp.mobius.betterbarrels.common;
 
 import java.util.Random;
 
+import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
@@ -31,7 +32,8 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
 
-public class TileEntityBarrel extends TileEntity implements ISidedInventory {
+//public class TileEntityBarrel extends TileEntity implements ISidedInventory {
+public class TileEntityBarrel extends TileEntity implements IInventory, IDeepStorageUnit {
 
 	public int blockOrientation    = -1;		//Faces with an item display (int to byte)
 	public int blockOriginalOrient = -1;		//Original orientation of the barrel (int to byte)
@@ -429,6 +431,27 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory {
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.storage.isStackValidForSlot(i, itemstack);}
 
 	@Override
+	public ItemStack getStoredItemType() {
+		return this.storage.getStoredItemType();
+	}
+
+	@Override
+	public void setStoredItemCount(int amount) {
+		this.storage.setStoredItemCount(amount);
+	}
+
+	@Override
+	public void setStoredItemType(ItemStack type, int amount) {
+		this.storage.setStoredItemType(type, amount);
+	}
+
+	@Override
+	public int getMaxStoredCount() {
+		return this.storage.getMaxStoredCount();
+	}
+
+	/*
+	@Override
 	public int[] getAccessibleSlotsFromSide(int var1) {
 		return this.storage.getAccessibleSlotsFromSide(var1);
 	}
@@ -442,7 +465,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory {
 	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
 		return this.storage.canExtractItem(slot, itemstack, side);
 	}
-	
+	*/
 
 	
 }
