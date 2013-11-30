@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
@@ -30,7 +31,7 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
 
-public class TileEntityBarrel extends TileEntity implements IInventory {
+public class TileEntityBarrel extends TileEntity implements ISidedInventory {
 
 	public int blockOrientation    = -1;		//Faces with an item display (int to byte)
 	public int blockOriginalOrient = -1;		//Original orientation of the barrel (int to byte)
@@ -426,4 +427,22 @@ public class TileEntityBarrel extends TileEntity implements IInventory {
 	public boolean isInvNameLocalized() {return false;}
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.storage.isStackValidForSlot(i, itemstack);}
+
+	@Override
+	public int[] getAccessibleSlotsFromSide(int var1) {
+		return this.storage.getAccessibleSlotsFromSide(var1);
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack itemstack, int side) {
+		return this.storage.canInsertItem(slot, itemstack, side);
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
+		return this.storage.canExtractItem(slot, itemstack, side);
+	}
+	
+
+	
 }

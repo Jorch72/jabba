@@ -364,4 +364,25 @@ public class StorageLocal implements IBarrelStorage {
 	private void   logMsg(String msg)                 { mod_BetterBarrels.log.log(Level.INFO, String.format("%s", msg)); }
 	private void   logInt(String msg, int value)      { mod_BetterBarrels.log.log(Level.INFO, String.format("%s %s", msg, value)); }
 	
+
+	/* ISIDEDINVENTORY */
+	@Override
+	public int[] getAccessibleSlotsFromSide(int var1) {
+		return new int[]{0,1};
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack itemstack, int side) {
+		if ((slot == 0) && !this.hasItem() && this.keepLastItem) return false;
+		if ((slot == 0) && !this.hasItem())                      return true;
+		if ((slot == 0) &&  this.sameItem(itemstack))            return true;		
+		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
+		System.out.printf("canExtractItem %s %s %s\n", slot, itemstack, side);
+		if ((slot == 1) && (this.sameItem(itemstack))) return true;
+		return false;		
+	}
 }

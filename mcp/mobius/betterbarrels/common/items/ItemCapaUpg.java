@@ -45,7 +45,10 @@ public class ItemCapaUpg extends ItemUpgrade{
 
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
-    {    	
+    {   
+		if (stack.getItemDamage() >= this.upgradeNames.length)
+			return "Capacity Upgrade [ERROR]";
+		
 		return this.upgradeNames[stack.getItemDamage()];
     }	    
     
