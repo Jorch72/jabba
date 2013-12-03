@@ -68,6 +68,7 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 	void switchGhosting(World world){
 		this.storage.switchGhosting();
 		this.updateEntity();
+		this.onInventoryChanged();
 		world.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);		
 	}
     
