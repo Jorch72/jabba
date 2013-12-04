@@ -8,7 +8,8 @@ public class TileEntityMiniBarrel extends TileEntityBarrel {
     	this.storage = new StorageLocal();
     }
 
-    public TileEntityMiniBarrel(int stacks, int slots){
-    	this.storage = new StorageLocal(stacks, slots);
+    public TileEntityMiniBarrel(int stacks){
+    	this.storage = new StorageLocal(stacks);
+    	this.storage.setBaseStacks(stacks);
     } 	
 }

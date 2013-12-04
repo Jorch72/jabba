@@ -33,7 +33,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 
 //public class TileEntityBarrel extends TileEntity implements ISidedInventory {
-public class TileEntityBarrel extends TileEntity implements IInventory, IDeepStorageUnit {
+public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDeepStorageUnit {
 
 	public int blockOrientation    = -1;		//Faces with an item display (int to byte)
 	public int blockOriginalOrient = -1;		//Original orientation of the barrel (int to byte)
@@ -61,15 +61,17 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
     	this.storage = new StorageLocal();
     }
 
-    public TileEntityBarrel(int stacks, int slots){
-    	this.storage = new StorageLocal(stacks, slots);
+    public TileEntityBarrel(int stacks){
+    	this.storage = new StorageLocal();
+    	this.storage.setBaseStacks(stacks);
     }    
     
 	void switchGhosting(World world){
 		this.storage.switchGhosting();
 		this.updateEntity();
 		this.onInventoryChanged();
-		world.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);		
+		world.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+		this.onInventoryChanged();
 	}
     
 	void setUsername(String username){
@@ -102,7 +104,7 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 		 */
 		if (!(this.worldObj.isRemote)){
 			this.tickSinceLastUpdate += 1;
-			this.storage.update();
+			//this.storage.onInventoryChanged();
 			this.syncAmount = this.storage.isDirty();
 			
 			if (this.orientDirty){
@@ -131,7 +133,7 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 	/* USER INTERACTIONS   */
 	/*/////////////////////*/
 	void leftClick(EntityPlayer player){
-		this.storage.update();
+		//this.storage.update();
 		
 		ItemStack droppedStack = null;
 		if (player.isSneaking())
@@ -144,10 +146,11 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 		
 		this.syncAmount = true;
 		this.updateEntity();
+		this.onInventoryChanged();		
 	}
 	
 	void rightClick(EntityPlayer player){
-		this.storage.update();
+		//this.storage.update();
 
 		// First, we try to add the current held item
 		ItemStack heldStack = player.inventory.getCurrentItem();
@@ -173,6 +176,7 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 		
 		this.syncAmount = true;
 		this.updateEntity();
+		this.onInventoryChanged();		
 	}
 
 	void applyUpgrade(World world, ItemStack upgradeStack, EntityPlayer player){
@@ -213,7 +217,8 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 		
 		// Update the block/entity //
 		this.updateEntity();		
-		world.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);		
+		world.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+		this.onInventoryChanged();		
 	}
 	
 	void applySticker(World world, int x, int y, int z, ItemStack stack, ForgeDirection side){
@@ -293,6 +298,7 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 		}
 		this.updateEntity();
 		SaveHandler.saveData();
+		this.onInventoryChanged();		
 
 	}
 	
@@ -303,8 +309,8 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 		}
 
 		this.updateEntity();
-		world.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);			
-		
+		world.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+		this.onInventoryChanged();
 	}
 	
 	private void dropItemInWorld(EntityPlayer player, ItemStack stack, double speedfactor){
@@ -406,11 +412,23 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 	@Override
 	public int getSizeInventory() {return this.storage.getSizeInventory();}
 	@Override
-	public ItemStack getStackInSlot(int islot) { return this.storage.getStackInSlot(islot); }
+	public ItemStack getStackInSlot(int islot) {
+		ItemStack stack = this.storage.getStackInSlot(islot);
+		this.onInventoryChanged();		
+		return stack; 
+	}
 	@Override
-	public ItemStack decrStackSize(int islot, int quantity) { return this.storage.decrStackSize(islot, quantity);}
+	public ItemStack decrStackSize(int islot, int quantity) {
+		ItemStack stack = this.storage.decrStackSize(islot, quantity);
+		this.onInventoryChanged();
+		return stack;
+	}
 	@Override
-	public void setInventorySlotContents(int islot, ItemStack stack) { this.storage.setInventorySlotContents(islot, stack); this.updateEntity(); }
+	public void setInventorySlotContents(int islot, ItemStack stack) { 
+		this.storage.setInventorySlotContents(islot, stack);
+		this.onInventoryChanged();
+		this.updateEntity(); 
+	}
 	@Override
 	public ItemStack getStackInSlotOnClosing(int var1) {return null;}	
 	@Override
@@ -429,7 +447,7 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 	@Override
 	public boolean isInvNameLocalized() {return false;}
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.storage.isStackValidForSlot(i, itemstack);}
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.storage.isItemValidForSlot(i, itemstack);}
 
 	@Override
 	public ItemStack getStoredItemType() {
@@ -439,11 +457,13 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 	@Override
 	public void setStoredItemCount(int amount) {
 		this.storage.setStoredItemCount(amount);
+		this.onInventoryChanged();
 	}
 
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
 		this.storage.setStoredItemType(type, amount);
+		this.onInventoryChanged();
 	}
 
 	@Override
@@ -451,7 +471,6 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 		return this.storage.getMaxStoredCount();
 	}
 
-	/*
 	@Override
 	public int[] getAccessibleSlotsFromSide(int var1) {
 		return this.storage.getAccessibleSlotsFromSide(var1);
@@ -466,7 +485,6 @@ public class TileEntityBarrel extends TileEntity implements IInventory, IDeepSto
 	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
 		return this.storage.canExtractItem(slot, itemstack, side);
 	}
-	*/
 
 	
 }

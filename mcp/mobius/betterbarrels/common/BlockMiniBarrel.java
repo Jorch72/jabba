@@ -23,7 +23,7 @@ public class BlockMiniBarrel extends BlockBarrel {
 	
 	@Override
 	public TileEntity createNewTileEntity(World var1) {
-        return new TileEntityMiniBarrel(16,16);
+        return new TileEntityMiniBarrel(16);
 	}	
 	
 	@Override	
