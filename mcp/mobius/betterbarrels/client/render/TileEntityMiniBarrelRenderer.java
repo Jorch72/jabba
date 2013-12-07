@@ -95,7 +95,7 @@ public class TileEntityMiniBarrelRenderer extends TileEntityBarrelRenderer {
         float revert = reverted ? -0.9991F : 1F;
         side = reverted ? side.getOpposite() : side;
         
-        float size = 2.0F;
+        float size = 8.0F;
         
     	GL11.glPushMatrix();
 

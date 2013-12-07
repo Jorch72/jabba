@@ -43,16 +43,16 @@ public class TileEntityBarrelShelfRenderer extends TileEntityBaseRenderer {
         	if (ent.storages[i] != null){
         		switch(i){
         		case 0:
-        			this.renderIconOnBlock(6, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f, 8f + 124f, -0.001f);
+        			this.renderIconOnBlock(16, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f, 8f + 124f, -0.001f);
         			break;
         		case 1:
-        			this.renderIconOnBlock(6, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f + 124f, 8f + 124f, -0.001f);
+        			this.renderIconOnBlock(16, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f + 124f, 8f + 124f, -0.001f);
         			break;
         		case 2:
-        			this.renderIconOnBlock(6, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f, 8f, -0.001f);
+        			this.renderIconOnBlock(16, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f, 8f, -0.001f);
         			break;
         		case 3:
-        			this.renderIconOnBlock(6, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f + 124f, 8f, -0.001f);
+        			this.renderIconOnBlock(16, ent.blockOrientation, new Coordinates(d0, d1, d2), 7.26f, 8f + 124f, 8f, -0.001f);
         			break;
         		}
         	}
@@ -65,5 +65,5 @@ public class TileEntityBarrelShelfRenderer extends TileEntityBaseRenderer {
     protected float getOrientationAngle(ForgeDirection side){
     	int sideRotation[]  = {0,0,3,1,0,2};
     	return sideRotation[side.ordinal()] * 90F;
-    }	
+    }
 }

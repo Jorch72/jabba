@@ -110,34 +110,20 @@ public class mod_BetterBarrels {
 		
 		try {
 			config.load();
-			Property propBarrel        = config.get("block",  "BetterBarrel", 3500);
-			Property propMiniBarrel    = config.get("block",  "MiniBarrel",   3501);
-			Property propBarrelShelf   = config.get("block",  "BarrelShelf",  3502);
-			Property propCapUpg        = config.get("item",   "UpgradeCapacity", 3501);
-			Property propSticker       = config.get("item",   "Sticker", 3502);
-			Property propMover         = config.get("item",   "Mover", 3503);
-			Property propTuningFork    = config.get("item",   "TuningFork", 3504);
-			Property propBSpaceUpg     = config.get("item",   "BSpaceUpg", 3505);
-			Property propLockingPlanks = config.get("item",   "LockingPlanks", 3506);	
+			barrelID     = config.get("block",  "BetterBarrel",    3500).getInt();
+			miniBarrelID = config.get("block",  "MiniBarrel",      3501).getInt();
+			barrelShelfID= config.get("block",  "BarrelShelf",     3502).getInt();
 			
-			Property propBarrelTexture      =  config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true);
-			Property propHighRezTexture     =  config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false);
-			Property propShowUpgradeSymbols =  config.get(Configuration.CATEGORY_GENERAL, "showUpgradeSymbols", false);
+			itemCapaUpgID       = config.get("item",   "UpgradeCapacity", 3501).getInt();
+			itemStickerID       = config.get("item",   "Sticker",         3502).getInt();
+			itemMoverID         = config.get("item",   "Mover",           3503).getInt();
+			itemTuningForkID    = config.get("item",   "TuningFork",      3504).getInt();
+			itemBSpaceUpgID     = config.get("item",   "BSpaceUpg",       3505).getInt();
+			itemLockingPlanksID = config.get("item",   "LockingPlanks",   3506).getInt();	
 			
-			barrelID      = propBarrel.getInt();
-			miniBarrelID  = propMiniBarrel.getInt();
-			barrelShelfID = propBarrelShelf.getInt();
-			
-			itemCapaUpgID = propCapUpg.getInt();
-			itemStickerID = propSticker.getInt();
-			itemMoverID   = propMover.getInt();
-			itemTuningForkID    = propTuningFork.getInt();
-			itemBSpaceUpgID     = propBSpaceUpg.getInt();	
-			itemLockingPlanksID = propLockingPlanks.getInt();
-			
-			fullBarrelTexture  = propBarrelTexture.getBoolean(true);
-			highRezTexture     = propHighRezTexture.getBoolean(false);
-			showUpgradeSymbols = propShowUpgradeSymbols.getBoolean(false);			
+			fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
+			highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
+			showUpgradeSymbols = config.get(Configuration.CATEGORY_GENERAL, "showUpgradeSymbols", false).getBoolean(false);
 			
 		} catch (Exception e) {
 			FMLLog.log(Level.SEVERE, e, "BlockBarrel has a problem loading it's configuration");
@@ -153,13 +139,13 @@ public class mod_BetterBarrels {
 	
 	@Init
 	public void load(FMLInitializationEvent event) {
-		blockBarrel     = new BlockBarrel(barrelID);
-		blockMiniBarrel = new BlockMiniBarrel(miniBarrelID);
-		blockBarrelShelf = new BlockBarrelShelf(barrelShelfID);
-		itemCapaUpg     = new ItemCapaUpg(itemCapaUpgID);
-		itemSticker     = new ItemBarrelSticker(itemStickerID);
-		itemMover       = new ItemBarrelMover(itemMoverID);
-		itemTuningFork  = new ItemTuningFork(itemTuningForkID);
+		blockBarrel       = new BlockBarrel(barrelID);
+		blockMiniBarrel   = new BlockMiniBarrel(miniBarrelID);
+		blockBarrelShelf  = new BlockBarrelShelf(barrelShelfID);
+		itemCapaUpg       = new ItemCapaUpg(itemCapaUpgID);
+		itemSticker       = new ItemBarrelSticker(itemStickerID);
+		itemMover         = new ItemBarrelMover(itemMoverID);
+		itemTuningFork    = new ItemTuningFork(itemTuningForkID);
 		itemBSpaceUpg     = new ItemBSpaceInterface(itemBSpaceUpgID);
 		itemLockingPlanks = new ItemBarrelLocker(itemLockingPlanksID);
 		
@@ -182,8 +168,8 @@ public class mod_BetterBarrels {
 		GameRegistry.registerBlock(blockBarrelShelf);
 		
 		//GameRegistry.registerBlock(blockBarrel, "ProfMobius_BetterBarrels");
-		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
-		GameRegistry.registerTileEntity(TileEntityMiniBarrel.class, "TileEntityMiniBarrel");
+		GameRegistry.registerTileEntity(TileEntityBarrel.class,      "TileEntityBarrel");
+		GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
 		GameRegistry.registerTileEntity(TileEntityBarrelShelf.class, "TileEntityBarrelShelf");
 		proxy.registerRenderers();
 		
