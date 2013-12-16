@@ -58,7 +58,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
     
 	protected void renderTextOnBlock(String renderString, ForgeDirection side, Coordinates barrelPos, float size, double posx, double posy, int red, int green, int blue, int alpha, boolean centered){
 
-    	if (renderString.equals("") || renderString == null){return;}
+    	if (renderString == null || renderString.equals("")){return;}
         	
     	int stringWidth = this.getFontRenderer().getStringWidth(renderString);
 

@@ -261,10 +261,6 @@ public class StorageLocal implements IBarrelStorage{
 			this.outputStack = itemstack;
 		
 		this.onInventoryChanged();
-		/*
-		else
-			throw new RuntimeException(String.format("[JABBA] Tried to assign %s to outputStack in setInventorySlotContents", itemstack));
-		*/
 	}
 
 	@Override
@@ -298,13 +294,6 @@ public class StorageLocal implements IBarrelStorage{
 			this.inputStack           = this.itemTemplate.copy();
 			this.inputStack.stackSize = this.itemTemplate.getMaxStackSize() - this.getFreeSpace();
 		}
-		
-		/*
-		if (this.hasItem() && this.itemTemplate.getMaxStackSize() * this.getMaxStacks() - this.totalAmount < this.itemTemplate.getMaxStackSize()){
-			this.inputStack = this.itemTemplate.copy();
-			this.inputStack.stackSize = this.inputStack.getMaxStackSize() * this.getMaxStacks() - this.totalAmount;
-		}
-		*/
 		
 		if (this.hasItem() && outputStack == null && this.prevOutputStack != null)
 			this.totalAmount -= prevOutputStack.stackSize;
