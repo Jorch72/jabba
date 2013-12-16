@@ -363,6 +363,8 @@ public class StorageLocal implements IBarrelStorage{
 	public int getMaxStoredCount() {
 		if (this.hasItem())
 			return this.maxstacks * this.getItem().getMaxStackSize();
+		else if (!this.hasItem() && this.isGhosting())
+			return 0;
 		else
 			return this.maxstacks * 64;
 	}	
