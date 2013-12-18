@@ -57,6 +57,7 @@ public class ItemBarrelMover extends Item {
     	classExtensionsNames.add("thermalexpansion.block.engine.TileEngineRoot");
     	//classExtensionsNames.add("factorization.common.TileEntityBarrel");
     	classExtensionsNames.add("thermalexpansion.block.machine.TileMachineRoot");
+    	classExtensionsNames.add("dmillerw.cchests.block.tile.TileChest");
     	
     	for (String s : classExtensionsNames){
     		try {
@@ -169,11 +170,11 @@ public class ItemBarrelMover extends Item {
 		
 		/* Buildcraft engines orientation correction */
 		if (TEClassName.contains("buildcraft.energy.TileEngine") && nbtContainer.hasKey("orientation"))
-			nbtContainer.setInteger("orientation", 1);		
+			nbtContainer.setInteger("orientation", 1);
 
 		/* Railcraft engines orientation correction */
 		if (TEClassName.contains("mods.railcraft.common.blocks.machine.beta") && nbtContainer.hasKey("direction"))
-			nbtContainer.setByte("direction", (byte)1);		
+			nbtContainer.setByte("direction", (byte)1);
 
 		/* Forestry engines orientation correction */
 		if (TEClassName.contains("forestry.energy.gadgets") && nbtContainer.hasKey("Orientation"))
@@ -198,6 +199,10 @@ public class ItemBarrelMover extends Item {
 		/* Gregtech Orientation Correction */
 		if (TEClassName.contains("gregtechmod") && nbtContainer.hasKey("mFacing"))
 			nbtContainer.setShort("mFacing", (short)this.getBarrelOrientationOnPlacement(player).ordinal());		
+		
+		/* Dmillerw Orientation Correction */		
+		if (TEClassName.contains("dmillerw.cchests.block.tile") && nbtContainer.hasKey("orientation"))
+			nbtContainer.setByte("orientation", (byte)this.getBarrelOrientationOnPlacement(player).ordinal());
 		
 		/* Factorization barrel */
 		//if (TEClassName.contains("factorization.common.TileEntityBarrel") && nbtContainer.hasKey("facing"))
