@@ -52,7 +52,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid=mod_BetterBarrels.modid, name="JABBA", version="1.0.1", dependencies="after:Waila")
+@Mod(modid=mod_BetterBarrels.modid, name="JABBA", version="1.0.2", dependencies="after:Waila")
 @NetworkMod(channels = {"JABBA"}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 
 public class mod_BetterBarrels {

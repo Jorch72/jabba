@@ -4,6 +4,7 @@ import java.util.logging.Level;
 
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -341,7 +342,11 @@ public class StorageLocal implements IBarrelStorage{
 			ItemStack stack = this.getItem().copy();
 			stack.stackSize = this.totalAmount;
 			return stack;
-		} else {
+		} 
+		else if (!this.hasItem() && this.isGhosting()){
+			return new ItemStack(Block.endPortal, 0);
+		}
+		else{
 			return null;
 		}
 	}
@@ -363,8 +368,6 @@ public class StorageLocal implements IBarrelStorage{
 	public int getMaxStoredCount() {
 		if (this.hasItem())
 			return this.maxstacks * this.getItem().getMaxStackSize();
-		else if (!this.hasItem() && this.isGhosting())
-			return 0;
 		else
 			return this.maxstacks * 64;
 	}	
