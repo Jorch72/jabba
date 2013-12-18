@@ -25,6 +25,7 @@ import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -419,7 +420,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}
 	@Override
 	public ItemStack decrStackSize(int islot, int quantity) {
-		ItemStack stack = this.storage.decrStackSize(islot, quantity);
+		TileEntity ent = this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
+		ItemStack stack;
+		if (ent instanceof TileEntityHopper)
+			stack = this.storage.decrStackSize_Hopper(islot, quantity);
+		else
+			stack = this.storage.decrStackSize(islot, quantity);
+		
 		this.onInventoryChanged();
 		return stack;
 	}

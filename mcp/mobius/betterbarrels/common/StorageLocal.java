@@ -247,10 +247,25 @@ public class StorageLocal implements IBarrelStorage{
 		int stackSize = Math.min(quantity, stack.stackSize);
 		stack.stackSize = stackSize;
 		this.getStackFromSlot(slot).stackSize -= stackSize;
+
 		this.onInventoryChanged();
 		return stack;		
 	}
 
+	@Override
+	public ItemStack decrStackSize_Hopper(int slot, int quantity) {
+		if (slot == 0)
+			throw new RuntimeException("[JABBA] Tried to decr the stack size of the input slot");
+
+		ItemStack stack = this.getStackFromSlot(slot).copy();
+		int stackSize = Math.min(quantity, stack.stackSize);
+		stack.stackSize = stackSize;
+		this.getStackFromSlot(slot).stackSize -= stackSize;
+
+		//this.onInventoryChanged();
+		return stack;		
+	}	
+	
 	@Override
 	public ItemStack getStackInSlotOnClosing(int slot) { return this.getStackFromSlot(slot); }
 

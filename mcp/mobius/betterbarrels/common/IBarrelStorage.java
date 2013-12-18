@@ -44,4 +44,6 @@ public interface IBarrelStorage extends ISidedInventory, IDeepStorageUnit{
 	public void    clearDirty();
 	public boolean isDirty();
 	public void    upgCapacity(int level);	
+	
+	public ItemStack decrStackSize_Hopper(int slot, int quantity);
 }
