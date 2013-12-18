@@ -1,11 +1,13 @@
 package mcp.mobius.betterbarrels.common.items;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
@@ -20,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -106,13 +109,13 @@ public class ItemBarrelMover extends Item {
 	@Override
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
     {
-		if (world.isRemote){return false;}
+		//if (world.isRemote){return false;}
 		
-		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Container")){
+		if (!world.isRemote && (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Container"))){
 			return this.pickupContainer(stack, player, world, x, y, z);
 		}
 		
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container")){
+		if (!world.isRemote && (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))){
 			return this.placeContainer(stack, player, world, x, y, z, side);
 		}
 		
@@ -151,7 +154,7 @@ public class ItemBarrelMover extends Item {
 			if (targSide.equals(ForgeDirection.UP))
 				targY += 1;			
 			if (targSide.equals(ForgeDirection.DOWN))
-				targY += 1;
+				targY -= 1;
 		}
 		
 		if(!(world.canPlaceEntityOnSide(blockID, targX, targY, targZ, false, side, (Entity)null, stack))){return false;}
@@ -162,7 +165,7 @@ public class ItemBarrelMover extends Item {
 
 		/* Vanilla chest */
 		if (TEClassName.contains("net.minecraft.tileentity.TileEntityChest"))
-			blockMeta = this.getBarrelOrientationOnPlacement(player, targY).ordinal(); 
+			blockMeta = this.getBarrelOrientationOnPlacement(player).ordinal(); 
 		
 		/* Buildcraft engines orientation correction */
 		if (TEClassName.contains("buildcraft.energy.TileEngine") && nbtContainer.hasKey("orientation"))
@@ -186,15 +189,15 @@ public class ItemBarrelMover extends Item {
 		
 		/* Iron chest orientation correction */
 		if (TEClassName.contains("cpw.mods.ironchest") && nbtContainer.hasKey("facing"))
-			nbtContainer.setByte("facing", (byte)this.getBarrelOrientationOnPlacement(player, targY).ordinal());		
+			nbtContainer.setByte("facing", (byte)this.getBarrelOrientationOnPlacement(player).ordinal());		
 		
-		/* IC2 Orientation correction */
-		//if (TEClassName.contains("ic2.core.block") && nbtContainer.hasKey("facing"))
-		//	nbtContainer.setShort("facing", (short)this.getBarrelOrientationOnPlacement(player).ordinal());
+		/* IC2 Orientation correction part1 */
+		if (TEClassName.contains("ic2.core.block") && nbtContainer.hasKey("facing"))
+			nbtContainer.setShort("facing", (short)6);
 		
 		/* Gregtech Orientation Correction */
 		if (TEClassName.contains("gregtechmod") && nbtContainer.hasKey("mFacing"))
-			nbtContainer.setShort("mFacing", (short)this.getBarrelOrientationOnPlacement(player, targY).ordinal());		
+			nbtContainer.setShort("mFacing", (short)this.getBarrelOrientationOnPlacement(player).ordinal());		
 		
 		/* Factorization barrel */
 		//if (TEClassName.contains("factorization.common.TileEntityBarrel") && nbtContainer.hasKey("facing"))
@@ -203,7 +206,7 @@ public class ItemBarrelMover extends Item {
 		/* Thermal Expension */
 		if (TEClassName.contains("thermalexpansion.block.machine") && nbtContainer.hasKey("side.facing")){
 			ForgeDirection side_facing  = ForgeDirection.getOrientation(nbtContainer.getByte("side.facing"));
-			ForgeDirection new_facing   = this.getBarrelOrientationOnPlacement(player, targY);
+			ForgeDirection new_facing   = this.getBarrelOrientationOnPlacement(player);
 			byte[] side_array_old       = nbtContainer.getByteArray("side.array");
 			byte[] side_array_new       = side_array_old.clone();
 
@@ -227,7 +230,7 @@ public class ItemBarrelMover extends Item {
 		
 		/* Better barrel craziness */
 		if (nbtContainer.getString("id").equals("TileEntityBarrel")){
-			ForgeDirection newBarrelOrientation         = this.getBarrelOrientationOnPlacement(player, targY);
+			ForgeDirection newBarrelOrientation         = this.getBarrelOrientationOnPlacement(player);
 			ForgeDirection oldBarrelOrientation         = this.convertOrientationFlagToForge(nbtContainer.getInteger("barrelOrigOrient")).get(0); 
 			ArrayList<ForgeDirection> oldBarrelStickers = this.convertOrientationFlagToForge(nbtContainer.getInteger("barrelOrient"));
 			
@@ -251,19 +254,13 @@ public class ItemBarrelMover extends Item {
 
 		TileEntity entity = world.getBlockTileEntity(targX, targY, targZ);
 		
-		/* IC2 orientation fix */
-		if (classMap.get("ic2.api.tile.IWrenchable").isInstance(entity)){
-			try{
-				Method setFacing = classMap.get("ic2.api.tile.IWrenchable").getMethod("setFacing", new Class[]{short.class});
-				setFacing.invoke(entity, (short)this.getBarrelOrientationOnPlacement(player, targY, true).ordinal());
-			} catch (Exception e){
-				System.out.printf("%s\n", e);
-			}
-		}
+		/* IC2 orientation fix part2 */
+		if (classMap.get("ic2.api.tile.IWrenchable").isInstance(entity))
+			this.fixIC2Orientation(entity, player, targY);
 		
 		if (TEClassName.contains("net.minecraft.tileentity.TileEntityChest"))	
 			world.setBlockMetadataWithNotify(targX, targY, targZ, blockMeta, 1 + 2);
-		
+
 		stack.setItemDamage(0);		
 		stack.getTagCompound().removeTag("Container");
 		try{ stack.getTagCompound().getCompoundTag("display").removeTag("Name");
@@ -271,6 +268,20 @@ public class ItemBarrelMover extends Item {
 		return true;
 		
 		
+	}
+	
+	private void fixIC2Orientation(TileEntity entity, EntityPlayer player, int targY){
+		try{
+			Method setFacing          = classMap.get("ic2.api.tile.IWrenchable").getMethod("setFacing", new Class[]{short.class});
+			Method wrenchCanSetFacing = classMap.get("ic2.api.tile.IWrenchable").getMethod("wrenchCanSetFacing", new Class[]{EntityPlayer.class, int.class});
+			if ((Boolean)wrenchCanSetFacing.invoke(entity, player, (short)this.getBarrelOrientationOnPlacement(player, targY, true).ordinal()))
+				setFacing.invoke(entity, (short)this.getBarrelOrientationOnPlacement(player, targY, true).ordinal());
+			else
+				setFacing.invoke(entity, (short)this.getBarrelOrientationOnPlacement(player, targY, false).ordinal());
+			
+		} catch (Exception e){
+			System.out.printf("%s\n", e);
+		}		
 	}
 	
 	private boolean isTEMovable(TileEntity te){
@@ -339,15 +350,15 @@ public class ItemBarrelMover extends Item {
 		}
 	}
 
-	private ForgeDirection getBarrelOrientationOnPlacement(EntityPlayer player, int targY){
-		return this.getBarrelOrientationOnPlacement(player, targY, false);
+	private ForgeDirection getBarrelOrientationOnPlacement(EntityPlayer player){
+		return this.getBarrelOrientationOnPlacement(player, 0, false);
 	}
 	
 	private ForgeDirection getBarrelOrientationOnPlacement(EntityPlayer player, int targY, boolean allowVertical){
 		
 		ForgeDirection barrelOrientation = ForgeDirection.UNKNOWN;
 		Vec3 playerLook = player.getLookVec();
-		if (Math.abs(playerLook.xCoord) > Math.abs(playerLook.zCoord)){
+		if (Math.abs(playerLook.xCoord) >= Math.abs(playerLook.zCoord)){
 			if (playerLook.xCoord > 0)
 				barrelOrientation = ForgeDirection.WEST;
 			else
@@ -359,15 +370,15 @@ public class ItemBarrelMover extends Item {
 				barrelOrientation = ForgeDirection.SOUTH;			
 		}
 		
-		/*
-		if (allowVertical && playerLook.yCoord < -0.55 && player.posY > targY){
+		if (allowVertical && player.posY > targY){
 			barrelOrientation = ForgeDirection.UP;
 		}
 
-		else if (allowVertical && playerLook.yCoord >  0.6 && (player.posY + 1) > targY){
+		else if (allowVertical && playerLook.yCoord >  0.73){
 			barrelOrientation = ForgeDirection.DOWN;
 		}
-		*/		
+
+		System.out.printf("%s\n", playerLook.yCoord);		
 		
         return barrelOrientation;
         
@@ -404,4 +415,42 @@ public class ItemBarrelMover extends Item {
 
         return "<Unknown>";
 	}
+	
+	private ForgeDirection fromMCToForge(short side){
+		switch (side){
+		case 0:
+			return ForgeDirection.DOWN;
+		case 1:
+			return ForgeDirection.UP;
+		case 2:
+			return ForgeDirection.EAST;
+		case 3:
+			return ForgeDirection.WEST;
+		case 4:
+			return ForgeDirection.NORTH;
+		case 5:
+			return ForgeDirection.SOUTH;
+		}
+		return ForgeDirection.UNKNOWN;
+	}
+	
+	private short fromForgeToMC(ForgeDirection side){
+		switch (side){
+		case DOWN:
+			return (short)0;		
+		case UP:
+			return (short)1;
+		case EAST:
+			return (short)2;
+		case WEST:
+			return (short)3;
+		case NORTH:
+			return (short)4;		
+		case SOUTH:
+			return (short)5;
+		case UNKNOWN:	
+			return (short)-1;
+		}
+		return -1;
+	}	
 }
