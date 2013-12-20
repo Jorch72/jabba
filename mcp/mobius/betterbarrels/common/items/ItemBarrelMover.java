@@ -59,6 +59,10 @@ public class ItemBarrelMover extends Item {
     	classExtensionsNames.add("thermalexpansion.block.machine.TileMachineRoot");
     	classExtensionsNames.add("dmillerw.cchests.block.tile.TileChest");
     	
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityReinforcedChest");
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityLocker");
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityCardboardBox");    	
+    	
     	for (String s : classExtensionsNames){
     		try {
     			classExtensions.add(Class.forName(s));
@@ -204,6 +208,10 @@ public class ItemBarrelMover extends Item {
 		if (TEClassName.contains("dmillerw.cchests.block.tile") && nbtContainer.hasKey("orientation"))
 			nbtContainer.setByte("orientation", (byte)this.getBarrelOrientationOnPlacement(player).ordinal());
 		
+		/* BetterStorage Orientation Correction */		
+		if (TEClassName.contains("net.mcft.copy.betterstorage.block.tileentity") && nbtContainer.hasKey("orientation"))
+			nbtContainer.setByte("orientation", (byte)this.getBarrelOrientationOnPlacement(player).ordinal());		
+		
 		/* Factorization barrel */
 		//if (TEClassName.contains("factorization.common.TileEntityBarrel") && nbtContainer.hasKey("facing"))
 		//	nbtContainer.setByte("facing", (byte)this.getBarrelOrientationOnPlacement(player).ordinal());
@@ -330,7 +338,10 @@ public class ItemBarrelMover extends Item {
 		stack.getTagCompound().setCompoundTag("Container", nbtTarget);
 
 		world.removeBlockTileEntity(x, y, z);
-		world.setBlock(x, y, z, 0, 0, 1 + 2);
+		try{
+			world.setBlock(x, y, z, 0, 0, 1 + 2);
+		} catch (Exception e) {}
+		
 		
 		stack.setItemDamage(1);
 		//stack.setItemName(mod_BetterBarrels.moverName + " (" + moverName + ")");
