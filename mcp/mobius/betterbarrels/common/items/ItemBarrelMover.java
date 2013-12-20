@@ -61,7 +61,15 @@ public class ItemBarrelMover extends Item {
     	
     	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityReinforcedChest");
     	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityLocker");
-    	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityCardboardBox");    	
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityCardboardBox");
+    	
+    	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityBookcase");
+    	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityPotionShelf");
+    	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityWeaponRack");
+    	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityGenericShelf");
+    	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityArmorStand");
+    	//classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityWeaponCase");    	
+    	
     	
     	for (String s : classExtensionsNames){
     		try {
@@ -211,6 +219,25 @@ public class ItemBarrelMover extends Item {
 		/* BetterStorage Orientation Correction */		
 		if (TEClassName.contains("net.mcft.copy.betterstorage.block.tileentity") && nbtContainer.hasKey("orientation"))
 			nbtContainer.setByte("orientation", (byte)this.getBarrelOrientationOnPlacement(player).ordinal());		
+		
+		/* Bibliocraft orientation correction block */
+		if (TEClassName.contains("jds.bibliocraft.tileentities") && nbtContainer.hasKey("bookcaseAngle"))
+			nbtContainer.setInteger("bookcaseAngle", this.fromForgeToBiblio(this.getBarrelOrientationOnPlacement(player)));
+		
+		if (TEClassName.contains("jds.bibliocraft.tileentities") && nbtContainer.hasKey("potionshelfAngle"))
+			nbtContainer.setInteger("potionshelfAngle", this.fromForgeToBiblio(this.getBarrelOrientationOnPlacement(player)));
+		
+		if (TEClassName.contains("jds.bibliocraft.tileentities") && nbtContainer.hasKey("rackAngle"))
+			nbtContainer.setInteger("rackAngle", this.fromForgeToBiblio(this.getBarrelOrientationOnPlacement(player)));
+			
+		if (TEClassName.contains("jds.bibliocraft.tileentities") && nbtContainer.hasKey("genericShelfAngle"))
+			nbtContainer.setInteger("genericShelfAngle", this.fromForgeToBiblio(this.getBarrelOrientationOnPlacement(player)));
+
+		if (TEClassName.contains("jds.bibliocraft.tileentities.TileEntityArmorStand"))
+			blockMeta = this.fromForgeToBiblio(this.getBarrelOrientationOnPlacement(player));		
+		
+		//if (TEClassName.contains("jds.bibliocraft.tileentities") && nbtContainer.hasKey("caseAngle"))			
+		//	nbtContainer.setInteger("caseAngle", this.fromForgeToBiblio(this.getBarrelOrientationOnPlacement(player)));
 		
 		/* Factorization barrel */
 		//if (TEClassName.contains("factorization.common.TileEntityBarrel") && nbtContainer.hasKey("facing"))
@@ -469,4 +496,19 @@ public class ItemBarrelMover extends Item {
 		}
 		return -1;
 	}	
+	
+	private short fromForgeToBiblio(ForgeDirection side){
+		switch (side){
+		case EAST:
+			return (short)2;
+		case WEST:
+			return (short)0;
+		case NORTH:
+			return (short)1;		
+		case SOUTH:
+			return (short)3;
+		default:	
+			return (short)-1;
+		}
+	}		
 }
