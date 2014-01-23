@@ -136,4 +136,70 @@ public class BlockBarrel extends BlockContainer{
         }
         return true;
     }
+    
+	private void dropStack(World world, ItemStack stack, int x, int y, int z){
+    	Random random = new Random();
+        float var10 = random.nextFloat() * 0.8F + 0.1F;
+        float var11 = random.nextFloat() * 0.8F + 0.1F;
+        EntityItem items;
+
+        
+        for (float var12 = random.nextFloat() * 0.8F + 0.1F; stack.stackSize > 0; world.spawnEntityInWorld(items))
+        {
+            int var13 = random.nextInt(21) + 10;
+
+            if (var13 > stack.stackSize)
+            {
+                var13 = stack.stackSize;
+            }
+
+            stack.stackSize -= var13;
+            items = new EntityItem(world, (double)((float)x + var10), (double)((float)y + var11), (double)((float)z + var12), new ItemStack(stack.itemID, var13, stack.getItemDamage()));
+            float var15 = 0.05F;
+            items.motionX = (double)((float)random.nextGaussian() * var15);
+            items.motionY = (double)((float)random.nextGaussian() * var15 + 0.2F);
+            items.motionZ = (double)((float)random.nextGaussian() * var15);
+
+            if (stack.hasTagCompound())
+            {
+            	items.getEntityItem().setTagCompound((NBTTagCompound)stack.getTagCompound().copy());
+            }
+        }  		
+	}
+	
+	@Override
+    public void breakBlock(World world, int x, int y, int z, int par5, int par6)
+    {
+
+    	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
+    	
+    	// We drop the stacks
+        if ((barrelEntity != null) && (barrelEntity.storage.hasItem()))
+        {
+        	barrelEntity.updateEntity();
+        	int ndroppedstacks = 0;
+        	ItemStack droppedstack = new ItemStack(0,0,0);
+        	while ((droppedstack != null) && (ndroppedstacks <= 64)){
+        		droppedstack    = barrelEntity.storage.getStack();
+        		ndroppedstacks += 1;
+        		
+        		if (droppedstack != null)
+        			this.dropStack(world, droppedstack, x, y, z);
+        	}
+        }
+
+        super.breakBlock(world, x, y, z, par5, par6);        
+        
+    }
+
+	@Override
+    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z)
+    {
+    	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
+    	if (player != null && barrelEntity != null && !barrelEntity.storage.canInteract(player.username)){
+    		return false;
+    	}
+    	return super.removeBlockByPlayer(world, player, x, y, z);
+		
+    } 
 }
