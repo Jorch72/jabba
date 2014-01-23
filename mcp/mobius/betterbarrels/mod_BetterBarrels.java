@@ -16,11 +16,7 @@ import mcp.mobius.betterbarrels.client.ClientEventHandler;
 import mcp.mobius.betterbarrels.client.PlasmaTexture;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.BlockBarrel;
-import mcp.mobius.betterbarrels.common.BlockBarrelShelf;
-import mcp.mobius.betterbarrels.common.BlockMiniBarrel;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-import mcp.mobius.betterbarrels.common.TileEntityBarrelShelf;
-import mcp.mobius.betterbarrels.common.TileEntityMiniBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBSpaceInterface;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelLocker;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
@@ -140,8 +136,8 @@ public class mod_BetterBarrels {
 	@Init
 	public void load(FMLInitializationEvent event) {
 		blockBarrel       = new BlockBarrel(barrelID);
-		blockMiniBarrel   = new BlockMiniBarrel(miniBarrelID);
-		blockBarrelShelf  = new BlockBarrelShelf(barrelShelfID);
+		//blockMiniBarrel   = new BlockMiniBarrel(miniBarrelID);
+		//blockBarrelShelf  = new BlockBarrelShelf(barrelShelfID);
 		itemCapaUpg       = new ItemCapaUpg(itemCapaUpgID);
 		itemSticker       = new ItemBarrelSticker(itemStickerID);
 		itemMover         = new ItemBarrelMover(itemMoverID);
@@ -150,8 +146,8 @@ public class mod_BetterBarrels {
 		itemLockingPlanks = new ItemBarrelLocker(itemLockingPlanksID);
 		
 		LanguageRegistry.addName(blockBarrel, "Better Barrel");
-		LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
-		LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
+		//LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
+		//LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
 		LanguageRegistry.addName(itemSticker, "Barrel sticker");
 		LanguageRegistry.addName(new ItemStack(itemMover,0,0),   moverName);
 		LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
@@ -163,14 +159,14 @@ public class mod_BetterBarrels {
 			LanguageRegistry.addName(upgrade, ((ItemCapaUpg)itemCapaUpg).upgradeNames[i]);
 		}
 		
-		GameRegistry.registerBlock(blockBarrel);
-		GameRegistry.registerBlock(blockMiniBarrel);
-		GameRegistry.registerBlock(blockBarrelShelf);
+		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");
+		//GameRegistry.registerBlock(blockMiniBarrel);
+		//GameRegistry.registerBlock(blockBarrelShelf);
 		
-		//GameRegistry.registerBlock(blockBarrel, "ProfMobius_BetterBarrels");
+		GameRegistry.registerBlock(blockBarrel, "ProfMobius_BetterBarrels");
 		GameRegistry.registerTileEntity(TileEntityBarrel.class,      "TileEntityBarrel");
-		GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
-		GameRegistry.registerTileEntity(TileEntityBarrelShelf.class, "TileEntityBarrelShelf");
+		//GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
+		//GameRegistry.registerTileEntity(TileEntityBarrelShelf.class, "TileEntityBarrelShelf");
 		proxy.registerRenderers();
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockBarrel), new Object[]
