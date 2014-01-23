@@ -35,6 +35,11 @@ public class BarrelPacketHandler implements IPacketHandler {
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				barrel.storage.setGhosting(packetCast.locked);
 			}
+			else if (header == 0x03){
+				Packet0x03SideUpgradeUpdate packetCast = new Packet0x03SideUpgradeUpdate(packet);
+				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
+				barrel.sideUpgrades = packetCast.sideUpgrades;
+			}			
 		}				
 	}
 

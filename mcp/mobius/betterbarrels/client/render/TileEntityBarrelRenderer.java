@@ -8,6 +8,7 @@ import java.util.Set;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.items.SideUpgrade;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -97,7 +98,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	        
         	for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){
         		int textureIndex = 0;
-            	if (forgeSide == orientation)
+            	if (this.isItemDisplaySide(barrelEntity, forgeSide))
             		textureIndex = 16*textureUpgrade + 1;  		
             	else if ((forgeSide == ForgeDirection.UP) || (forgeSide == ForgeDirection.DOWN))
             		textureIndex = 16*textureUpgrade;
@@ -107,7 +108,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
             	this.setLight(barrelEntity, forgeSide);
             	this.renderBarrelSide(textureIndex, forgeSide, barrelPos);            	
             	
-            	if (forgeSide == orientation)
+            	if (this.isItemDisplaySide(barrelEntity, forgeSide))
             		this.renderBarrelSide(3, forgeSide, barrelPos);
 
             	
@@ -125,7 +126,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){					
 				this.setLight(barrelEntity, forgeSide);
 					
-				if (barrelEntity.storage.hasItem() &&  (forgeSide == orientation))
+				if (barrelEntity.storage.hasItem() &&  this.isItemDisplaySide(barrelEntity, forgeSide))
 				{
 					this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, barrelPos, 8.0F, 65.0F, 75.0F);
 					String barrelString = this.getBarrelString(barrelEntity);
@@ -134,7 +135,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 				}
 
 				//TODO : Simplified version for speed
-				if (barrelEntity.storage.isGhosting() && (forgeSide == orientation))
+				if (barrelEntity.storage.isGhosting() && this.isItemDisplaySide(barrelEntity, forgeSide))
 					this.renderIconOnBlock(8, forgeSide, barrelPos, 2F, 223F, 215F, -0.01F);				
 				
 				//TODO : Desactivated for speed
@@ -230,7 +231,12 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         GL11.glPopMatrix();    	           
     }    
     
-
+	protected boolean isItemDisplaySide(TileEntityBarrel barrel, ForgeDirection forgeSide){
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == SideUpgrade.NONE)    return false;			
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == SideUpgrade.FRONT)   return true;		
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == SideUpgrade.STICKER) return true;
+		return false;
+	}
 	
     //TODO : Desactivated to test rendering speed
     /*

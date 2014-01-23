@@ -9,9 +9,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.server.FMLServerHandler;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.items.ItemBSpaceInterface;
+import mcp.mobius.betterbarrels.common.items.ItemBarrelSticker;
 import mcp.mobius.betterbarrels.common.items.ItemCapaUpg;
+import mcp.mobius.betterbarrels.common.items.SideUpgrade;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
 import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.server.SaveHandler;
 import net.minecraft.entity.item.EntityItem;
@@ -44,8 +47,8 @@ public class TileEntityBarrel extends TileEntity{
 	
     public IBarrelStorage storage     = new StorageLocal();
 	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
-	public int levelStructural        = 0;	
-	
+	public int levelStructural        = 0;
+	public int[] sideUpgrades = {SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE};
 	/* PLAYER INTERACTIONS */
 	
 	public void leftClick(EntityPlayer player){
@@ -62,11 +65,13 @@ public class TileEntityBarrel extends TileEntity{
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
-	public void rightClick(EntityPlayer player){
+	public void rightClick(EntityPlayer player, int side){
 		ItemStack stack = player.getHeldItem();
 		
 		if (player.isSneaking() && stack == null)
 			this.switchLocked();
+        else if (stack.getItem() instanceof ItemBarrelSticker)
+        	this.applySticker(stack, ForgeDirection.getOrientation(side));		
 		else
 			this.manualStackAdd(player);
 	}
@@ -75,6 +80,16 @@ public class TileEntityBarrel extends TileEntity{
 		this.storage.switchGhosting();
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
+	}
+	
+	private void applySticker(ItemStack stack, ForgeDirection side){
+		if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
+		if (this.sideUpgrades[side.ordinal()] != SideUpgrade.NONE) {return;}
+
+		this.sideUpgrades[side.ordinal()] = SideUpgrade.STICKER;
+		stack.stackSize -= 1;
+		
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
 	private void manualStackAdd(EntityPlayer player){
@@ -156,16 +171,18 @@ public class TileEntityBarrel extends TileEntity{
     public void writeToNBT(NBTTagCompound NBTTag)
     {
         super.writeToNBT(NBTTag);
-        NBTTag.setInteger("version",     this.version);        
-        NBTTag.setInteger("orientation", this.orientation.ordinal());
-        NBTTag.setCompoundTag("storage", this.storage.writeTagCompound());
+        NBTTag.setInteger("version",       this.version);        
+        NBTTag.setInteger("orientation",   this.orientation.ordinal());
+        NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
+        NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
     }  	
 
 	@Override	
     public void readFromNBT(NBTTagCompound NBTTag)
     {
     	super.readFromNBT(NBTTag);
-    	this.orientation = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
+    	this.orientation  = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
+    	this.sideUpgrades = NBTTag.getIntArray("sideUpgrades");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
 	

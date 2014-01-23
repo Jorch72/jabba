@@ -38,6 +38,7 @@ import mcp.mobius.betterbarrels.common.items.ItemBarrelLocker;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelSticker;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
 import mcp.mobius.betterbarrels.common.items.ItemUpgrade;
+import mcp.mobius.betterbarrels.common.items.SideUpgrade;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaBlock;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -116,6 +117,7 @@ public class BlockBarrel extends BlockContainer{
 	        		barrelEntity.orientation = ForgeDirection.WEST;	        		
 	        		break;        		
 	        }
+	        barrelEntity.sideUpgrades[barrelEntity.orientation.ordinal()] = SideUpgrade.FRONT;
         }
     }
     
@@ -129,10 +131,10 @@ public class BlockBarrel extends BlockContainer{
     }     
     
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int var6, float var7, float var8, float var9){
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float var7, float var8, float var9){
         if (!world.isRemote){
             TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
-            ((TileEntityBarrel)tileEntity).rightClick(player);        	
+            ((TileEntityBarrel)tileEntity).rightClick(player, side);        	
         }
         return true;
     }
