@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
 
+import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldServer;
@@ -15,7 +17,11 @@ public class SaveHandler {
 
 	public static void saveData(){
 		WorldServer worldServer = DimensionManager.getWorld(0);
-
+		if (worldServer == null){
+			mod_BetterBarrels.log.log(Level.WARNING, "Error while trying to save bspace data. Dimension 0 is null");
+			return;
+		}
+		
         try {
             File saveFile = new File(worldServer.getChunkSaveLocation(), "betterbarrel.dat");
             if(saveFile.exists()) {
@@ -31,15 +37,22 @@ public class SaveHandler {
 
             CompressedStreamTools.writeCompressed(BSpaceStorageHandler.instance.writeToNBT(), new FileOutputStream(saveFile));
          } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to save betterbarrel data");
-         }		
+             e.printStackTrace();
+             throw new RuntimeException("Failed to save betterbarrel data");
+         } catch (NullPointerException e) {
+	         e.printStackTrace();
+	         throw new RuntimeException("Error while trying to save bspace data. Something is null");        	 
+         }
 		
 	};
 	
 	public static void loadData(){
 		
 		WorldServer worldServer = DimensionManager.getWorld(0);		
+		if (worldServer == null){
+			mod_BetterBarrels.log.log(Level.WARNING, "Error while trying to load bspace data. Dimension 0 is null");
+			return;
+		}		
 		
 		try {
 			File saveFile = new File(worldServer.getChunkSaveLocation(), "betterbarrel.dat");
@@ -73,6 +86,9 @@ public class SaveHandler {
 	          */
 	       } catch (IOException var7) {
 	    	   System.out.printf("BETTERBARRELS : Error reading save file !\n");	    	   
+	       } catch (NullPointerException e) {
+	    	   e.printStackTrace();
+	    	   throw new RuntimeException("Error while trying to load bspace data. Something is null");        	 
 	       }		
 	}
 	

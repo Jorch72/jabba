@@ -36,25 +36,25 @@ import net.minecraftforge.oredict.OreDictionary;
 //public class TileEntityBarrel extends TileEntity implements ISidedInventory {
 public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDeepStorageUnit {
 
-	public int blockOrientation    = -1;		//Faces with an item display (int to byte)
-	public int blockOriginalOrient = -1;		//Original orientation of the barrel (int to byte)
+	public int      blockOrientation    = -1;		//Faces with an item display (int to byte)
+	public int      blockOriginalOrient = -1;		//Original orientation of the barrel (int to byte)
 	private boolean syncAmount     = true;		//Should the amount be synced on entity update ?
 	private boolean syncAspect     = true;
-	public boolean orientDirty     = false; 	//Has the barrel orientation changed ?
-	private int tickSinceLastUpdate = 0;			//Timer for forced barrel updates
+	public boolean  orientDirty    = false; 	//Has the barrel orientation changed ?
+	private int     tickSinceLastUpdate = 0;		//Timer for forced barrel updates
 	
 	public int upgradeCapacity    = 0;			//Capacity upgrade level
 	//public int upgradeOutput      = 0;
 	
-	public boolean storageRemote   = false;				    //Type of storage. For now, 0 => local, 1 => remote.
-	public int     storageRemoteID = -1;				//Storage ID for none local storages.
+	public boolean storageRemote   = false;		//Type of storage. For now, 0 => local, 1 => remote.
+	public int     storageRemoteID = -1;		//Storage ID for none local storages.
 	
 	private int prevAmount = 0;
 	private ItemStack prevItem = null;
 	
-    private long clickTime = -20;				//Click timer for double click handling
+    private long clickTime = -20;	     //Click timer for double click handling
 	
-    private int version = 2;						//Version of the NBT Tag format
+    private int version = 3;             //Version of the NBT Tag format
     
     public IBarrelStorage storage = null;
     
@@ -360,6 +360,23 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setInteger("storageRemoteID",  this.storageRemoteID);
     	NBTTag.setCompoundTag("storage",      this.storage.writeTagCompound());
 		this.syncAmount = true;        
+    }    
+    
+    private void writeToNBT_v2(NBTTagCompound NBTTag, boolean full)
+    {
+        if (full){
+        	super.writeToNBT(NBTTag);
+        }
+        
+        NBTTag.setInteger("version",          this.version);        
+        NBTTag.setInteger("barrelOrient",     this.blockOrientation);
+        NBTTag.setInteger("barrelOrigOrient", this.blockOriginalOrient);          
+        NBTTag.setInteger("upgradeCapacity",  this.upgradeCapacity);     
+        
+        NBTTag.setBoolean("storageRemote",    this.storageRemote);
+        NBTTag.setInteger("storageRemoteID",  this.storageRemoteID);
+    	NBTTag.setCompoundTag("storage",      this.storage.writeTagCompound());
+		this.syncAmount = true;        
     }
 
     @Override
@@ -368,6 +385,31 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     }
     
     private void readFromNBT(NBTTagCompound NBTTag, boolean full)
+    {
+    	if (full)
+    		super.readFromNBT(NBTTag);
+
+    	this.blockOrientation = NBTTag.getInteger("barrelOrient");
+    	this.upgradeCapacity  = NBTTag.getInteger("upgradeCapacity");
+    	
+    	
+    	this.storageRemote     = NBTTag.getBoolean("storageRemote");
+    	this.storageRemoteID   = NBTTag.getInteger("storageRemoteID");
+    	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
+    	
+    	this.blockOriginalOrient = NBTTag.hasKey("barrelOrigOrient") ? NBTTag.getInteger("barrelOrigOrient") : this.blockOrientation;
+		this.orientDirty = true;    
+		this.syncAmount = true;
+		
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && (this.storageRemote) && (this.storageRemoteID != -1)){
+			if(!BSpaceStorageHandler.loaded)
+				SaveHandler.loadData();
+			if (this.storage != BSpaceStorageHandler.instance.getStorage(this.storageRemoteID))
+				this.storage = BSpaceStorageHandler.instance.getStorage(this.storageRemoteID);
+		}
+    }    
+    
+    private void readFromNBT_v2(NBTTagCompound NBTTag, boolean full)
     {
     	if (full)
     		super.readFromNBT(NBTTag);

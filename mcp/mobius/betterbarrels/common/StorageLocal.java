@@ -68,12 +68,12 @@ public class StorageLocal implements IBarrelStorage{
     	if (stack == null)   return false;
 
     	int oreIDBarrel = OreDictionary.getOreID(this.getItem());
-		int oreIDStack  = OreDictionary.getOreID(stack);
-		boolean stackIsMetal = OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
-							   OreDictionary.getOreName(oreIDBarrel).startsWith("ore")   ||
-							   OreDictionary.getOreName(oreIDBarrel).startsWith("dust")  ||
-							   OreDictionary.getOreName(oreIDBarrel).startsWith("block") ||
-							   OreDictionary.getOreName(oreIDBarrel).startsWith("nugget") ;
+    	int oreIDStack  = OreDictionary.getOreID(stack);
+		boolean stackIsMetal =  OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
+								OreDictionary.getOreName(oreIDBarrel).startsWith("ore")   ||
+								OreDictionary.getOreName(oreIDBarrel).startsWith("dust")  ||
+								OreDictionary.getOreName(oreIDBarrel).startsWith("block") ||
+								OreDictionary.getOreName(oreIDBarrel).startsWith("nugget") ;
 		
 		boolean oreDictEquals = (oreIDStack != -1) && (oreIDBarrel != -1) && (oreIDBarrel == oreIDStack);
 		boolean rawEquals     = this.getItem().isItemEqual(stack) && ItemStack.areItemStackTagsEqual(this.getItem(), stack); 
