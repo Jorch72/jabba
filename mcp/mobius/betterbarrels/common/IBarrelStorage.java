@@ -31,6 +31,7 @@ public interface IBarrelStorage extends ISidedInventory, IDeepStorageUnit{
     /* STATUS MANIPULATION */
     public boolean switchGhosting();
     public boolean isGhosting();
+    public void    setGhosting(boolean locked);
     public boolean isPrivate();
     public void    setPrivate(boolean status);
     public void    setUsername(String username);

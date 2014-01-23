@@ -11,6 +11,7 @@ import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.items.ItemBSpaceInterface;
 import mcp.mobius.betterbarrels.common.items.ItemCapaUpg;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.server.SaveHandler;
 import net.minecraft.entity.item.EntityItem;
@@ -62,9 +63,20 @@ public class TileEntityBarrel extends TileEntity{
 	}
 	
 	public void rightClick(EntityPlayer player){
-		this.manualStackAdd(player);
+		ItemStack stack = player.getHeldItem();
+		
+		if (player.isSneaking() && stack == null)
+			this.switchLocked();
+		else
+			this.manualStackAdd(player);
 	}
 
+	private void switchLocked(){
+		this.storage.switchGhosting();
+		this.onInventoryChanged();
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
+	}
+	
 	private void manualStackAdd(EntityPlayer player){
 		ItemStack heldStack = player.inventory.getCurrentItem();
 		this.storage.addStack(heldStack);
@@ -94,8 +106,6 @@ public class TileEntityBarrel extends TileEntity{
 		
         int hitOrientation = MathHelper.floor_double((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
         double stackCoordX = 0.0D, stackCoordY = 0.0D, stackCoordZ = 0.0D;
-        
-        System.out.printf("%d\n", hitOrientation);
         
         switch (hitOrientation){
         	case 0:

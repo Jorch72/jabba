@@ -168,6 +168,8 @@ public class StorageLocal implements IBarrelStorage{
 	@Override
 	public boolean isGhosting() { return this.keepLastItem; }
 	@Override
+	public void setGhosting(boolean locked) { this.keepLastItem = locked; }	
+	@Override
 	public boolean isPrivate() { return this.isPrivate; }
 	@Override
 	public void    setPrivate(boolean status) { this.isPrivate = status; }
