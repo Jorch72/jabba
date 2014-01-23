@@ -68,9 +68,11 @@ public class TileEntityBarrel extends TileEntity{
 	public void rightClick(EntityPlayer player, int side){
 		ItemStack stack = player.getHeldItem();
 		
-		if (player.isSneaking() && stack == null)
+		if (!player.isSneaking())
+			this.manualStackAdd(player);		
+		else if (player.isSneaking() && stack == null)
 			this.switchLocked();
-        else if (stack.getItem() instanceof ItemBarrelSticker)
+        else if (player.isSneaking() && stack.getItem() instanceof ItemBarrelSticker)
         	this.applySticker(stack, ForgeDirection.getOrientation(side));		
 		else
 			this.manualStackAdd(player);

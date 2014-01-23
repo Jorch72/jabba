@@ -175,6 +175,17 @@ public class BlockBarrel extends BlockContainer{
 
     	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	
+    	// We drop the side upgrades
+    	if (barrelEntity != null){
+    		for (int i = 0; i < 6; i++){
+    			Item upgrade = SideUpgrade.mapItem[barrelEntity.sideUpgrades[i]];
+    			if (upgrade != null){
+    				ItemStack droppedStack = new ItemStack(upgrade, 1, SideUpgrade.mapMeta[barrelEntity.sideUpgrades[i]]);
+    				this.dropStack(world, droppedStack, x, y, z);
+    			}
+    		}
+    	}    	
+    	
     	// We drop the stacks
         if ((barrelEntity != null) && (barrelEntity.storage.hasItem()))
         {
