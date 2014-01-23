@@ -119,4 +119,21 @@ public class BlockBarrel extends BlockContainer{
         }
     }
     
+    @Override
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player)
+    {
+        if (!world.isRemote){
+            TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
+            ((TileEntityBarrel)tileEntity).leftClick(player);
+        }
+    }     
+    
+    @Override
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int var6, float var7, float var8, float var9){
+        if (!world.isRemote){
+            TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
+            ((TileEntityBarrel)tileEntity).rightClick(player);        	
+        }
+        return true;
+    }
 }

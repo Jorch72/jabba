@@ -15,6 +15,7 @@ public interface IBarrelStorage extends ISidedInventory, IDeepStorageUnit{
     
     /* STORAGE HANDLING */
 	public int  getAmount();
+	public void setAmount(int amount);
 	public int  getMaxStacks();
     public void setBaseStacks(int basestacks);
     

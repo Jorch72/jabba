@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import mcp.mobius.betterbarrels.common.TileEntityBarrel;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -23,7 +25,10 @@ public class BarrelPacketHandler implements IPacketHandler {
 		if (packet.channel.equals("JABBA")) {
 			byte header = this.getHeader(packet);
 
-			if (header == 0x00){
+			if (header == 0x01){
+				Packet0x01ContentUpdate packetCast = new Packet0x01ContentUpdate(packet);
+				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
+				barrel.storage.setStoredItemType(packetCast.stack, packetCast.amount);
 			}
 		}				
 	}

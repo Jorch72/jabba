@@ -192,6 +192,9 @@ public class StorageLocal implements IBarrelStorage{
 	@Override
 	public int   getAmount() { return this.totalAmount; }	
 	
+	@Override
+	public void setAmount(int amount) { this.totalAmount = amount; }
+	
 	@Override	
 	public void setBaseStacks(int basestacks){ 
 		this.basestacks = basestacks;
