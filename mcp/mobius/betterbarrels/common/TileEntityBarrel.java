@@ -28,6 +28,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -47,6 +48,17 @@ public class TileEntityBarrel extends TileEntity{
 	/* PLAYER INTERACTIONS */
 	
 	public void leftClick(EntityPlayer player){
+		ItemStack droppedStack = null;
+		if (player.isSneaking())
+			droppedStack = this.storage.getStack(1); 
+		else
+			droppedStack = this.storage.getStack();
+
+		if ((droppedStack != null) && (droppedStack.stackSize > 0))
+			this.dropItemInWorld(player, droppedStack, 0.02);
+		
+		this.onInventoryChanged();
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
 	public void rightClick(EntityPlayer player){
@@ -74,12 +86,59 @@ public class TileEntityBarrel extends TileEntity{
 		mod_BetterBarrels.proxy.updatePlayerInventory(player);
 		this.clickTime = this.worldObj.getWorldTime();	
 		
+		this.onInventoryChanged();		
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
-		
-		// TODO : Do the update here (like sending an update packet or something)
-		//this.updateEntity();
-		//this.onInventoryChanged();		
 	}
+	
+	private void dropItemInWorld(EntityPlayer player, ItemStack stack, double speedfactor){
+		
+        int hitOrientation = MathHelper.floor_double((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+        double stackCoordX = 0.0D, stackCoordY = 0.0D, stackCoordZ = 0.0D;
+        
+        System.out.printf("%d\n", hitOrientation);
+        
+        switch (hitOrientation){
+        	case 0:
+        		stackCoordX = (double)this.xCoord + 0.5D;
+        		stackCoordY = (double)this.yCoord + 0.5D;
+        		stackCoordZ = (double)this.zCoord - 0.25D;
+        		break;
+        	case 1:
+        		stackCoordX = (double)this.xCoord + 1.25D;
+        		stackCoordY = (double)this.yCoord + 0.5D;
+        		stackCoordZ = (double)this.zCoord + 0.5D;	        		
+        		break;
+        	case 2:
+        		stackCoordX = (double)this.xCoord + 0.5D;
+        		stackCoordY = (double)this.yCoord + 0.5D;
+        		stackCoordZ = (double)this.zCoord + 1.25D;	        		
+        		break;
+        	case 3:
+        		stackCoordX = (double)this.xCoord - 0.25D;
+        		stackCoordY = (double)this.yCoord + 0.5D;
+        		stackCoordZ = (double)this.zCoord + 0.5D;        		
+        		break;        		
+        }
+       
+		EntityItem droppedEntity = new EntityItem(this.worldObj, stackCoordX, stackCoordY, stackCoordZ, stack);
+
+        if (player != null)
+        {
+            Vec3 motion = Vec3.createVectorHelper(player.posX - stackCoordX, player.posY - stackCoordY, player.posZ - stackCoordZ);
+            motion.normalize();
+            droppedEntity.motionX = motion.xCoord;
+            droppedEntity.motionY = motion.yCoord;
+            droppedEntity.motionZ = motion.zCoord;
+            double offset = 0.25D;
+            droppedEntity.moveEntity(motion.xCoord * offset, motion.yCoord * offset, motion.zCoord * offset);
+        }
+
+        droppedEntity.motionX *= speedfactor;
+        droppedEntity.motionY *= speedfactor;
+        droppedEntity.motionZ *= speedfactor;        
+        
+        this.worldObj.spawnEntityInWorld(droppedEntity);		
+	}	
 	
 	/* SAVING AND LOADING OF DATA */
 	
