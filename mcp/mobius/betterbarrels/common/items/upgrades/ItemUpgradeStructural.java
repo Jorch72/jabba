@@ -12,15 +12,15 @@ import net.minecraft.util.Icon;
 
 public class ItemUpgradeStructural extends ItemUpgrade{
 
-	public Icon[] upgradeIcons = new Icon[7];
+	public static Icon[] upgradeIcons = new Icon[7];
 	
-    public String[] upgradeNames = { "Capacity MKI (Wood)",		
-			 						 "Capacity MKII (Iron)",
-			 						 "Capacity MKIII (Gold)",
-			 						 "Capacity MKIV (Diamond)",
-			 						 "Capacity MKV (Obsidian)",
-			 						 "Capacity MKVI (End stone)",
-			 						 "Capacity MKVII (Emerald)" };
+    public static String[] upgradeNames = { "Capacity MKI (Wood)",		
+			 						 		"Capacity MKII (Iron)",
+			 						 		"Capacity MKIII (Gold)",
+			 						 		"Capacity MKIV (Diamond)",
+			 						 		"Capacity MKV (Obsidian)",
+			 						 		"Capacity MKVI (End stone)",
+			 						 		"Capacity MKVII (Emerald)" };
 	
 	
     public ItemUpgradeStructural(int par1)
@@ -29,7 +29,7 @@ public class ItemUpgradeStructural extends ItemUpgrade{
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(16);
-        this.setUnlocalizedName("Generic capacity upgrade");        
+        this.setUnlocalizedName("Generic structural upgrade");        
     }
 
     /*
@@ -54,7 +54,7 @@ public class ItemUpgradeStructural extends ItemUpgrade{
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	for(int i=0 ; i < 7; i++)
+    	for(int i=0 ; i < this.upgradeNames.length; i++)
     		this.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "capaupg_mk" + String.valueOf(i+1));
     }	
 	

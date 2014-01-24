@@ -1,9 +1,9 @@
-package mcp.mobius.betterbarrels.common.items.upgrades.side;
+package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import net.minecraft.item.Item;
 
-public class SideUpgrade {
+public class UpgradeSide {
 	public static int NONE    = 0x0; 
 	public static int FRONT   = 0x1;
 	public static int STICKER = 0x2;

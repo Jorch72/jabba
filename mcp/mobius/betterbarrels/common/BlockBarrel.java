@@ -20,7 +20,7 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.SideUpgrade;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
 public class BlockBarrel extends BlockContainer{
 
@@ -96,7 +96,7 @@ public class BlockBarrel extends BlockContainer{
 	        		barrelEntity.orientation = ForgeDirection.WEST;	        		
 	        		break;        		
 	        }
-	        barrelEntity.sideUpgrades[barrelEntity.orientation.ordinal()] = SideUpgrade.FRONT;
+	        barrelEntity.sideUpgrades[barrelEntity.orientation.ordinal()] = UpgradeSide.FRONT;
         }
     }
     
@@ -167,9 +167,9 @@ public class BlockBarrel extends BlockContainer{
     	// We drop the side upgrades
     	if (barrelEntity != null){
     		for (int i = 0; i < 6; i++){
-    			Item upgrade = SideUpgrade.mapItem[barrelEntity.sideUpgrades[i]];
+    			Item upgrade = UpgradeSide.mapItem[barrelEntity.sideUpgrades[i]];
     			if (upgrade != null){
-    				ItemStack droppedStack = new ItemStack(upgrade, 1, SideUpgrade.mapMeta[barrelEntity.sideUpgrades[i]]);
+    				ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeSide.mapMeta[barrelEntity.sideUpgrades[i]]);
     				this.dropStack(world, droppedStack, x, y, z);
     			}
     		}

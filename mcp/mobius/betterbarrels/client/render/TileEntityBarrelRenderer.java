@@ -5,7 +5,7 @@ import java.util.HashMap;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.SideUpgrade;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -215,9 +215,9 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
     }    
     
 	protected boolean isItemDisplaySide(TileEntityBarrel barrel, ForgeDirection forgeSide){
-		if (barrel.sideUpgrades[forgeSide.ordinal()] == SideUpgrade.NONE)    return false;			
-		if (barrel.sideUpgrades[forgeSide.ordinal()] == SideUpgrade.FRONT)   return true;		
-		if (barrel.sideUpgrades[forgeSide.ordinal()] == SideUpgrade.STICKER) return true;
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.NONE)    return false;			
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.FRONT)   return true;		
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.STICKER) return true;
 		return false;
 	}
 	

@@ -2,9 +2,9 @@ package mcp.mobius.betterbarrels.common;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemSideSticker;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemSideSticker;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.SideUpgrade;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
@@ -34,7 +34,7 @@ public class TileEntityBarrel extends TileEntity{
     public IBarrelStorage storage     = new StorageLocal();
 	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
 	public int levelStructural        = 0;
-	public int[] sideUpgrades = {SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE, SideUpgrade.NONE};
+	public int[] sideUpgrades = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
 	/* PLAYER INTERACTIONS */
 	
 	public void leftClick(EntityPlayer player){
@@ -100,9 +100,9 @@ public class TileEntityBarrel extends TileEntity{
 	
 	private void applySticker(ItemStack stack, ForgeDirection side){
 		if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
-		if (this.sideUpgrades[side.ordinal()] != SideUpgrade.NONE) {return;}
+		if (this.sideUpgrades[side.ordinal()] != UpgradeSide.NONE) {return;}
 
-		this.sideUpgrades[side.ordinal()] = SideUpgrade.STICKER;
+		this.sideUpgrades[side.ordinal()] = UpgradeSide.STICKER;
 		stack.stackSize -= 1;
 		
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);

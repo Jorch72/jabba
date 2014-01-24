@@ -13,8 +13,9 @@ import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.BlockBarrel;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemSideSticker;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemSideSticker;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -54,6 +55,7 @@ public class mod_BetterBarrels {
 	public static int barrelShelfID = -1;
 	
 	private static int itemUpgradeStructuralID = -1;
+	private static int itemUpgradeCoreID = -1;	
 	private static int itemStickerID = -1;
 	private static int itemMoverID = -1;
 	private static int itemTuningForkID = -1;	
@@ -69,6 +71,7 @@ public class mod_BetterBarrels {
 	public static Block blockMiniBarrel  = null;
 	public static Block blockBarrelShelf = null;	
 	public static Item itemUpgradeStructural = null;
+	public static Item itemUpgradeCore       = null;
 	public static Item itemSticker       = null;
 	public static Item itemMover         = null;
 	public static Item itemTuningFork    = null;
@@ -91,12 +94,13 @@ public class mod_BetterBarrels {
 			miniBarrelID = config.get("block",  "MiniBarrel",      3501).getInt();
 			barrelShelfID= config.get("block",  "BarrelShelf",     3502).getInt();
 			
-			itemUpgradeStructuralID       = config.get("item",   "UpgradeCapacity", 3501).getInt();
+			itemUpgradeStructuralID = config.get("item",   "UpgradeCapacity", 3501).getInt();
 			itemStickerID       = config.get("item",   "Sticker",         3502).getInt();
 			itemMoverID         = config.get("item",   "Mover",           3503).getInt();
 			itemTuningForkID    = config.get("item",   "TuningFork",      3504).getInt();
 			itemBSpaceUpgID     = config.get("item",   "BSpaceUpg",       3505).getInt();
 			itemLockingPlanksID = config.get("item",   "LockingPlanks",   3506).getInt();	
+			itemUpgradeCoreID   = config.get("item",   "UpgradeCore",     3507).getInt();
 			
 			fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
@@ -123,36 +127,43 @@ public class mod_BetterBarrels {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		blockBarrel       = new BlockBarrel(barrelID);
-		//blockMiniBarrel   = new BlockMiniBarrel(miniBarrelID);
-		//blockBarrelShelf  = new BlockBarrelShelf(barrelShelfID);
-		itemUpgradeStructural       = new ItemUpgradeStructural(itemUpgradeStructuralID);
-		itemSticker       = new ItemSideSticker(itemStickerID);
-		itemMover         = new ItemBarrelMover(itemMoverID);
-		//itemTuningFork    = new ItemTuningFork(itemTuningForkID);
-		//itemBSpaceUpg     = new ItemBSpaceInterface(itemBSpaceUpgID);
-		//itemLockingPlanks = new ItemBarrelLocker(itemLockingPlanksID);
+		blockBarrel           = new BlockBarrel(barrelID);
+		itemUpgradeStructural = new ItemUpgradeStructural(itemUpgradeStructuralID);
+		itemUpgradeCore       = new ItemUpgradeCore(itemUpgradeCoreID);
+		itemSticker           = new ItemSideSticker(itemStickerID);
+		itemMover             = new ItemBarrelMover(itemMoverID);
 		
 		LanguageRegistry.addName(blockBarrel, "Better Barrel");
-		//LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
-		//LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
 		LanguageRegistry.addName(itemSticker, "Barrel sticker");
 		LanguageRegistry.addName(new ItemStack(itemMover,0,0),   moverName);
+
+		//blockMiniBarrel     = new BlockMiniBarrel(miniBarrelID);
+		//blockBarrelShelf    = new BlockBarrelShelf(barrelShelfID);		
+		//itemTuningFork      = new ItemTuningFork(itemTuningForkID);
+		//itemBSpaceUpg       = new ItemBSpaceInterface(itemBSpaceUpgID);
+		//itemLockingPlanks   = new ItemBarrelLocker(itemLockingPlanksID);		
+		
+		//LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
+		//LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
 		//LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
 		//LanguageRegistry.addName(itemBSpaceUpg,   "B-Space Interface (WIP)");
 		//LanguageRegistry.addName(itemLockingPlanks, "Locking Planks (WIP)");
 		
-		for(int i=0; i<7; i++){
+		for(int i=0; i<ItemUpgradeStructural.upgradeNames.length; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeStructural, 1, i);
 			LanguageRegistry.addName(upgrade, ((ItemUpgradeStructural)itemUpgradeStructural).upgradeNames[i]);
 		}
+
+		for(int i=0; i<ItemUpgradeCore.upgradeNames.length; i++){
+			ItemStack upgrade = new ItemStack(itemUpgradeCore, 1, i);
+			LanguageRegistry.addName(upgrade, ((ItemUpgradeCore)itemUpgradeCore).upgradeNames[i]);
+		}		
 		
 		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");
+		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
+
 		//GameRegistry.registerBlock(blockMiniBarrel);
-		//GameRegistry.registerBlock(blockBarrelShelf);
-		
-		GameRegistry.registerBlock(blockBarrel, "ProfMobius_BetterBarrels");
-		GameRegistry.registerTileEntity(TileEntityBarrel.class,      "TileEntityBarrel");
+		//GameRegistry.registerBlock(blockBarrelShelf);		
 		//GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
 		//GameRegistry.registerTileEntity(TileEntityBarrelShelf.class, "TileEntityBarrelShelf");
 		proxy.registerRenderers();
