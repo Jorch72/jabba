@@ -8,7 +8,7 @@ import java.util.Set;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-import mcp.mobius.betterbarrels.common.items.SideUpgrade;
+import mcp.mobius.betterbarrels.common.items.upgrades.SideUpgrade;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;

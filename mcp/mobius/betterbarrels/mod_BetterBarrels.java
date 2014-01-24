@@ -18,17 +18,10 @@ import mcp.mobius.betterbarrels.client.PlasmaTexture;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.BlockBarrel;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-import mcp.mobius.betterbarrels.common.items.ItemBSpaceInterface;
-import mcp.mobius.betterbarrels.common.items.ItemBarrelLocker;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
-import mcp.mobius.betterbarrels.common.items.ItemBarrelSticker;
-import mcp.mobius.betterbarrels.common.items.ItemUpgradeStructural;
-import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
+import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemBarrelSticker;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
-import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
-import mcp.mobius.betterbarrels.server.ServerEventHandler;
-import mcp.mobius.betterbarrels.server.BarrelServerTickHandler;
-import mcp.mobius.betterbarrels.server.SaveHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -99,7 +92,7 @@ public class mod_BetterBarrels {
 	
 	public static String moverName = "Dolly";
 	
-	public static BSpaceStorageHandler storageHandler = new BSpaceStorageHandler();
+	//public static BSpaceStorageHandler storageHandler = new BSpaceStorageHandler();
 	
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event) {
@@ -149,18 +142,18 @@ public class mod_BetterBarrels {
 		itemUpgradeStructural       = new ItemUpgradeStructural(itemUpgradeStructuralID);
 		itemSticker       = new ItemBarrelSticker(itemStickerID);
 		itemMover         = new ItemBarrelMover(itemMoverID);
-		itemTuningFork    = new ItemTuningFork(itemTuningForkID);
-		itemBSpaceUpg     = new ItemBSpaceInterface(itemBSpaceUpgID);
-		itemLockingPlanks = new ItemBarrelLocker(itemLockingPlanksID);
+		//itemTuningFork    = new ItemTuningFork(itemTuningForkID);
+		//itemBSpaceUpg     = new ItemBSpaceInterface(itemBSpaceUpgID);
+		//itemLockingPlanks = new ItemBarrelLocker(itemLockingPlanksID);
 		
 		LanguageRegistry.addName(blockBarrel, "Better Barrel");
 		//LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
 		//LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
 		LanguageRegistry.addName(itemSticker, "Barrel sticker");
 		LanguageRegistry.addName(new ItemStack(itemMover,0,0),   moverName);
-		LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
-		LanguageRegistry.addName(itemBSpaceUpg,   "B-Space Interface (WIP)");
-		LanguageRegistry.addName(itemLockingPlanks, "Locking Planks (WIP)");
+		//LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
+		//LanguageRegistry.addName(itemBSpaceUpg,   "B-Space Interface (WIP)");
+		//LanguageRegistry.addName(itemLockingPlanks, "Locking Planks (WIP)");
 		
 		for(int i=0; i<7; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeStructural, 1, i);
@@ -209,7 +202,7 @@ public class mod_BetterBarrels {
 		
 		proxy.registerEventHandler();
 		
-        TickRegistry.registerTickHandler(new BarrelServerTickHandler(), Side.SERVER);
+        //TickRegistry.registerTickHandler(new BarrelServerTickHandler(), Side.SERVER);
         FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
 	}
  
@@ -234,8 +227,8 @@ public class mod_BetterBarrels {
 	public void postInit(FMLPostInitializationEvent event) {
 	}	
 
-	@ServerStopping
-	public void serverStopping(FMLServerStoppingEvent var1) {
-		SaveHandler.saveData();
-	}
+	//@ServerStopping
+	//public void serverStopping(FMLServerStoppingEvent var1) {
+	//	SaveHandler.saveData();
+	//}
 }

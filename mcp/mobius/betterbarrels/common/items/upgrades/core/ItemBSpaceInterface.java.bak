@@ -1,7 +1,8 @@
-package mcp.mobius.betterbarrels.common.items;
+package mcp.mobius.betterbarrels.common.items.upgrades.core;
 
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgrade;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

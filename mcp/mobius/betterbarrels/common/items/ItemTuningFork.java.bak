@@ -6,7 +6,6 @@ import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.StorageLocal;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

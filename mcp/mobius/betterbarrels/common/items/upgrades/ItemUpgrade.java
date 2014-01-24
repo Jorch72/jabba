@@ -1,11 +1,11 @@
-package mcp.mobius.betterbarrels.common.items;
+package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
 public class ItemUpgrade extends Item {
-	ItemUpgrade(int id){
+	public ItemUpgrade(int id){
 		super(id);
 	}
 	

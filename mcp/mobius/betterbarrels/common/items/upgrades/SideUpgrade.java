@@ -1,4 +1,4 @@
-package mcp.mobius.betterbarrels.common.items;
+package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import net.minecraft.item.Item;
