@@ -1,12 +1,7 @@
 package mcp.mobius.betterbarrels.common;
 
-import java.util.logging.Level;
-
-import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
@@ -186,8 +181,11 @@ public class StorageLocal implements IBarrelStorage{
 	@Override
     public int getStorageID() { return this.storageID; }	
 	
+	@Override
 	public void    setDirty()   { this.dirty = true; };
+	@Override
 	public void    clearDirty() { this.dirty = false; };
+	@Override
 	public boolean isDirty()    { return this.dirty; };	
 	
 	/* AMOUNT HANDLING */

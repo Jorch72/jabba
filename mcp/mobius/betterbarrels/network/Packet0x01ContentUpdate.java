@@ -8,10 +8,8 @@ import java.io.IOException;
 
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.tileentity.TileEntity;
 
 public class Packet0x01ContentUpdate {
 

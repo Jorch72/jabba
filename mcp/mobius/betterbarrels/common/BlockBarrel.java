@@ -1,45 +1,25 @@
 package mcp.mobius.betterbarrels.common;
 
-import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet3Chat;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
-import mcp.mobius.betterbarrels.client.ClientProxy;
-import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgrade;
 import mcp.mobius.betterbarrels.common.items.upgrades.SideUpgrade;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemBarrelSticker;
-import mcp.mobius.waila.api.IWailaConfigHandler;
-import mcp.mobius.waila.api.IWailaBlock;
-import mcp.mobius.waila.api.IWailaDataAccessor;
 
 public class BlockBarrel extends BlockContainer{
 
@@ -65,10 +45,10 @@ public class BlockBarrel extends BlockContainer{
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	this.text_side  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_side");
-    	this.text_top   = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_top");
-    	this.text_label = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_label");
-    	this.text_blank = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "blank");
+    	BlockBarrel.text_side  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_side");
+    	BlockBarrel.text_top   = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_top");
+    	BlockBarrel.text_label = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_label");
+    	BlockBarrel.text_blank = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "blank");
     }
     
     @Override
@@ -96,7 +76,7 @@ public class BlockBarrel extends BlockContainer{
     	// We get the orientation and check if the TE is already properly created.
     	// If so we set the entity value to the correct orientation and set the block meta to 1 to kill the normal block rendering.
     	
-        int barrelOrientation = MathHelper.floor_double((double)(entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+        int barrelOrientation = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
         TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
         
         if (barrelEntity != null){
@@ -154,11 +134,11 @@ public class BlockBarrel extends BlockContainer{
             }
 
             stack.stackSize -= var13;
-            items = new EntityItem(world, (double)((float)x + var10), (double)((float)y + var11), (double)((float)z + var12), new ItemStack(stack.itemID, var13, stack.getItemDamage()));
+            items = new EntityItem(world, x + var10, y + var11, z + var12, new ItemStack(stack.itemID, var13, stack.getItemDamage()));
             float var15 = 0.05F;
-            items.motionX = (double)((float)random.nextGaussian() * var15);
-            items.motionY = (double)((float)random.nextGaussian() * var15 + 0.2F);
-            items.motionZ = (double)((float)random.nextGaussian() * var15);
+            items.motionX = (float)random.nextGaussian() * var15;
+            items.motionY = (float)random.nextGaussian() * var15 + 0.2F;
+            items.motionZ = (float)random.nextGaussian() * var15;
 
             if (stack.hasTagCompound())
             {

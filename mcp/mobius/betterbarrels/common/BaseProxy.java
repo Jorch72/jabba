@@ -2,7 +2,6 @@ package mcp.mobius.betterbarrels.common;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.common.MinecraftForge;
 
 public class BaseProxy {
 	

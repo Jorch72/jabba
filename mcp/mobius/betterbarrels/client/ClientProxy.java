@@ -2,8 +2,6 @@ package mcp.mobius.betterbarrels.client;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.render.TileEntityBarrelRenderer;
 import mcp.mobius.betterbarrels.common.BaseProxy;

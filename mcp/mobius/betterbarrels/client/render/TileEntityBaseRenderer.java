@@ -53,7 +53,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         int var6 = ambientLight % 65536;
         int var7 = ambientLight / 65536;
         float var8 = 0.8F;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)var6 * var8, (float)var7 * var8);		
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, var6 * var8, var7 * var8);		
 	}    
     
 	protected void renderTextOnBlock(String renderString, ForgeDirection side, Coordinates barrelPos, float size, double posx, double posy, int red, int green, int blue, int alpha, boolean centered){
@@ -148,10 +148,10 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         float zLevel = 0.0F;
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV((double)(posX + 0),     (double)(posY + sizeY), (double)zLevel, (double)((float)(textureX + 0) * scaleX),     (double)((float)(textureY + sizeY) * scaleY));
-        var9.addVertexWithUV((double)(posX + sizeX), (double)(posY + sizeY), (double)zLevel, (double)((float)(textureX + sizeX) * scaleX), (double)((float)(textureY + sizeY) * scaleY));
-        var9.addVertexWithUV((double)(posX + sizeX), (double)(posY + 0),     (double)zLevel, (double)((float)(textureX + sizeX) * scaleX), (double)((float)(textureY + 0) * scaleY));
-        var9.addVertexWithUV((double)(posX + 0),     (double)(posY + 0),     (double)zLevel, (double)((float)(textureX + 0) * scaleX),     (double)((float)(textureY + 0) * scaleY));
+        var9.addVertexWithUV(posX + 0,     posY + sizeY, zLevel, (textureX + 0) * scaleX,     (textureY + sizeY) * scaleY);
+        var9.addVertexWithUV(posX + sizeX, posY + sizeY, zLevel, (textureX + sizeX) * scaleX, (textureY + sizeY) * scaleY);
+        var9.addVertexWithUV(posX + sizeX, posY + 0,     zLevel, (textureX + sizeX) * scaleX, (textureY + 0) * scaleY);
+        var9.addVertexWithUV(posX + 0,     posY + 0,     zLevel, (textureX + 0) * scaleX,     (textureY + 0) * scaleY);
         var9.draw();
     }		
 	

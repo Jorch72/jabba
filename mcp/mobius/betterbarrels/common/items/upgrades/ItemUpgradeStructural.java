@@ -2,7 +2,6 @@ package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import java.util.List;
 
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;

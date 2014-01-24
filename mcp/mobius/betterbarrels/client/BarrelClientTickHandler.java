@@ -1,9 +1,6 @@
 package mcp.mobius.betterbarrels.client;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-
-import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;

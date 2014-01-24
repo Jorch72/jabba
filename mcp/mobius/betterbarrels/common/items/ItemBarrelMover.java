@@ -1,40 +1,25 @@
 package mcp.mobius.betterbarrels.common.items;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
-import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.packet.Packet132TileEntityData;
-import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.Icon;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.common.IShearable;
 
 public class ItemBarrelMover extends Item {
 	private static Icon   text_empty = null;
@@ -106,17 +91,17 @@ public class ItemBarrelMover extends Item {
     public void registerIcons(IconRegister par1IconRegister)
     {
     	this.itemIcon    = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "dolly_empty");
-    	this.text_empty  = this.itemIcon;
-    	this.text_filled = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "dolly_filled");
+    	ItemBarrelMover.text_empty  = this.itemIcon;
+    	ItemBarrelMover.text_filled = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "dolly_filled");
     }    
     
     @Override
     public Icon getIconFromDamage(int dmg)
     {
         if (dmg == 0)
-        	return this.text_empty;
+        	return ItemBarrelMover.text_empty;
         else
-        	return this.text_filled;
+        	return ItemBarrelMover.text_filled;
     }    
     
 	@Override

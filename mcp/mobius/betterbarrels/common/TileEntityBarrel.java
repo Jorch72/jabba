@@ -1,14 +1,7 @@
 package mcp.mobius.betterbarrels.common;
 
-import java.util.Random;
-
-import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.server.FMLServerHandler;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
-import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgrade;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.SideUpgrade;
 import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemBarrelSticker;
@@ -20,22 +13,16 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.network.packet.Packet3Chat;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.oredict.OreDictionary;
 
 
 //public class TileEntityBarrel extends TileEntity implements ISidedInventory {
@@ -148,29 +135,29 @@ public class TileEntityBarrel extends TileEntity{
 	
 	private void dropItemInWorld(EntityPlayer player, ItemStack stack, double speedfactor){
 		
-        int hitOrientation = MathHelper.floor_double((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+        int hitOrientation = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
         double stackCoordX = 0.0D, stackCoordY = 0.0D, stackCoordZ = 0.0D;
         
         switch (hitOrientation){
         	case 0:
-        		stackCoordX = (double)this.xCoord + 0.5D;
-        		stackCoordY = (double)this.yCoord + 0.5D;
-        		stackCoordZ = (double)this.zCoord - 0.25D;
+        		stackCoordX = this.xCoord + 0.5D;
+        		stackCoordY = this.yCoord + 0.5D;
+        		stackCoordZ = this.zCoord - 0.25D;
         		break;
         	case 1:
-        		stackCoordX = (double)this.xCoord + 1.25D;
-        		stackCoordY = (double)this.yCoord + 0.5D;
-        		stackCoordZ = (double)this.zCoord + 0.5D;	        		
+        		stackCoordX = this.xCoord + 1.25D;
+        		stackCoordY = this.yCoord + 0.5D;
+        		stackCoordZ = this.zCoord + 0.5D;	        		
         		break;
         	case 2:
-        		stackCoordX = (double)this.xCoord + 0.5D;
-        		stackCoordY = (double)this.yCoord + 0.5D;
-        		stackCoordZ = (double)this.zCoord + 1.25D;	        		
+        		stackCoordX = this.xCoord + 0.5D;
+        		stackCoordY = this.yCoord + 0.5D;
+        		stackCoordZ = this.zCoord + 1.25D;	        		
         		break;
         	case 3:
-        		stackCoordX = (double)this.xCoord - 0.25D;
-        		stackCoordY = (double)this.yCoord + 0.5D;
-        		stackCoordZ = (double)this.zCoord + 0.5D;        		
+        		stackCoordX = this.xCoord - 0.25D;
+        		stackCoordY = this.yCoord + 0.5D;
+        		stackCoordZ = this.zCoord + 0.5D;        		
         		break;        		
         }
        
@@ -200,7 +187,7 @@ public class TileEntityBarrel extends TileEntity{
     public void writeToNBT(NBTTagCompound NBTTag)
     {
         super.writeToNBT(NBTTag);
-        NBTTag.setInteger("version",       this.version);        
+        NBTTag.setInteger("version",       TileEntityBarrel.version);        
         NBTTag.setInteger("orientation",   this.orientation.ordinal());
         NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
         NBTTag.setInteger("structural",    this.levelStructural);

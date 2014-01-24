@@ -1,7 +1,6 @@
 package mcp.mobius.betterbarrels.common;
 
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
