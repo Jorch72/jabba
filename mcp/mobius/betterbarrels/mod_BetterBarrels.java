@@ -15,6 +15,7 @@ import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemSideSticker;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import cpw.mods.fml.common.FMLLog;
@@ -56,7 +57,7 @@ public class mod_BetterBarrels {
 	
 	private static int itemUpgradeStructuralID = -1;
 	private static int itemUpgradeCoreID = -1;	
-	private static int itemStickerID = -1;
+	private static int itemUpgradeSideID = -1;
 	private static int itemMoverID = -1;
 	private static int itemTuningForkID = -1;	
 	private static int itemBSpaceUpgID = -1;
@@ -71,8 +72,8 @@ public class mod_BetterBarrels {
 	public static Block blockMiniBarrel  = null;
 	public static Block blockBarrelShelf = null;	
 	public static Item itemUpgradeStructural = null;
-	public static Item itemUpgradeCore       = null;
-	public static Item itemSticker       = null;
+	public static Item itemUpgradeCore   = null;
+	public static Item itemUpgradeSide   = null;
 	public static Item itemMover         = null;
 	public static Item itemTuningFork    = null;
 	public static Item itemBSpaceUpg     = null;	
@@ -95,7 +96,7 @@ public class mod_BetterBarrels {
 			barrelShelfID= config.get("block",  "BarrelShelf",     3502).getInt();
 			
 			itemUpgradeStructuralID = config.get("item",   "UpgradeCapacity", 3501).getInt();
-			itemStickerID       = config.get("item",   "Sticker",         3502).getInt();
+			itemUpgradeSideID       = config.get("item",   "Sticker",         3502).getInt();
 			itemMoverID         = config.get("item",   "Mover",           3503).getInt();
 			itemTuningForkID    = config.get("item",   "TuningFork",      3504).getInt();
 			itemBSpaceUpgID     = config.get("item",   "BSpaceUpg",       3505).getInt();
@@ -130,11 +131,10 @@ public class mod_BetterBarrels {
 		blockBarrel           = new BlockBarrel(barrelID);
 		itemUpgradeStructural = new ItemUpgradeStructural(itemUpgradeStructuralID);
 		itemUpgradeCore       = new ItemUpgradeCore(itemUpgradeCoreID);
-		itemSticker           = new ItemSideSticker(itemStickerID);
+		itemUpgradeSide       = new ItemUpgradeSide(itemUpgradeSideID);
 		itemMover             = new ItemBarrelMover(itemMoverID);
 		
 		LanguageRegistry.addName(blockBarrel, "Better Barrel");
-		LanguageRegistry.addName(itemSticker, "Barrel sticker");
 		LanguageRegistry.addName(new ItemStack(itemMover,0,0),   moverName);
 
 		//blockMiniBarrel     = new BlockMiniBarrel(miniBarrelID);
@@ -158,6 +158,11 @@ public class mod_BetterBarrels {
 			ItemStack upgrade = new ItemStack(itemUpgradeCore, 1, i);
 			LanguageRegistry.addName(upgrade, ((ItemUpgradeCore)itemUpgradeCore).upgradeNames[i]);
 		}		
+	
+		for(int i=0; i<ItemUpgradeSide.upgradeNames.length; i++){
+			ItemStack upgrade = new ItemStack(itemUpgradeSide, 1, i);
+			LanguageRegistry.addName(upgrade, ((ItemUpgradeSide)itemUpgradeSide).upgradeNames[i]);
+		}			
 		
 		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
@@ -187,7 +192,7 @@ public class mod_BetterBarrels {
 		     Character.valueOf('X'), "ingotIron", 
 			 Character.valueOf('P'), "plankWood"}));
 		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemSticker, 4), new Object[]
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemUpgradeSide, 4, 0), new Object[]
 				{" P ","PXP", " P ", 
 			 Character.valueOf('P'), Item.paper, 
 			 Character.valueOf('X'), "slimeball"}));

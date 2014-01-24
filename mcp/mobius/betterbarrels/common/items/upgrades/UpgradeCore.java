@@ -24,5 +24,12 @@ public class UpgradeCore {
 		1,
 		2,
 		3,
-	};		
+	};
+	
+	public static int[] mapRevMeta = {
+		STORAGE,
+		ENDER,
+		REDSTONE,
+		HOPPER
+	};
 }

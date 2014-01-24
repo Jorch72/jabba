@@ -41,7 +41,7 @@ public class ItemUpgradeCore extends ItemUpgrade {
     public void registerIcons(IconRegister par1IconRegister)
     {
     	for(int i=0 ; i < this.upgradeNames.length; i++)
-    		this.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "coreupgrade_" + String.valueOf(i+1));
+    		this.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "coreupg_" + String.valueOf(i));
     }	
 	
     @Override
