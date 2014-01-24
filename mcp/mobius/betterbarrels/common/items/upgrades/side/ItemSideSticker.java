@@ -4,8 +4,8 @@ import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.Item;
 
-public class ItemBarrelSticker extends Item {
-	public ItemBarrelSticker(int id){
+public class ItemSideSticker extends Item {
+	public ItemSideSticker(int id){
 		super(id);
         //this.setIconIndex(16);
 		this.setUnlocalizedName("ItemBarrelSticker");

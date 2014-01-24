@@ -1,6 +1,7 @@
 package mcp.mobius.betterbarrels.common;
 
 import java.util.Random;
+
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -19,7 +20,7 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
-import mcp.mobius.betterbarrels.common.items.upgrades.SideUpgrade;
+import mcp.mobius.betterbarrels.common.items.upgrades.side.SideUpgrade;
 
 public class BlockBarrel extends BlockContainer{
 

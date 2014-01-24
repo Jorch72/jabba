@@ -1,10 +1,11 @@
 package mcp.mobius.betterbarrels.client.render;
 
 import java.util.HashMap;
+
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-import mcp.mobius.betterbarrels.common.items.upgrades.SideUpgrade;
+import mcp.mobius.betterbarrels.common.items.upgrades.side.SideUpgrade;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 

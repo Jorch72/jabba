@@ -3,8 +3,8 @@ package mcp.mobius.betterbarrels.common;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
-import mcp.mobius.betterbarrels.common.items.upgrades.SideUpgrade;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemBarrelSticker;
+import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemSideSticker;
+import mcp.mobius.betterbarrels.common.items.upgrades.side.SideUpgrade;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
@@ -58,7 +58,7 @@ public class TileEntityBarrel extends TileEntity{
 			this.manualStackAdd(player);		
 		else if (player.isSneaking() && stack == null)
 			this.switchLocked();
-        else if (player.isSneaking() && stack.getItem() instanceof ItemBarrelSticker)
+        else if (player.isSneaking() && stack.getItem() instanceof ItemSideSticker)
         	this.applySticker(stack, ForgeDirection.getOrientation(side));
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemUpgradeStructural))
 			this.applyUpgradeStructural(stack, player);		

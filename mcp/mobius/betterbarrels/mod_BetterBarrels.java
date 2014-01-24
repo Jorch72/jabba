@@ -14,7 +14,7 @@ import mcp.mobius.betterbarrels.common.BlockBarrel;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
-import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemBarrelSticker;
+import mcp.mobius.betterbarrels.common.items.upgrades.side.ItemSideSticker;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -127,7 +127,7 @@ public class mod_BetterBarrels {
 		//blockMiniBarrel   = new BlockMiniBarrel(miniBarrelID);
 		//blockBarrelShelf  = new BlockBarrelShelf(barrelShelfID);
 		itemUpgradeStructural       = new ItemUpgradeStructural(itemUpgradeStructuralID);
-		itemSticker       = new ItemBarrelSticker(itemStickerID);
+		itemSticker       = new ItemSideSticker(itemStickerID);
 		itemMover         = new ItemBarrelMover(itemMoverID);
 		//itemTuningFork    = new ItemTuningFork(itemTuningForkID);
 		//itemBSpaceUpg     = new ItemBSpaceInterface(itemBSpaceUpgID);
