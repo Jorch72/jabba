@@ -45,8 +45,9 @@ public class TileEntityBarrel extends TileEntity{
     public IBarrelStorage storage     = new StorageLocal();
 	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
 	public int levelStructural        = 0;
-	public int[] sideUpgrades = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
+	public int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
 	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
+	public boolean hasRedstone        = false;
 	
 	/* SLOT HANDLING */
 	
@@ -67,6 +68,12 @@ public class TileEntityBarrel extends TileEntity{
 	public int getFreeSlots(){
 		return getMaxUpgradeSlots() - getUsedSlots();
 	}	
+	
+	public boolean hasUpgrade(int upgrade){
+		for (Integer i : this.coreUpgrades)
+			if (i == upgrade) return true;
+		return false;
+	}
 	
 	/* PLAYER INTERACTIONS */
 	
@@ -115,21 +122,34 @@ public class TileEntityBarrel extends TileEntity{
 	
 	private void applyCoreUpgrade(ItemStack stack, EntityPlayer player){
 		int slotsused = UpgradeCore.mapMetaSlots[stack.getItemDamage()]; 
+		int type      = UpgradeCore.mapRevMeta[stack.getItemDamage()];
 
+		if (!(type == UpgradeCore.STORAGE) && this.hasUpgrade(type)){
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("Core upgrade already installed."), false));
+			return;			
+		}		
+		
 		if (slotsused > this.getFreeSlots()){
 			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
 					ChatMessageComponent.createFromText("Not enough upgrade slots for this upgrade. You need at least " + String.valueOf(slotsused) + " to apply this."), false));
 			return;
 		}
 	
-		if (UpgradeCore.mapRevMeta[stack.getItemDamage()] == UpgradeCore.STORAGE){
+		if (type == UpgradeCore.STORAGE){
 			this.coreUpgrades.add(UpgradeCore.STORAGE);
 			this.storage.addStorageUpgrade();
 			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);				
 		}
 
+		if (type == UpgradeCore.REDSTONE){
+			this.coreUpgrades.add(UpgradeCore.REDSTONE);
+			this.hasRedstone = true;
+		}		
+		
 		stack.stackSize -= 1;
 		this.onInventoryChanged();
+		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);	
 	}	
 	
@@ -246,6 +266,7 @@ public class TileEntityBarrel extends TileEntity{
         NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
         NBTTag.setIntArray("coreUpgrades", this.convertInts(this.coreUpgrades));
         NBTTag.setInteger("structural",    this.levelStructural);
+        NBTTag.setBoolean("redstone",      this.hasRedstone);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
     }  	
 
@@ -257,6 +278,7 @@ public class TileEntityBarrel extends TileEntity{
     	this.sideUpgrades    = NBTTag.getIntArray("sideUpgrades");
     	this.coreUpgrades    = this.convertArrayList(NBTTag.getIntArray("coreUpgrades"));
     	this.levelStructural = NBTTag.getInteger("structural");
+    	this.hasRedstone     = NBTTag.getBoolean("redstone");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
 	

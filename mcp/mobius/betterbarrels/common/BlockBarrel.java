@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
@@ -207,13 +208,44 @@ public class BlockBarrel extends BlockContainer{
     }
 
 	@Override
-    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z)
-    {
+    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z){
     	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	if (player != null && barrelEntity != null && !barrelEntity.storage.canInteract(player.username)){
     		return false;
     	}
     	return super.removeBlockByPlayer(world, player, x, y, z);
 		
-    } 
+    }
+	
+	/* REDSTONE HANDLING */
+
+	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side){
+		return this.isProvidingWeakPower(world, x, y, z, side);
+    }
+
+    public boolean canProvidePower(){
+    	return true;
+    }
+
+    public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side){
+    	TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
+    	if (barrel.hasRedstone)
+    		return 15;
+    	return 0;
+    }
+
+    /*
+    @Override
+    public boolean isBlockNormalCube(World world, int x, int y, int z){
+    	return false;
+    }
+    */
+    
+    /*
+    private boolean isIndirectlyPowered(World par1World, int par2, int par3, int par4)
+    {
+        int l = par1World.getBlockMetadata(par2, par3, par4);
+        return l == 5 && par1World.getIndirectPowerOutput(par2, par3 - 1, par4, 0) ? true : (l == 3 && par1World.getIndirectPowerOutput(par2, par3, par4 - 1, 2) ? true : (l == 4 && par1World.getIndirectPowerOutput(par2, par3, par4 + 1, 3) ? true : (l == 1 && par1World.getIndirectPowerOutput(par2 - 1, par3, par4, 4) ? true : l == 2 && par1World.getIndirectPowerOutput(par2 + 1, par3, par4, 5))));
+    }
+    */    
 }
