@@ -254,24 +254,29 @@ public class ItemBarrelMover extends Item {
 		
 		
 		/* Better barrel craziness */
+		
 		if (nbtContainer.getString("id").equals("TileEntityBarrel")){
-			ForgeDirection newBarrelOrientation         = this.getBarrelOrientationOnPlacement(player);
-			ForgeDirection oldBarrelOrientation         = this.convertOrientationFlagToForge(nbtContainer.getInteger("barrelOrigOrient")).get(0); 
-			ArrayList<ForgeDirection> oldBarrelStickers = this.convertOrientationFlagToForge(nbtContainer.getInteger("barrelOrient"));
+			ForgeDirection newBarrelOrientation = this.getBarrelOrientationOnPlacement(player);
+			ForgeDirection oldBarrelOrientation = ForgeDirection.getOrientation(nbtContainer.getInteger("orientation")); 
+			int[] newSideArray = new int[6];
+			int[] oldSideArray = nbtContainer.getIntArray("sideUpgrades");
 			
 			int numberRotations = 0;
 			while (newBarrelOrientation != oldBarrelOrientation){
 				numberRotations += 1;
 				oldBarrelOrientation = oldBarrelOrientation.getRotation(ForgeDirection.UP);
 			}
+
+			for (int i = 0; i < 6; i++){
+				ForgeDirection idir = ForgeDirection.getOrientation(i);
+				for (int rot = 0; rot < numberRotations; rot++){
+					idir = idir.getRotation(ForgeDirection.UP);
+				}
+				newSideArray[idir.ordinal()] = oldSideArray[i];
+			}
 			
-			for (int i = 0; i < numberRotations; i++)
-				for (int j = 0; j < oldBarrelStickers.size(); j++)
-					oldBarrelStickers.set(j, oldBarrelStickers.get(j).getRotation(ForgeDirection.UP));
-			
-			nbtContainer.setInteger("barrelOrient", this.convertForgeToOrientationFlag(oldBarrelStickers));
-			nbtContainer.setInteger("barrelOrigOrient", (1 << (newBarrelOrientation.ordinal() - 2)));
-			blockMeta = this.convertForgeToOrientationFlag(oldBarrelStickers);
+			nbtContainer.setInteger("orientation", newBarrelOrientation.ordinal());
+			nbtContainer.setIntArray("sideUpgrades", newSideArray);
 		}
 		
 		world.setBlock(targX, targY, targZ, blockID, blockMeta, 1 + 2);
