@@ -18,18 +18,33 @@ public class UpgradeCore {
 		mod_BetterBarrels.itemUpgradeCore,		
 	};
 	
-	public static int[] mapMeta = {
-		0,
+	public static int[] mapMeta = {	//Map index to metadata
+		-1,
 		0,
 		1,
 		2,
 		3,
 	};
 	
-	public static int[] mapRevMeta = {
+	public static int[] mapRevMeta = {	//Map meta to index
 		STORAGE,
 		ENDER,
 		REDSTONE,
 		HOPPER
 	};
+	
+    public static int[] mapMetaSlots = { 	//Map meta to slots
+    	1,
+		2,
+		1,
+		1
+	};
+    
+    public static int[] mapSlots = {	// Map index to slots
+    	-1,
+    	1,
+		2,
+		1,
+		1
+	};	    
 }

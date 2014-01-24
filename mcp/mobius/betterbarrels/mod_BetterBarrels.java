@@ -13,7 +13,6 @@ import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.BlockBarrel;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
-import mcp.mobius.betterbarrels.common.items.upgrades.ItemSideSticker;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;

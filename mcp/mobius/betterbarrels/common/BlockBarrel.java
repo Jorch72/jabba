@@ -20,6 +20,7 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
 public class BlockBarrel extends BlockContainer{
@@ -163,6 +164,17 @@ public class BlockBarrel extends BlockContainer{
     			currentUpgrade -= 1;
     		}
     	}    	
+    	
+    	// We drop the core upgrades
+    	if (barrelEntity != null){
+    		for (Integer i : barrelEntity.coreUpgrades){
+    			Item upgrade = UpgradeCore.mapItem[i];
+    			if (upgrade != null){
+    				ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeSide.mapMeta[i]);
+    				this.dropStack(world, droppedStack, x, y, z);
+    			}
+    		}
+    	}     	
     	
     	// We drop the side upgrades
     	if (barrelEntity != null){

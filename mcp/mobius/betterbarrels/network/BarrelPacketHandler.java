@@ -38,6 +38,11 @@ public class BarrelPacketHandler implements IPacketHandler {
 				Packet0x04StructuralUpdate packetCast = new Packet0x04StructuralUpdate(packet);
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				barrel.levelStructural = packetCast.level;
+			}	
+			else if (header == 0x05){
+				Packet0x05CoreUpdate packetCast = new Packet0x05CoreUpdate(packet);
+				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
+				barrel.coreUpgrades = packetCast.upgrades;
 			}			
 		}				
 	}

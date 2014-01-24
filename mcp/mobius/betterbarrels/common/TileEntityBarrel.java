@@ -1,15 +1,24 @@
 package mcp.mobius.betterbarrels.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
-import mcp.mobius.betterbarrels.common.items.upgrades.ItemSideSticker;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,6 +45,8 @@ public class TileEntityBarrel extends TileEntity{
 	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
 	public int levelStructural        = 0;
 	public int[] sideUpgrades = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
+	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
+	
 	/* PLAYER INTERACTIONS */
 	
 	public void leftClick(EntityPlayer player){
@@ -61,6 +72,8 @@ public class TileEntityBarrel extends TileEntity{
 			this.switchLocked();
         else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeSide && UpgradeSide.mapRevMeta[stack.getItemDamage()] == UpgradeSide.STICKER)
         	this.applySticker(stack, ForgeDirection.getOrientation(side));
+        else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeCore)
+        	this.applyCoreUpgrade(stack, player);		
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemUpgradeStructural))
 			this.applyUpgradeStructural(stack, player);		
 		else
@@ -93,6 +106,17 @@ public class TileEntityBarrel extends TileEntity{
 		return  nslots;
 	}
 	
+	public int getUsedSlots(){
+		int nslots = 0;
+		for (Integer i : this.coreUpgrades)
+			nslots += UpgradeCore.mapSlots[i];
+		return nslots;
+	}
+	
+	public int getFreeSlots(){
+		return getMaxUpgradeSlots() - getUsedSlots();
+	}	
+	
 	private void switchLocked(){
 		this.storage.switchGhosting();
 		this.onInventoryChanged();
@@ -107,6 +131,26 @@ public class TileEntityBarrel extends TileEntity{
 		stack.stackSize -= 1;
 		
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
+	}
+	
+	private void applyCoreUpgrade(ItemStack stack, EntityPlayer player){
+		int slotsused = UpgradeCore.mapMetaSlots[stack.getItemDamage()]; 
+
+		if (slotsused > this.getFreeSlots()){
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("Not enough upgrade slots for this upgrade. You need at least " + String.valueOf(slotsused) + " to apply this."), false));
+			return;
+		}
+		
+		System.out.printf("%s\n", this.getFreeSlots());
+		
+		if (UpgradeCore.mapRevMeta[stack.getItemDamage()] == UpgradeCore.STORAGE){
+			this.coreUpgrades.add(UpgradeCore.STORAGE);
+		}
+
+		stack.stackSize -= 1;
+		this.onInventoryChanged();
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);	
 	}
 	
 	private void manualStackAdd(EntityPlayer player){
@@ -187,10 +231,13 @@ public class TileEntityBarrel extends TileEntity{
 	@Override
     public void writeToNBT(NBTTagCompound NBTTag)
     {
+		
+		
         super.writeToNBT(NBTTag);
         NBTTag.setInteger("version",       TileEntityBarrel.version);        
         NBTTag.setInteger("orientation",   this.orientation.ordinal());
         NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
+        NBTTag.setIntArray("coreUpgrades", this.convertInts(this.coreUpgrades));
         NBTTag.setInteger("structural",    this.levelStructural);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
     }  	
@@ -201,6 +248,7 @@ public class TileEntityBarrel extends TileEntity{
     	super.readFromNBT(NBTTag);
     	this.orientation     = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
     	this.sideUpgrades    = NBTTag.getIntArray("sideUpgrades");
+    	this.coreUpgrades    = this.convertArrayList(NBTTag.getIntArray("coreUpgrades"));
     	this.levelStructural = NBTTag.getInteger("structural");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
@@ -218,4 +266,23 @@ public class TileEntityBarrel extends TileEntity{
         return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, var1);
     }	
 	
+    private int[] convertInts(List<Integer> integers)
+    {
+        int[] ret = new int[integers.size()];
+        Iterator<Integer> iterator = integers.iterator();
+        for (int i = 0; i < ret.length; i++)
+        {
+            ret[i] = iterator.next().intValue();
+        }
+        return ret;
+    }
+    
+    private ArrayList<Integer> convertArrayList(int[] list)
+    {
+    	ArrayList<Integer> ret = new ArrayList<Integer>();
+    	for (int i = 0; i < list.length; i++)
+    		ret.add(list[i]);
+    	return ret;
+
+    }    
 }

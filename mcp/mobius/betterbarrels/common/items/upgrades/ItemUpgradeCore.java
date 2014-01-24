@@ -19,7 +19,7 @@ public class ItemUpgradeCore extends ItemUpgrade {
     										"Redstone upgrade",
     										"Hopper upgrade"
     									};	
-	
+    
 	public ItemUpgradeCore(int id){
 		super(id);
         this.setHasSubtypes(true);
