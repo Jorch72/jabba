@@ -10,6 +10,7 @@ import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Property;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import mcp.mobius.betterbarrels.client.BarrelClientTickHandler;
 import mcp.mobius.betterbarrels.client.ClientEventHandler;
@@ -129,6 +130,10 @@ public class mod_BetterBarrels {
 			config.save();
 		}
 		
+		OreDictionary.registerOre("ingotIron", Item.ingotIron);
+		OreDictionary.registerOre("ingotGold", Item.ingotGold);
+		OreDictionary.registerOre("slimeball", Item.slimeBall);
+		
 		//PlasmaTexture.precomputeTables();
 		//PlasmaTexture.generateTexture();
 	}
@@ -175,35 +180,23 @@ public class mod_BetterBarrels {
 				 Character.valueOf('W'), "logWood",
 				 Character.valueOf('-'), "slabWood"}));
 
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemCapaUpg,1,0), new Object[] 
-				{"XPX", "PBP", "XPX",
-		     Character.valueOf('B'), Block.chest, 
-			 Character.valueOf('X'), "plankWood",
-			 Character.valueOf('P'), Block.pistonBase}));		
-
-		//GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemLockingPlanks,4), new Object[]
-		//		 {"W W", " C ", "W W", 
-		//	     Character.valueOf('C'), Item.ingotIron, 
-		//		 Character.valueOf('W'), "plankWood"}));
-		
-		
-		this.addUpgradeRecipe(1, Item.ingotIron);
-		this.addUpgradeRecipe(2, Item.ingotGold);
+		this.addUpgradeRecipe(0, "plankWood");
+		this.addUpgradeRecipe(1, "ingotIron");
+		this.addUpgradeRecipe(2, "ingotGold");
 		this.addUpgradeRecipe(3, Item.diamond);
 		this.addUpgradeRecipe(4, Block.obsidian);
 		this.addUpgradeRecipe(5, Block.whiteStone);
 		this.addUpgradeRecipe(6, Item.emerald);		
-		//this.addUpgradeRecipe(4, Item.enderPearl);
-		//this.addUpgradeRecipe(5, Item.emerald);
-		//this.addUpgradeRecipe(6, Item.netherStar);				
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemMover,1,0), new Object[] 
 				{"  X", " PX", "XXX",
-		     Character.valueOf('X'), Item.ingotIron, 
+		     Character.valueOf('X'), "ingotIron", 
 			 Character.valueOf('P'), "plankWood"}));
 		
-		GameRegistry.addRecipe(new ItemStack(itemSticker, 4), new Object[]
-				{" P ","PXP", " P ", 'P', Item.paper, 'X', Item.slimeBall});
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemSticker, 4), new Object[]
+				{" P ","PXP", " P ", 
+			 Character.valueOf('P'), Item.paper, 
+			 Character.valueOf('X'), "slimeball"}));
 
 		//GameRegistry.addRecipe(new ItemStack(itemTuningFork, 1, 0), new Object[]
 		//		{" P "," PP", "P  ", 'P', Item.ingotIron});		
@@ -219,13 +212,20 @@ public class mod_BetterBarrels {
  
 	private void addUpgradeRecipe(int level, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(itemCapaUpg,1,level), new Object[] 
-				{"XPX", "PBP", "XPX",'B', new ItemStack(itemCapaUpg,1,level-1), 'P', Block.pistonBase, 'X', variableComponent});		
+				{" P ", "PBP", " P ",'P', Block.pistonBase, 'B', variableComponent});		
 	}
 
 	private void addUpgradeRecipe(int level, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(itemCapaUpg,1,level), new Object[] 
-				{"XPX", "PBP", "XPX",'B', new ItemStack(itemCapaUpg,1,level-1), 'P', Block.pistonBase, 'X', new ItemStack(variableComponent,0)});		
+				{" P ", "PBP", " P ",'P', Block.pistonBase, 'B', new ItemStack(variableComponent,0)});		
 	}	
+	
+	private void addUpgradeRecipe(int level, String variableComponent){
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemCapaUpg,1,level), new Object[] 
+				{" P ", "PBP", " P ",
+			Character.valueOf('P'), Block.pistonBase, 
+			Character.valueOf('B'), variableComponent}));		
+	}		
 	
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event) {
