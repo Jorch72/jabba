@@ -47,6 +47,26 @@ public class TileEntityBarrel extends TileEntity{
 	public int[] sideUpgrades = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
 	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
 	
+	/* SLOT HANDLING */
+	
+	public int getMaxUpgradeSlots(){
+		int nslots = 0;
+		for (int i = 0; i < this.levelStructural; i++)
+			nslots += MathHelper.floor_double(Math.pow(2, i));
+		return  nslots;
+	}
+	
+	public int getUsedSlots(){
+		int nslots = 0;
+		for (Integer i : this.coreUpgrades)
+			nslots += UpgradeCore.mapSlots[i];
+		return nslots;
+	}
+	
+	public int getFreeSlots(){
+		return getMaxUpgradeSlots() - getUsedSlots();
+	}	
+	
 	/* PLAYER INTERACTIONS */
 	
 	public void leftClick(EntityPlayer player){
@@ -80,48 +100,7 @@ public class TileEntityBarrel extends TileEntity{
 			this.manualStackAdd(player);
 	}
 
-	private void applyUpgradeStructural(ItemStack stack, EntityPlayer player){
-		if (stack.getItemDamage() == this.levelStructural){
-			stack.stackSize      -= 1;
-			this.levelStructural += 1;
-		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() == (this.levelStructural - 1))) {
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("Upgrade already applied."), false));				
-		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() < this.levelStructural)) {
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("You cannot downgrade a barrel."), false));
-		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() > this.levelStructural)) {
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("You need at least an upgrade Mark " + stack.getItemDamage() + " to apply this."), false));
-		}
-
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
-		this.onInventoryChanged();
-	}	
-	
-	public int getMaxUpgradeSlots(){
-		int nslots = 0;
-		for (int i = 0; i < this.levelStructural; i++)
-			nslots += MathHelper.floor_double(Math.pow(2, i));
-		return  nslots;
-	}
-	
-	public int getUsedSlots(){
-		int nslots = 0;
-		for (Integer i : this.coreUpgrades)
-			nslots += UpgradeCore.mapSlots[i];
-		return nslots;
-	}
-	
-	public int getFreeSlots(){
-		return getMaxUpgradeSlots() - getUsedSlots();
-	}	
-	
-	private void switchLocked(){
-		this.storage.switchGhosting();
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
-	}
+	/* UPGRADE ACTIONS */
 	
 	private void applySticker(ItemStack stack, ForgeDirection side){
 		if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
@@ -151,6 +130,33 @@ public class TileEntityBarrel extends TileEntity{
 		stack.stackSize -= 1;
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);	
+	}	
+	
+	private void applyUpgradeStructural(ItemStack stack, EntityPlayer player){
+		if (stack.getItemDamage() == this.levelStructural){
+			stack.stackSize      -= 1;
+			this.levelStructural += 1;
+		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() == (this.levelStructural - 1))) {
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("Upgrade already applied."), false));				
+		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() < this.levelStructural)) {
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("You cannot downgrade a barrel."), false));
+		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() > this.levelStructural)) {
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("You need at least an upgrade Mark " + stack.getItemDamage() + " to apply this."), false));
+		}
+
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.onInventoryChanged();
+	}	
+	
+	/* OTHER ACTIONS */
+	
+	private void switchLocked(){
+		this.storage.switchGhosting();
+		this.onInventoryChanged();
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
 	private void manualStackAdd(EntityPlayer player){
