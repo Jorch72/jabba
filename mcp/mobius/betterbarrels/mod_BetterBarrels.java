@@ -130,9 +130,12 @@ public class mod_BetterBarrels {
 			config.save();
 		}
 		
-		OreDictionary.registerOre("ingotIron", Item.ingotIron);
-		OreDictionary.registerOre("ingotGold", Item.ingotGold);
-		OreDictionary.registerOre("slimeball", Item.slimeBall);
+		OreDictionary.registerOre("ingotIron",  Item.ingotIron);
+		OreDictionary.registerOre("ingotGold",  Item.ingotGold);
+		OreDictionary.registerOre("slimeball",  Item.slimeBall);
+		OreDictionary.registerOre("gemDiamond", Item.diamond);
+		OreDictionary.registerOre("gemEmerald", Item.emerald);
+		OreDictionary.registerOre("chestWood",  Block.chest);
 		
 		//PlasmaTexture.precomputeTables();
 		//PlasmaTexture.generateTexture();
@@ -176,17 +179,17 @@ public class mod_BetterBarrels {
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(blockBarrel), new Object[]
 				 {"W-W", "WCW", "WWW", 
-			     Character.valueOf('C'), Block.chest, 
+			     Character.valueOf('C'), "chestWood", 
 				 Character.valueOf('W'), "logWood",
 				 Character.valueOf('-'), "slabWood"}));
 
 		this.addUpgradeRecipe(0, "plankWood");
 		this.addUpgradeRecipe(1, "ingotIron");
 		this.addUpgradeRecipe(2, "ingotGold");
-		this.addUpgradeRecipe(3, Item.diamond);
+		this.addUpgradeRecipe(3, "gemDiamond");
 		this.addUpgradeRecipe(4, Block.obsidian);
 		this.addUpgradeRecipe(5, Block.whiteStone);
-		this.addUpgradeRecipe(6, Item.emerald);		
+		this.addUpgradeRecipe(6, "gemEmerald");		
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemMover,1,0), new Object[] 
 				{"  X", " PX", "XXX",
