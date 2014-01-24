@@ -19,6 +19,7 @@ import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x06FullStorage;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -120,11 +121,11 @@ public class TileEntityBarrel extends TileEntity{
 					ChatMessageComponent.createFromText("Not enough upgrade slots for this upgrade. You need at least " + String.valueOf(slotsused) + " to apply this."), false));
 			return;
 		}
-		
-		System.out.printf("%s\n", this.getFreeSlots());
-		
+	
 		if (UpgradeCore.mapRevMeta[stack.getItemDamage()] == UpgradeCore.STORAGE){
 			this.coreUpgrades.add(UpgradeCore.STORAGE);
+			this.storage.addStorageUpgrade();
+			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);				
 		}
 
 		stack.stackSize -= 1;

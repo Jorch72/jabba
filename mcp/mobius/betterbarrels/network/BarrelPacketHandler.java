@@ -2,10 +2,13 @@ package mcp.mobius.betterbarrels.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.IOException;
 
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.common.network.IPacketHandler;
@@ -43,7 +46,12 @@ public class BarrelPacketHandler implements IPacketHandler {
 				Packet0x05CoreUpdate packetCast = new Packet0x05CoreUpdate(packet);
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				barrel.coreUpgrades = packetCast.upgrades;
-			}			
+			}	
+			else if (header == 0x06){
+				Packet0x06FullStorage packetCast = new Packet0x06FullStorage(packet);
+				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
+				barrel.storage = packetCast.storage;
+			}				
 		}				
 	}
 
@@ -55,5 +63,19 @@ public class BarrelPacketHandler implements IPacketHandler {
 			return -1;
 		}
 	}	
+
+    public static void writeNBTTagCompound(NBTTagCompound par0NBTTagCompound, DataOutput par1DataOutput) throws IOException
+    {
+        if (par0NBTTagCompound == null)
+        {
+            par1DataOutput.writeShort(-1);
+        }
+        else
+        {
+            byte[] abyte = CompressedStreamTools.compress(par0NBTTagCompound);
+            par1DataOutput.writeShort((short)abyte.length);
+            par1DataOutput.write(abyte);
+        }
+    }		
 	
 }

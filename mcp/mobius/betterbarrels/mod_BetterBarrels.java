@@ -178,13 +178,18 @@ public class mod_BetterBarrels {
 				 Character.valueOf('W'), "logWood",
 				 Character.valueOf('-'), "slabWood"}));
 
-		this.addUpgradeRecipe(0, "plankWood");
-		this.addUpgradeRecipe(1, "ingotIron");
-		this.addUpgradeRecipe(2, "ingotGold");
-		this.addUpgradeRecipe(3, "gemDiamond");
-		this.addUpgradeRecipe(4, Block.obsidian);
-		this.addUpgradeRecipe(5, Block.whiteStone);
-		this.addUpgradeRecipe(6, "gemEmerald");		
+		this.addStructuralUpgrade(0, "plankWood");
+		this.addStructuralUpgrade(1, "ingotIron");
+		this.addStructuralUpgrade(2, "ingotGold");
+		this.addStructuralUpgrade(3, "gemDiamond");
+		this.addStructuralUpgrade(4, Block.obsidian);
+		this.addStructuralUpgrade(5, Block.whiteStone);
+		this.addStructuralUpgrade(6, "gemEmerald");		
+		
+		this.addCoreUpgrade(0, blockBarrel);
+		this.addCoreUpgrade(1, Block.enderChest);
+		this.addCoreUpgrade(2, Block.blockRedstone);
+		this.addCoreUpgrade(3, Block.hopperBlock);		
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemMover,1,0), new Object[] 
 				{"  X", " PX", "XXX",
@@ -208,22 +213,47 @@ public class mod_BetterBarrels {
         FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
 	}
  
-	private void addUpgradeRecipe(int level, Item variableComponent){
+	private void addStructuralUpgrade(int level, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(itemUpgradeStructural,1,level), new Object[] 
-				{" P ", "PBP", " P ",'P', Block.pistonBase, 'B', variableComponent});		
+				{"PBP", "B B", "PBP",
+				'P', Block.fence, 
+				'B', variableComponent});		
 	}
 
-	private void addUpgradeRecipe(int level, Block variableComponent){
+	private void addStructuralUpgrade(int level, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(itemUpgradeStructural,1,level), new Object[] 
-				{" P ", "PBP", " P ",'P', Block.pistonBase, 'B', new ItemStack(variableComponent,0)});		
+				{"PBP", "B B", "PBP",
+				'P', Block.fence, 
+				'B', new ItemStack(variableComponent,0)});		
 	}	
 	
-	private void addUpgradeRecipe(int level, String variableComponent){
+	private void addStructuralUpgrade(int level, String variableComponent){
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemUpgradeStructural,1,level), new Object[] 
-				{" P ", "PBP", " P ",
-			Character.valueOf('P'), Block.pistonBase, 
-			Character.valueOf('B'), variableComponent}));		
-	}		
+				{"PBP", "B B", "PBP",
+				Character.valueOf('P'), Block.fence, 
+				Character.valueOf('B'), variableComponent}));		
+	}	
+	
+	private void addCoreUpgrade(int meta, Item variableComponent){
+		GameRegistry.addRecipe(new ItemStack(itemUpgradeCore,1,meta), new Object[] 
+				{" P ", " B ", " P ",
+				'P', Block.pistonBase, 
+				'B', variableComponent});		
+	}
+
+	private void addCoreUpgrade(int meta, Block variableComponent){
+		GameRegistry.addRecipe(new ItemStack(itemUpgradeCore,1,meta), new Object[] 
+				{" P ", " B ", " P ",
+				'P', Block.pistonBase, 
+				'B', new ItemStack(variableComponent,0)});		
+	}	
+	
+	private void addCoreUpgrade(int meta, String variableComponent){
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemUpgradeCore,1,meta), new Object[] 
+				{" P ", " B ", " P ",
+				Character.valueOf('P'), Block.pistonBase,
+				Character.valueOf('B'), variableComponent}));		
+	}	
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
