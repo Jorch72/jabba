@@ -10,11 +10,13 @@ import cpw.mods.fml.server.FMLServerHandler;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.items.ItemBSpaceInterface;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelSticker;
-import mcp.mobius.betterbarrels.common.items.ItemCapaUpg;
+import mcp.mobius.betterbarrels.common.items.ItemUpgradeStructural;
+import mcp.mobius.betterbarrels.common.items.ItemUpgrade;
 import mcp.mobius.betterbarrels.common.items.SideUpgrade;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
 import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.server.SaveHandler;
 import net.minecraft.entity.item.EntityItem;
@@ -73,11 +75,39 @@ public class TileEntityBarrel extends TileEntity{
 		else if (player.isSneaking() && stack == null)
 			this.switchLocked();
         else if (player.isSneaking() && stack.getItem() instanceof ItemBarrelSticker)
-        	this.applySticker(stack, ForgeDirection.getOrientation(side));		
+        	this.applySticker(stack, ForgeDirection.getOrientation(side));
+		else if (player.isSneaking() && (stack.getItem() instanceof ItemUpgradeStructural))
+			this.applyUpgradeStructural(stack, player);		
 		else
 			this.manualStackAdd(player);
 	}
 
+	private void applyUpgradeStructural(ItemStack stack, EntityPlayer player){
+		if (stack.getItemDamage() == this.levelStructural){
+			stack.stackSize      -= 1;
+			this.levelStructural += 1;
+		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() == (this.levelStructural - 1))) {
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("Upgrade already applied."), false));				
+		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() < this.levelStructural)) {
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("You cannot downgrade a barrel."), false));
+		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() > this.levelStructural)) {
+			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+					ChatMessageComponent.createFromText("You need at least an upgrade Mark " + stack.getItemDamage() + " to apply this."), false));
+		}
+
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.onInventoryChanged();
+	}	
+	
+	public int getMaxUpgradeSlots(){
+		int nslots = 0;
+		for (int i = 0; i < this.levelStructural; i++)
+			nslots += MathHelper.floor_double(Math.pow(2, i)); 
+		return  nslots;
+	}
+	
 	private void switchLocked(){
 		this.storage.switchGhosting();
 		this.onInventoryChanged();
@@ -176,6 +206,7 @@ public class TileEntityBarrel extends TileEntity{
         NBTTag.setInteger("version",       this.version);        
         NBTTag.setInteger("orientation",   this.orientation.ordinal());
         NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
+        NBTTag.setInteger("structural",    this.levelStructural);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
     }  	
 
@@ -183,8 +214,9 @@ public class TileEntityBarrel extends TileEntity{
     public void readFromNBT(NBTTagCompound NBTTag)
     {
     	super.readFromNBT(NBTTag);
-    	this.orientation  = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
-    	this.sideUpgrades = NBTTag.getIntArray("sideUpgrades");
+    	this.orientation     = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
+    	this.sideUpgrades    = NBTTag.getIntArray("sideUpgrades");
+    	this.levelStructural = NBTTag.getInteger("structural");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
 	

@@ -22,7 +22,7 @@ import mcp.mobius.betterbarrels.common.items.ItemBSpaceInterface;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelLocker;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelSticker;
-import mcp.mobius.betterbarrels.common.items.ItemCapaUpg;
+import mcp.mobius.betterbarrels.common.items.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
@@ -73,7 +73,7 @@ public class mod_BetterBarrels {
 	public static int miniBarrelID = -1;
 	public static int barrelShelfID = -1;
 	
-	private static int itemCapaUpgID = -1;
+	private static int itemUpgradeStructuralID = -1;
 	private static int itemStickerID = -1;
 	private static int itemMoverID = -1;
 	private static int itemTuningForkID = -1;	
@@ -88,7 +88,7 @@ public class mod_BetterBarrels {
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
 	public static Block blockBarrelShelf = null;	
-	public static Item itemCapaUpg       = null;
+	public static Item itemUpgradeStructural = null;
 	public static Item itemSticker       = null;
 	public static Item itemMover         = null;
 	public static Item itemTuningFork    = null;
@@ -111,7 +111,7 @@ public class mod_BetterBarrels {
 			miniBarrelID = config.get("block",  "MiniBarrel",      3501).getInt();
 			barrelShelfID= config.get("block",  "BarrelShelf",     3502).getInt();
 			
-			itemCapaUpgID       = config.get("item",   "UpgradeCapacity", 3501).getInt();
+			itemUpgradeStructuralID       = config.get("item",   "UpgradeCapacity", 3501).getInt();
 			itemStickerID       = config.get("item",   "Sticker",         3502).getInt();
 			itemMoverID         = config.get("item",   "Mover",           3503).getInt();
 			itemTuningForkID    = config.get("item",   "TuningFork",      3504).getInt();
@@ -146,7 +146,7 @@ public class mod_BetterBarrels {
 		blockBarrel       = new BlockBarrel(barrelID);
 		//blockMiniBarrel   = new BlockMiniBarrel(miniBarrelID);
 		//blockBarrelShelf  = new BlockBarrelShelf(barrelShelfID);
-		itemCapaUpg       = new ItemCapaUpg(itemCapaUpgID);
+		itemUpgradeStructural       = new ItemUpgradeStructural(itemUpgradeStructuralID);
 		itemSticker       = new ItemBarrelSticker(itemStickerID);
 		itemMover         = new ItemBarrelMover(itemMoverID);
 		itemTuningFork    = new ItemTuningFork(itemTuningForkID);
@@ -163,8 +163,8 @@ public class mod_BetterBarrels {
 		LanguageRegistry.addName(itemLockingPlanks, "Locking Planks (WIP)");
 		
 		for(int i=0; i<7; i++){
-			ItemStack upgrade = new ItemStack(itemCapaUpg, 1, i);
-			LanguageRegistry.addName(upgrade, ((ItemCapaUpg)itemCapaUpg).upgradeNames[i]);
+			ItemStack upgrade = new ItemStack(itemUpgradeStructural, 1, i);
+			LanguageRegistry.addName(upgrade, ((ItemUpgradeStructural)itemUpgradeStructural).upgradeNames[i]);
 		}
 		
 		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");
@@ -214,17 +214,17 @@ public class mod_BetterBarrels {
 	}
  
 	private void addUpgradeRecipe(int level, Item variableComponent){
-		GameRegistry.addRecipe(new ItemStack(itemCapaUpg,1,level), new Object[] 
+		GameRegistry.addRecipe(new ItemStack(itemUpgradeStructural,1,level), new Object[] 
 				{" P ", "PBP", " P ",'P', Block.pistonBase, 'B', variableComponent});		
 	}
 
 	private void addUpgradeRecipe(int level, Block variableComponent){
-		GameRegistry.addRecipe(new ItemStack(itemCapaUpg,1,level), new Object[] 
+		GameRegistry.addRecipe(new ItemStack(itemUpgradeStructural,1,level), new Object[] 
 				{" P ", "PBP", " P ",'P', Block.pistonBase, 'B', new ItemStack(variableComponent,0)});		
 	}	
 	
 	private void addUpgradeRecipe(int level, String variableComponent){
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemCapaUpg,1,level), new Object[] 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(itemUpgradeStructural,1,level), new Object[] 
 				{" P ", "PBP", " P ",
 			Character.valueOf('P'), Block.pistonBase, 
 			Character.valueOf('B'), variableComponent}));		
