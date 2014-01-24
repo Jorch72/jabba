@@ -104,7 +104,7 @@ public class TileEntityBarrel extends TileEntity{
 	public int getMaxUpgradeSlots(){
 		int nslots = 0;
 		for (int i = 0; i < this.levelStructural; i++)
-			nslots += MathHelper.floor_double(Math.pow(2, i)); 
+			nslots += MathHelper.floor_double(Math.pow(2, i));
 		return  nslots;
 	}
 	

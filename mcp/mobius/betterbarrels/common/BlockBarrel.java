@@ -175,6 +175,16 @@ public class BlockBarrel extends BlockContainer{
 
     	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	
+    	// We drop the structural upgrades
+    	if ((barrelEntity != null) && (barrelEntity.levelStructural > 0)){
+    		int currentUpgrade = barrelEntity.levelStructural;
+    		while (currentUpgrade > 0){
+    			ItemStack droppedStack = new ItemStack(mod_BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
+    			this.dropStack(world, droppedStack, x, y, z);
+    			currentUpgrade -= 1;
+    		}
+    	}    	
+    	
     	// We drop the side upgrades
     	if (barrelEntity != null){
     		for (int i = 0; i < 6; i++){
