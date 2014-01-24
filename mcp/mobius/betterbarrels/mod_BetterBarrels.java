@@ -157,7 +157,7 @@ public class mod_BetterBarrels {
 			ItemStack upgrade = new ItemStack(itemUpgradeCore, 1, i);
 			LanguageRegistry.addName(upgrade, ((ItemUpgradeCore)itemUpgradeCore).upgradeNames[i]);
 		}		
-	
+		
 		for(int i=0; i<ItemUpgradeSide.upgradeNames.length; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeSide, 1, i);
 			LanguageRegistry.addName(upgrade, ((ItemUpgradeSide)itemUpgradeSide).upgradeNames[i]);

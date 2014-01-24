@@ -14,18 +14,26 @@ import net.minecraft.util.Icon;
 public class ItemUpgradeCore extends ItemUpgrade {
 	public static Icon[] upgradeIcons = new Icon[4];
 	
-    public static String[] upgradeNames = { "Storage upgrade",
-    										"BSpace  upgrade",
-    										"Redstone upgrade",
-    										"Hopper upgrade"
+	/*
+    public static String[] upgradeNames = { "upgrade.core.storage",
+    										"upgrade.core.ender",
+    										"upgrade.core.redstone",
+    										"upgrade.core.hopper"
     									};	
+    */
     
+    public static String[] upgradeNames = { "Storage upgrade",
+											"BSpace upgrade",
+											"Redstone upgrade",
+											"Hopper upgrade"
+										};		
+	
 	public ItemUpgradeCore(int id){
 		super(id);
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(16);
-        this.setUnlocalizedName("Generic core upgrade");    		
+        this.setUnlocalizedName("upgrade.core.generic");    		
 	}
 	
 	@Override	
