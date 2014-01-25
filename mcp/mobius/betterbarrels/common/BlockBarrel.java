@@ -171,7 +171,7 @@ public class BlockBarrel extends BlockContainer{
     		for (Integer i : barrelEntity.coreUpgrades){
     			Item upgrade = UpgradeCore.mapItem[i];
     			if (upgrade != null){
-    				ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeSide.mapMeta[i]);
+    				ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeCore.mapMeta[i]);
     				this.dropStack(world, droppedStack, x, y, z);
     			}
     		}

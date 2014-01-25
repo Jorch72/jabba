@@ -76,6 +76,16 @@ public class TileEntityBarrel extends TileEntity{
 		return false;
 	}
 	
+	@Override
+	public void onInventoryChanged(){
+		super.onInventoryChanged();
+
+		if (this.hasUpgrade(UpgradeCore.REDSTONE))
+			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));		
+	}
+	
+		
+	
 	/* REDSTONE HANDLING */
 	public int getRedstonePower(int side){
 		int[] sideSwitch = {1,0,3,2,5,4};
@@ -84,7 +94,7 @@ public class TileEntityBarrel extends TileEntity{
 		if (!this.hasRedstone) 
 			return 0;
 		else
-			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE)
+			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.storage.getAmount() == this.storage.getMaxStoredCount())
 				return 15;
 			else
 				return 0;
@@ -142,6 +152,7 @@ public class TileEntityBarrel extends TileEntity{
 		}		
 		
 		stack.stackSize -= 1;
+		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
@@ -172,7 +183,6 @@ public class TileEntityBarrel extends TileEntity{
 		
 		stack.stackSize -= 1;
 		this.onInventoryChanged();
-		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);	
 	}	
 	
@@ -188,8 +198,9 @@ public class TileEntityBarrel extends TileEntity{
 			BarrelPacketHandler.sendChat(player, "You need at least an upgrade Mark " + stack.getItemDamage() + " to apply this.");
 		}
 
+		this.onInventoryChanged();		
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
-		this.onInventoryChanged();
+
 	}	
 	
 	/* OTHER ACTIONS */
@@ -221,7 +232,7 @@ public class TileEntityBarrel extends TileEntity{
 		mod_BetterBarrels.proxy.updatePlayerInventory(player);
 		this.clickTime = this.worldObj.getWorldTime();	
 		
-		this.onInventoryChanged();		
+		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
