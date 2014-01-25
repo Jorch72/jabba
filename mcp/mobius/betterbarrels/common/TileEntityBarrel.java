@@ -98,8 +98,8 @@ public class TileEntityBarrel extends TileEntity{
 			this.manualStackAdd(player);		
 		else if (player.isSneaking() && stack == null)
 			this.switchLocked();
-        else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeSide && UpgradeSide.mapRevMeta[stack.getItemDamage()] == UpgradeSide.STICKER)
-        	this.applySticker(stack, ForgeDirection.getOrientation(side));
+        else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeSide)
+        	this.applySideUpgrade(stack, player, ForgeDirection.getOrientation(side));
         else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeCore)
         	this.applyCoreUpgrade(stack, player);		
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemUpgradeStructural))
@@ -110,13 +110,16 @@ public class TileEntityBarrel extends TileEntity{
 
 	/* UPGRADE ACTIONS */
 	
-	private void applySticker(ItemStack stack, ForgeDirection side){
-		if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
+	private void applySideUpgrade(ItemStack stack, EntityPlayer player, ForgeDirection side){
+		int type      = UpgradeSide.mapRevMeta[stack.getItemDamage()];
 		if (this.sideUpgrades[side.ordinal()] != UpgradeSide.NONE) {return;}
-
-		this.sideUpgrades[side.ordinal()] = UpgradeSide.STICKER;
-		stack.stackSize -= 1;
 		
+		if (type == UpgradeSide.STICKER){
+			if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
+			this.sideUpgrades[side.ordinal()] = UpgradeSide.STICKER;
+		}
+		
+		stack.stackSize -= 1;
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
