@@ -1,11 +1,8 @@
 package mcp.mobius.betterbarrels.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
@@ -30,9 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
-import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.ForgeDirection;

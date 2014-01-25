@@ -45,22 +45,22 @@ public class ItemUpgradeStructural extends ItemUpgrade{
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
     {   
-		if (stack.getItemDamage() >= this.upgradeNames.length)
+		if (stack.getItemDamage() >= ItemUpgradeStructural.upgradeNames.length)
 			return "Capacity Upgrade [ERROR]";
 		
-		return this.upgradeNames[stack.getItemDamage()];
+		return ItemUpgradeStructural.upgradeNames[stack.getItemDamage()];
     }	    
     
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	for(int i=0 ; i < this.upgradeNames.length; i++)
-    		this.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "capaupg_mk" + String.valueOf(i+1));
+    	for(int i=0 ; i < ItemUpgradeStructural.upgradeNames.length; i++)
+    		ItemUpgradeStructural.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "capaupg_mk" + String.valueOf(i+1));
     }	
 	
     @Override
     public Icon getIconFromDamage(int i){
-        return this.upgradeIcons[i];
+        return ItemUpgradeStructural.upgradeIcons[i];
     }
     
     /*
@@ -78,7 +78,7 @@ public class ItemUpgradeStructural extends ItemUpgrade{
 	@Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int itemID, CreativeTabs tabs, List list){
-            for(int i = 0; i < this.upgradeIcons.length; ++i){
+            for(int i = 0; i < ItemUpgradeStructural.upgradeIcons.length; ++i){
                     list.add(new ItemStack(itemID, 1, i));
              }
      }    

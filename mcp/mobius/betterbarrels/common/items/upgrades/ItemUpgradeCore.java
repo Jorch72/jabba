@@ -39,28 +39,28 @@ public class ItemUpgradeCore extends ItemUpgrade {
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
     {   
-		if (stack.getItemDamage() >= this.upgradeNames.length)
+		if (stack.getItemDamage() >= ItemUpgradeCore.upgradeNames.length)
 			return "Core Upgrade [ERROR]";
 		
-		return this.upgradeNames[stack.getItemDamage()];
+		return ItemUpgradeCore.upgradeNames[stack.getItemDamage()];
     }	    
     
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	for(int i=0 ; i < this.upgradeNames.length; i++)
-    		this.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "coreupg_" + String.valueOf(i));
+    	for(int i=0 ; i < ItemUpgradeCore.upgradeNames.length; i++)
+    		ItemUpgradeCore.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "coreupg_" + String.valueOf(i));
     }	
 	
     @Override
     public Icon getIconFromDamage(int i){
-        return this.upgradeIcons[i];
+        return ItemUpgradeCore.upgradeIcons[i];
     }	
 	
 	@Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(int itemID, CreativeTabs tabs, List list){
-            for(int i = 0; i < this.upgradeIcons.length; ++i){
+            for(int i = 0; i < ItemUpgradeCore.upgradeIcons.length; ++i){
                     list.add(new ItemStack(itemID, 1, i));
              }
      }      

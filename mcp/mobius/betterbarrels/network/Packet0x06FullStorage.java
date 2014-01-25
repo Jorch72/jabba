@@ -3,14 +3,11 @@ package mcp.mobius.betterbarrels.network;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import mcp.mobius.betterbarrels.common.StorageLocal;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 

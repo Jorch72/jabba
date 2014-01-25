@@ -157,17 +157,17 @@ public class mod_BetterBarrels {
 		
 		for(int i=0; i<ItemUpgradeStructural.upgradeNames.length; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeStructural, 1, i);
-			LanguageRegistry.addName(upgrade, ((ItemUpgradeStructural)itemUpgradeStructural).upgradeNames[i]);
+			LanguageRegistry.addName(upgrade, ItemUpgradeStructural.upgradeNames[i]);
 		}
 
 		for(int i=0; i<ItemUpgradeCore.upgradeNames.length; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeCore, 1, i);
-			LanguageRegistry.addName(upgrade, ((ItemUpgradeCore)itemUpgradeCore).upgradeNames[i]);
+			LanguageRegistry.addName(upgrade, ItemUpgradeCore.upgradeNames[i]);
 		}		
 		
 		for(int i=0; i<ItemUpgradeSide.upgradeNames.length; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeSide, 1, i);
-			LanguageRegistry.addName(upgrade, ((ItemUpgradeSide)itemUpgradeSide).upgradeNames[i]);
+			LanguageRegistry.addName(upgrade, ItemUpgradeSide.upgradeNames[i]);
 		}			
 		
 		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");

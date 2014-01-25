@@ -70,7 +70,8 @@ public class BlockBarrel extends BlockContainer{
     		return text_side;    		
     }
     
-    public void onBlockAdded(World world, int x, int y, int z) {
+    @Override
+	public void onBlockAdded(World world, int x, int y, int z) {
     	world.setBlockMetadataWithNotify(x, y, z, 1, 1 & 2);    	
     }
     
@@ -216,15 +217,18 @@ public class BlockBarrel extends BlockContainer{
 	
 	/* REDSTONE HANDLING */
 
+	@Override
 	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side){
 		return this.isProvidingWeakPower(world, x, y, z, side);
     }
 
-    public boolean canProvidePower(){
+    @Override
+	public boolean canProvidePower(){
     	return true;
     }
 
-    public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side){
+    @Override
+	public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side){
     	TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	return barrel.getRedstonePower(side);
     }

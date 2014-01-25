@@ -6,9 +6,7 @@ import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
-import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -138,23 +136,23 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 				if (isHammer && this.isItemDisplaySide(barrelEntity, forgeSide)){
 					int offsetY = 0;
 					if (barrelEntity.nStorageUpg > 0){
-						this.renderStackOnBlock(this.coreStorage, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreStorage, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
 						this.renderTextOnBlock("x"+String.valueOf(barrelEntity.nStorageUpg), forgeSide, barrelPos, 2.0F, 35.0F, offsetY + 15.0F, 255, 255, 255, 0, false);
 						offsetY += 35;
 					}
 						
 					if (barrelEntity.hasRedstone){
-						this.renderStackOnBlock(this.coreRedstone, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreRedstone, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
 						offsetY += 35;
 					}
 					
 					if (barrelEntity.hasHopper){
-						this.renderStackOnBlock(this.coreHopper, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreHopper, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
 						offsetY += 35;
 					}
 					
 					if (barrelEntity.hasEnder){
-						this.renderStackOnBlock(this.coreEnder, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
 						offsetY += 35;
 					}					
 				}
