@@ -7,10 +7,14 @@ import java.io.IOException;
 
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.network.packet.Packet3Chat;
+import net.minecraft.util.ChatMessageComponent;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
 
@@ -78,4 +82,9 @@ public class BarrelPacketHandler implements IPacketHandler {
         }
     }		
 	
+    public static void sendChat(EntityPlayer player, String msg){
+		((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
+				ChatMessageComponent.createFromText(msg), false));    	
+    }
+    
 }

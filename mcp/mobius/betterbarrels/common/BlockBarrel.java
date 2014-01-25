@@ -229,9 +229,7 @@ public class BlockBarrel extends BlockContainer{
 
     public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side){
     	TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
-    	if (barrel.hasRedstone)
-    		return 15;
-    	return 0;
+    	return barrel.getRedstonePower(side);
     }
 
     /*

@@ -14,6 +14,7 @@ import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
+import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
@@ -75,6 +76,20 @@ public class TileEntityBarrel extends TileEntity{
 		return false;
 	}
 	
+	/* REDSTONE HANDLING */
+	public int getRedstonePower(int side){
+		int[] sideSwitch = {1,0,3,2,5,4};
+		side = sideSwitch[side];
+
+		if (!this.hasRedstone) 
+			return 0;
+		else
+			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE)
+				return 15;
+			else
+				return 0;
+	}
+	
 	/* PLAYER INTERACTIONS */
 	
 	public void leftClick(EntityPlayer player){
@@ -118,6 +133,13 @@ public class TileEntityBarrel extends TileEntity{
 			if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
 			this.sideUpgrades[side.ordinal()] = UpgradeSide.STICKER;
 		}
+
+		if (type == UpgradeSide.REDSTONE){
+			if (this.hasUpgrade(UpgradeCore.REDSTONE))
+				this.sideUpgrades[side.ordinal()] = UpgradeSide.REDSTONE;
+			else
+				BarrelPacketHandler.sendChat(player, "This facade requires a redstone core update.");
+		}		
 		
 		stack.stackSize -= 1;
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
@@ -128,14 +150,12 @@ public class TileEntityBarrel extends TileEntity{
 		int type      = UpgradeCore.mapRevMeta[stack.getItemDamage()];
 
 		if (!(type == UpgradeCore.STORAGE) && this.hasUpgrade(type)){
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("Core upgrade already installed."), false));
+			BarrelPacketHandler.sendChat(player, "Core upgrade already installed.");
 			return;			
 		}		
 		
 		if (slotsused > this.getFreeSlots()){
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("Not enough upgrade slots for this upgrade. You need at least " + String.valueOf(slotsused) + " to apply this."), false));
+			BarrelPacketHandler.sendChat(player, "Not enough upgrade slots for this upgrade. You need at least " + String.valueOf(slotsused) + " to apply this.");			
 			return;
 		}
 	
@@ -161,14 +181,11 @@ public class TileEntityBarrel extends TileEntity{
 			stack.stackSize      -= 1;
 			this.levelStructural += 1;
 		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() == (this.levelStructural - 1))) {
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("Upgrade already applied."), false));				
+			BarrelPacketHandler.sendChat(player, "Upgrade already applied.");			
 		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() < this.levelStructural)) {
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("You cannot downgrade a barrel."), false));
+			BarrelPacketHandler.sendChat(player, "You cannot downgrade a barrel.");			
 		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() > this.levelStructural)) {
-			((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-					ChatMessageComponent.createFromText("You need at least an upgrade Mark " + stack.getItemDamage() + " to apply this."), false));
+			BarrelPacketHandler.sendChat(player, "You need at least an upgrade Mark " + stack.getItemDamage() + " to apply this.");
 		}
 
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
