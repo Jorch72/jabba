@@ -295,6 +295,13 @@ public class TileEntityBarrel extends TileEntity{
     public void readFromNBT(NBTTagCompound NBTTag)
     {
     	super.readFromNBT(NBTTag);
+    	
+    	// Handling of backward compatibility
+    	if(NBTTag.getInteger("version") == 2){
+    		this.readFromNBT_v2(NBTTag);
+    		return;
+    	}
+    	    	
     	this.orientation     = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
     	this.sideUpgrades    = NBTTag.getIntArray("sideUpgrades");
     	this.coreUpgrades    = this.convertArrayList(NBTTag.getIntArray("coreUpgrades"));
@@ -302,6 +309,46 @@ public class TileEntityBarrel extends TileEntity{
     	this.hasRedstone     = NBTTag.getBoolean("redstone");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
+
+	/* V2 COMPATIBILITY METHODS */
+	
+	private void readFromNBT_v2(NBTTagCompound NBTTag){
+    	int     blockOrientation = NBTTag.getInteger("barrelOrient");
+    	int     upgradeCapacity  = NBTTag.getInteger("upgradeCapacity");
+    	int blockOriginalOrient  = NBTTag.hasKey("barrelOrigOrient") ? NBTTag.getInteger("barrelOrigOrient") : blockOrientation;
+    	StorageLocal storage = new StorageLocal();
+    	storage.readTagCompound(NBTTag.getCompoundTag("storage"));    	
+    	
+    	// We fix the labels and orientation
+    	this.orientation = this.convertOrientationFlagToForge(blockOriginalOrient).get(0);
+    	for (ForgeDirection s : this.convertOrientationFlagToForge(blockOrientation))
+    		this.sideUpgrades[s.ordinal()] = UpgradeSide.STICKER;
+    	this.sideUpgrades[this.orientation.ordinal()] = UpgradeSide.FRONT;
+    	
+    	// We fix the structural and core upgrades
+    	this.levelStructural = upgradeCapacity;
+    	int freeSlots = this.getFreeSlots();
+    	for (int i = 0; i < freeSlots; i++){
+			this.coreUpgrades.add(UpgradeCore.STORAGE);
+			this.storage.addStorageUpgrade();
+    	}
+
+    	// Fix for the content
+    	this.storage.setStoredItemType(storage.getItem(), storage.getAmount());
+    	this.storage.setGhosting(storage.isGhosting());
+    	
+    	//this.worldObj.setBlockMetadataWithNotify(this.xCoord, this.yCoord, this.zCoord, 1, 1 & 2);
+	}
+	
+	private ArrayList<ForgeDirection> convertOrientationFlagToForge(int flags){
+		ArrayList<ForgeDirection> directions = new ArrayList<ForgeDirection>();
+		for (int i = 0; i<4; i++)
+			if (((1 << i) & flags) != 0)
+				directions.add(ForgeDirection.getOrientation(i+2));
+		return directions;
+	}	
+
+	/* END OF V2 COMPATIBILITY METHODS */		
 	
     @Override
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
