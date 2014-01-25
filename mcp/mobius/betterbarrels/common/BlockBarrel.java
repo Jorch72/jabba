@@ -31,8 +31,7 @@ public class BlockBarrel extends BlockContainer{
 	private static Icon text_label = null;
 	private static Icon text_blank = null;	
 	
-    public BlockBarrel(int par1)
-    {
+    public BlockBarrel(int par1){
         super(par1, Material.wood);
         this.setHardness(2.0F);
         this.setResistance(5.0F);
@@ -46,8 +45,7 @@ public class BlockBarrel extends BlockContainer{
 	}
 	
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
-    {
+    public void registerIcons(IconRegister par1IconRegister){
     	BlockBarrel.text_side  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_side");
     	BlockBarrel.text_top   = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_top");
     	BlockBarrel.text_label = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_label");
@@ -56,8 +54,7 @@ public class BlockBarrel extends BlockContainer{
     
     @Override
     @SideOnly(Side.CLIENT)
-    public Icon getIcon(int side, int metadata)
-    {
+    public Icon getIcon(int side, int metadata){
     	// Meta is not equal to 0 if the TE is properly set and we don't want normal block rendering
     	if (metadata != 0)
     		return text_blank;
@@ -78,8 +75,7 @@ public class BlockBarrel extends BlockContainer{
     }
     
     @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack par6ItemStack) 
-    {
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack par6ItemStack){
     	// We get the orientation and check if the TE is already properly created.
     	// If so we set the entity value to the correct orientation and set the block meta to 1 to kill the normal block rendering.
     	
@@ -87,7 +83,6 @@ public class BlockBarrel extends BlockContainer{
         TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
         
         if (barrelEntity != null){
-        	world.setBlockMetadataWithNotify(x, y, z, 1, 1 & 2);
 	        switch (barrelOrientation){
 	        	case 0:
 	        		barrelEntity.orientation = ForgeDirection.NORTH;
@@ -107,8 +102,7 @@ public class BlockBarrel extends BlockContainer{
     }
     
     @Override
-    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player)
-    {
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player){
         if (!world.isRemote){
             TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
             ((TileEntityBarrel)tileEntity).leftClick(player);
@@ -155,8 +149,7 @@ public class BlockBarrel extends BlockContainer{
 	}
 	
 	@Override
-    public void breakBlock(World world, int x, int y, int z, int par5, int par6)
-    {
+    public void breakBlock(World world, int x, int y, int z, int par5, int par6){
 
     	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	
