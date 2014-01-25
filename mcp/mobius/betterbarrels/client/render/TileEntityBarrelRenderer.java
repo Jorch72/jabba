@@ -147,6 +147,16 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 						this.renderStackOnBlock(this.coreRedstone, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
 						offsetY += 35;
 					}
+					
+					if (barrelEntity.hasHopper){
+						this.renderStackOnBlock(this.coreHopper, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						offsetY += 35;
+					}
+					
+					if (barrelEntity.hasEnder){
+						this.renderStackOnBlock(this.coreEnder, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						offsetY += 35;
+					}					
 				}
 				
 				//TODO : Desactivated for speed

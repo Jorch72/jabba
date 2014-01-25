@@ -8,13 +8,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class Packet0x05CoreUpdate {
 	public byte header;
 	public int  x,y,z;
-	public byte  nStorageUpg;
-	public boolean hasRedstone;
+	public byte  nStorageUpg = 0;
+	public boolean hasRedstone = false;
+	public boolean hasHopper   = false;
+	public boolean hasEnder    = false;
 	public ArrayList<Integer> upgrades = new ArrayList<Integer>();
 
 	public Packet0x05CoreUpdate(Packet250CustomPayload packet){
@@ -25,14 +28,23 @@ public class Packet0x05CoreUpdate {
 			this.x           = inputStream.readInt();
 			this.y           = inputStream.readInt();
 			this.z           = inputStream.readInt();
-			this.nStorageUpg = inputStream.readByte();
-			this.hasRedstone = inputStream.readBoolean();
 			int size         = inputStream.readInt();
 
 			for (int i = 0; i < size; i++)
 				this.upgrades.add(inputStream.readInt());
 			
 		} catch (IOException e){}
+		
+		for (Integer i : this.upgrades){
+			if (i == UpgradeCore.STORAGE)
+				this.nStorageUpg += 1;
+			else if (i == UpgradeCore.ENDER)
+				this.hasEnder = true;
+			else if (i == UpgradeCore.HOPPER)
+				this.hasHopper = true;
+			else if (i == UpgradeCore.REDSTONE)
+				this.hasRedstone = true;
+		}
 	}
 	
 	public static Packet250CustomPayload create(TileEntityBarrel barrel){
@@ -46,8 +58,6 @@ public class Packet0x05CoreUpdate {
 			outputStream.writeInt(barrel.xCoord);
 			outputStream.writeInt(barrel.yCoord);
 			outputStream.writeInt(barrel.zCoord);
-			outputStream.writeByte(barrel.nStorageUpg);
-			outputStream.writeBoolean(barrel.hasRedstone);
 			outputStream.writeInt(barrel.coreUpgrades.size());
 			for (Integer i : barrel.coreUpgrades)
 				outputStream.writeInt(i.intValue());

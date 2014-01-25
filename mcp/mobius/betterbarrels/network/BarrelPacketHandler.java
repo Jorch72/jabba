@@ -51,6 +51,8 @@ public class BarrelPacketHandler implements IPacketHandler {
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				barrel.coreUpgrades = packetCast.upgrades;
 				barrel.hasRedstone  = packetCast.hasRedstone;
+				barrel.hasHopper    = packetCast.hasHopper;
+				barrel.hasEnder     = packetCast.hasEnder;
 				barrel.nStorageUpg  = packetCast.nStorageUpg;
 			}	
 			else if (header == 0x06){

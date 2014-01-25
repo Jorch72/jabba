@@ -50,7 +50,8 @@ public class TileEntityBarrel extends TileEntity{
 	public int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
 	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
 	public boolean hasRedstone        = false;
-	public boolean hasHopper          = false;	
+	public boolean hasHopper          = false;
+	public boolean hasEnder           = false;
 	public byte    nStorageUpg        = 0;
 	
 	/* SLOT HANDLING */
@@ -365,6 +366,7 @@ public class TileEntityBarrel extends TileEntity{
         NBTTag.setInteger("structural",    this.levelStructural);
         NBTTag.setBoolean("redstone",      this.hasRedstone);
         NBTTag.setBoolean("hopper",        this.hasHopper);
+        NBTTag.setBoolean("ender",         this.hasEnder);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
         NBTTag.setByte("nStorageUpg",   this.nStorageUpg);
     }  	
@@ -386,6 +388,7 @@ public class TileEntityBarrel extends TileEntity{
     	this.levelStructural = NBTTag.getInteger("structural");
     	this.hasRedstone     = NBTTag.getBoolean("redstone");
     	this.hasHopper       = NBTTag.getBoolean("hopper");
+    	this.hasEnder        = NBTTag.getBoolean("ender");
     	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
