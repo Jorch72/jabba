@@ -73,6 +73,10 @@ public class BlockBarrel extends BlockContainer{
     		return text_side;    		
     }
     
+    public void onBlockAdded(World world, int x, int y, int z) {
+    	world.setBlockMetadataWithNotify(x, y, z, 1, 1 & 2);    	
+    }
+    
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack par6ItemStack) 
     {
