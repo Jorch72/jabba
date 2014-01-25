@@ -163,13 +163,21 @@ public class TileEntityBarrel extends TileEntity{
 			} else if (this.coreUpgrades.size() > 0) {
 				int newMaxStoredItems = (this.storage.getMaxStacks() - 64) * this.storage.getItem().getMaxStackSize();
 				if (this.storage.getAmount() > newMaxStoredItems)
-					BarrelPacketHandler.sendChat(player, "Please remove some stacks first.");	
+					
+					BarrelPacketHandler.sendChat(player, "Please remove some stacks first.");
+				
 				else{
 					this.coreUpgrades.remove(0);
 					ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[UpgradeCore.STORAGE], 1, UpgradeCore.mapMeta[UpgradeCore.STORAGE]);
 					this.dropItemInWorld(player, droppedStack , 0.02);
 					this.storage.rmStorageUpgrade();
 				}
+				
+			} else if (this.levelStructural > 0){
+				
+    			ItemStack droppedStack = new ItemStack(mod_BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
+				this.dropItemInWorld(player, droppedStack , 0.02);
+				this.levelStructural -= 1;				
 				
 			} else {
 				BarrelPacketHandler.sendChat(player, "Bonk !");				
@@ -178,6 +186,7 @@ public class TileEntityBarrel extends TileEntity{
 		
 		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);		
 	}
