@@ -51,6 +51,7 @@ public class TileEntityBarrel extends TileEntity{
 	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
 	public boolean hasRedstone        = false;
 	public boolean hasHopper          = false;	
+	public byte    nStorageUpg        = 0;
 	
 	/* SLOT HANDLING */
 	
@@ -171,6 +172,7 @@ public class TileEntityBarrel extends TileEntity{
 					ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[UpgradeCore.STORAGE], 1, UpgradeCore.mapMeta[UpgradeCore.STORAGE]);
 					this.dropItemInWorld(player, droppedStack , 0.02);
 					this.storage.rmStorageUpgrade();
+					this.nStorageUpg -= 1;
 				}
 				
 			} else if (this.levelStructural > 0){
@@ -236,6 +238,7 @@ public class TileEntityBarrel extends TileEntity{
 		if (type == UpgradeCore.STORAGE){
 			this.coreUpgrades.add(UpgradeCore.STORAGE);
 			this.storage.addStorageUpgrade();
+			this.nStorageUpg += 1;
 			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);				
 		}
 
@@ -363,6 +366,7 @@ public class TileEntityBarrel extends TileEntity{
         NBTTag.setBoolean("redstone",      this.hasRedstone);
         NBTTag.setBoolean("hopper",        this.hasHopper);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
+        NBTTag.setByte("nStorageUpg",   this.nStorageUpg);
     }  	
 
 	@Override	
@@ -382,6 +386,7 @@ public class TileEntityBarrel extends TileEntity{
     	this.levelStructural = NBTTag.getInteger("structural");
     	this.hasRedstone     = NBTTag.getBoolean("redstone");
     	this.hasHopper       = NBTTag.getBoolean("hopper");
+    	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
 
@@ -408,6 +413,7 @@ public class TileEntityBarrel extends TileEntity{
     	for (int i = 0; i < freeSlots; i++){
 			this.coreUpgrades.add(UpgradeCore.STORAGE);
 			this.storage.addStorageUpgrade();
+			this.nStorageUpg += 1;
     	}
 
     	// Fix for the content

@@ -2,6 +2,7 @@ package mcp.mobius.betterbarrels.client.render;
 
 import org.lwjgl.opengl.GL11;
 
+import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -23,8 +24,9 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
     protected RenderBlocks renderBlocks = new RenderBlocks();	
     protected RenderItem   renderItem   = new RenderItem();
 
-    protected TextureManager texManager    = Minecraft.getMinecraft().renderEngine;
-    protected FontRenderer   renderFont    = Minecraft.getMinecraft().fontRenderer;
+    protected Minecraft      mc            = Minecraft.getMinecraft();
+    protected TextureManager texManager    = mc.renderEngine;
+    protected FontRenderer   renderFont    = mc.fontRenderer;
 	
     protected static ResourceLocation itemsSheetRes    = new ResourceLocation("jabba", "textures/sheets/items.png");
     protected static ResourceLocation blocksSheetRes   = new ResourceLocation("jabba", "textures/sheets/blocks.png");

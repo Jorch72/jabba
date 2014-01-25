@@ -5,8 +5,11 @@ import java.util.HashMap;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -16,6 +19,11 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 
 	public static HashMap<TileEntityBarrel, Coordinates> postponedSigns = new HashMap<TileEntityBarrel, Coordinates>();
 	public static TileEntityBarrelRenderer _instance = null;
+	
+    protected static ItemStack coreStorage  = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 0);
+    protected static ItemStack coreEnder    = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 1);
+    protected static ItemStack coreRedstone = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 2);
+    protected static ItemStack coreHopper   = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 3);	
 	
     //protected int textureSideRef = Minecraft.getMinecraft().renderEngine.getTexture("/mcp/mobius/betterbarrels/textures/block.png");
     //protected int textureIconRef = Minecraft.getMinecraft().renderEngine.getTexture("/mcp/mobius/betterbarrels/textures/items.png");
@@ -107,6 +115,8 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 
         	//this.renderPlasma(ForgeDirection.SOUTH, barrelPos);	         	
 
+        	boolean isHammer = this.mc.thePlayer.getHeldItem() != null ? this.mc.thePlayer.getHeldItem().getItem() instanceof ItemBarrelHammer ? true : false : false;
+        	
 	        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){					
 				this.setLight(barrelEntity, forgeSide);
 					
@@ -124,6 +134,20 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 				
 				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.REDSTONE)
 					this.renderIconOnBlock(10, forgeSide, barrelPos, 8F, 64F, 64F, -0.01F);
+				
+				if (isHammer && this.isItemDisplaySide(barrelEntity, forgeSide)){
+					int offsetY = 0;
+					if (barrelEntity.nStorageUpg > 0){
+						this.renderStackOnBlock(this.coreStorage, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderTextOnBlock("x"+String.valueOf(barrelEntity.nStorageUpg), forgeSide, barrelPos, 2.0F, 35.0F, offsetY + 15.0F, 255, 255, 255, 0, false);
+						offsetY += 35;
+					}
+						
+					if (barrelEntity.hasRedstone){
+						this.renderStackOnBlock(this.coreRedstone, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						offsetY += 35;
+					}
+				}
 				
 				//TODO : Desactivated for speed
 				/*
