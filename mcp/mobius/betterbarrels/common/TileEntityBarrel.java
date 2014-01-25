@@ -321,7 +321,9 @@ public class TileEntityBarrel extends TileEntity{
     	
     	// We fix the labels and orientation
     	this.orientation = this.convertOrientationFlagToForge(blockOriginalOrient).get(0);
-    	for (ForgeDirection s : this.convertOrientationFlagToForge(blockOrientation))
+    	
+    	ArrayList<ForgeDirection> stickers = this.convertOrientationFlagToForge(blockOrientation);
+    	for (ForgeDirection s : stickers)
     		this.sideUpgrades[s.ordinal()] = UpgradeSide.STICKER;
     	this.sideUpgrades[this.orientation.ordinal()] = UpgradeSide.FRONT;
     	
@@ -334,8 +336,9 @@ public class TileEntityBarrel extends TileEntity{
     	}
 
     	// Fix for the content
-    	this.storage.setStoredItemType(storage.getItem(), storage.getAmount());
     	this.storage.setGhosting(storage.isGhosting());
+    	this.storage.setStoredItemType(storage.getItem(), storage.getAmount());
+
     	
     	//this.worldObj.setBlockMetadataWithNotify(this.xCoord, this.yCoord, this.zCoord, 1, 1 & 2);
 	}
