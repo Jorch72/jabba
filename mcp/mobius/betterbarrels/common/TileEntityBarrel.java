@@ -213,8 +213,11 @@ public class TileEntityBarrel extends TileEntity{
 		if (type == UpgradeSide.REDSTONE){
 			if (this.hasUpgrade(UpgradeCore.REDSTONE))
 				this.sideUpgrades[side.ordinal()] = UpgradeSide.REDSTONE;
-			else
+			else{
 				BarrelPacketHandler.sendChat(player, "This facade requires a redstone core update.");
+				return;
+			}
+			
 		}		
 		
 		stack.stackSize -= 1;
