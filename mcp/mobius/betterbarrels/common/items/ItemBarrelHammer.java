@@ -1,10 +1,14 @@
 package mcp.mobius.betterbarrels.common.items;
 
+import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.Item;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
 public class ItemBarrelHammer extends Item {
+	
 	public ItemBarrelHammer(int id){
 		super(id);
         this.setMaxStackSize(1); 		
@@ -15,4 +19,16 @@ public class ItemBarrelHammer extends Item {
     {
         return true;
     }
+	
+    @Override    
+    public void registerIcons(IconRegister par1IconRegister)
+    {
+    	this.itemIcon    = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "hammer");
+    }    
+    
+    @Override
+    public Icon getIconFromDamage(int dmg)
+    {
+    	return this.itemIcon;
+    }  	
 }
