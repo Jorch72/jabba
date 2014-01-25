@@ -6,6 +6,7 @@ import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -120,6 +121,9 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 				//TODO : Simplified version for speed
 				if (barrelEntity.storage.isGhosting() && this.isItemDisplaySide(barrelEntity, forgeSide))
 					this.renderIconOnBlock(8, forgeSide, barrelPos, 2F, 223F, 215F, -0.01F);				
+				
+				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.REDSTONE)
+					this.renderIconOnBlock(10, forgeSide, barrelPos, 8F, 64F, 64F, -0.01F);
 				
 				//TODO : Desactivated for speed
 				/*

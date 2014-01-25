@@ -76,16 +76,6 @@ public class TileEntityBarrel extends TileEntity{
 		return false;
 	}
 	
-	@Override
-	public void onInventoryChanged(){
-		super.onInventoryChanged();
-
-		if (this.hasUpgrade(UpgradeCore.REDSTONE))
-			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));		
-	}
-	
-		
-	
 	/* REDSTONE HANDLING */
 	public int getRedstonePower(int side){
 		int[] sideSwitch = {1,0,3,2,5,4};
@@ -326,6 +316,16 @@ public class TileEntityBarrel extends TileEntity{
         return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, var1);
     }	
 	
+    /* OTHER */
+    
+	@Override
+	public void onInventoryChanged(){
+		super.onInventoryChanged();
+
+		if (this.hasUpgrade(UpgradeCore.REDSTONE))
+			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));		
+	}    
+    
     private int[] convertInts(List<Integer> integers)
     {
         int[] ret = new int[integers.size()];
