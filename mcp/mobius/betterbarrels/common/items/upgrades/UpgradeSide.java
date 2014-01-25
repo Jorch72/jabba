@@ -30,5 +30,13 @@ public class UpgradeSide {
 		STICKER,
 		HOPPER,
 		REDSTONE,
-	};		
+	};
+	
+	public static int[] mapReq = {
+		UpgradeCore.NONE,
+		UpgradeCore.NONE,
+		UpgradeCore.NONE,
+		UpgradeCore.HOPPER,
+		UpgradeCore.REDSTONE
+	};
 }

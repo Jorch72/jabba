@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
@@ -49,6 +50,7 @@ public class TileEntityBarrel extends TileEntity{
 	public int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
 	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
 	public boolean hasRedstone        = false;
+	public boolean hasHopper          = false;	
 	
 	/* SLOT HANDLING */
 	
@@ -74,6 +76,13 @@ public class TileEntityBarrel extends TileEntity{
 		for (Integer i : this.coreUpgrades)
 			if (i == upgrade) return true;
 		return false;
+	}
+	
+	public int getLastNoneStorageUpgradeIndex(){
+		for (int i = coreUpgrades.size() - 1; i >= 0; i--)
+			if ((this.coreUpgrades.get(i) != UpgradeCore.STORAGE) && (this.coreUpgrades.get(i) != UpgradeCore.NONE))
+				return i;
+		return -1;
 	}
 	
 	/* REDSTONE HANDLING */
@@ -118,12 +127,67 @@ public class TileEntityBarrel extends TileEntity{
         else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeCore)
         	this.applyCoreUpgrade(stack, player);		
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemUpgradeStructural))
-			this.applyUpgradeStructural(stack, player);		
+			this.applyUpgradeStructural(stack, player);
+		else if (player.isSneaking() && (stack.getItem() instanceof ItemBarrelHammer))
+			this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
 		else
 			this.manualStackAdd(player);
 	}
 
+	
 	/* UPGRADE ACTIONS */
+
+	private void removeUpgrade(ItemStack stack, EntityPlayer player, ForgeDirection side){
+		int type = this.sideUpgrades[side.ordinal()]; 
+		
+		if (type != UpgradeSide.NONE && type != UpgradeSide.FRONT){
+			this.dropSideUpgrade(player, side);
+		} else {
+			int indexLastUpdate = this.getLastNoneStorageUpgradeIndex();
+			if (indexLastUpdate != -1){
+
+				int coreType = this.coreUpgrades.get(indexLastUpdate);
+				this.coreUpgrades.remove(indexLastUpdate);
+				ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[coreType], 1, UpgradeCore.mapMeta[coreType]);
+				this.dropItemInWorld(player, droppedStack , 0.02);
+				
+				this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
+				this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
+				
+				for (ForgeDirection s : ForgeDirection.VALID_DIRECTIONS){
+					int sideType = this.sideUpgrades[s.ordinal()];
+					if ((UpgradeSide.mapReq[sideType] != UpgradeCore.NONE) && (!this.hasUpgrade(UpgradeSide.mapReq[sideType])))
+						this.dropSideUpgrade(player, s);
+				}
+
+			} else if (this.coreUpgrades.size() > 0) {
+				int newMaxStoredItems = (this.storage.getMaxStacks() - 64) * this.storage.getItem().getMaxStackSize();
+				if (this.storage.getAmount() > newMaxStoredItems)
+					BarrelPacketHandler.sendChat(player, "Please remove some stacks first.");	
+				else{
+					this.coreUpgrades.remove(0);
+					ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[UpgradeCore.STORAGE], 1, UpgradeCore.mapMeta[UpgradeCore.STORAGE]);
+					this.dropItemInWorld(player, droppedStack , 0.02);
+					this.storage.rmStorageUpgrade();
+				}
+				
+			} else {
+				BarrelPacketHandler.sendChat(player, "Bonk !");				
+			}
+		}
+		
+		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);		
+	}
+	
+	private void dropSideUpgrade(EntityPlayer player, ForgeDirection side){
+		int type = this.sideUpgrades[side.ordinal()]; 		
+		ItemStack droppedStack = new ItemStack(UpgradeSide.mapItem[type], 1, UpgradeSide.mapMeta[type]);
+		this.dropItemInWorld(player, droppedStack , 0.02);
+		this.sideUpgrades[side.ordinal()] = UpgradeSide.NONE;
+	}
 	
 	private void applySideUpgrade(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		int type      = UpgradeSide.mapRevMeta[stack.getItemDamage()];
@@ -288,6 +352,7 @@ public class TileEntityBarrel extends TileEntity{
         NBTTag.setIntArray("coreUpgrades", this.convertInts(this.coreUpgrades));
         NBTTag.setInteger("structural",    this.levelStructural);
         NBTTag.setBoolean("redstone",      this.hasRedstone);
+        NBTTag.setBoolean("hopper",        this.hasHopper);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
     }  	
 
@@ -307,6 +372,7 @@ public class TileEntityBarrel extends TileEntity{
     	this.coreUpgrades    = this.convertArrayList(NBTTag.getIntArray("coreUpgrades"));
     	this.levelStructural = NBTTag.getInteger("structural");
     	this.hasRedstone     = NBTTag.getBoolean("redstone");
+    	this.hasHopper       = NBTTag.getBoolean("hopper");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     }	
 

@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 public class ItemBarrelHammer extends Item {
 	public ItemBarrelHammer(int id){
 		super(id);
+        this.setMaxStackSize(1); 		
 	}
 	
 	@Override

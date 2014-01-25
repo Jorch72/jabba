@@ -218,6 +218,12 @@ public class StorageLocal implements IBarrelStorage{
 		this.maxstacks    = this.basestacks * (this.upgCapacity + 1);
 	}
 	
+	@Override
+	public void rmStorageUpgrade(){
+		this.upgCapacity -= 1;
+		this.maxstacks    = this.basestacks * (this.upgCapacity + 1);
+	}	
+	
 	// ISidedInventory Interface //
 	@Override
 	public int[] getAccessibleSlotsFromSide(int var1) {

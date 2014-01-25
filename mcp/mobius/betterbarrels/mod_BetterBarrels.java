@@ -12,12 +12,14 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.BlockBarrel;
 import mcp.mobius.betterbarrels.common.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -30,7 +32,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid=mod_BetterBarrels.modid, name="JABBA", version="1.0.3", dependencies="after:Waila")
+@Mod(modid=mod_BetterBarrels.modid, name="JABBA", version="1.1.0", dependencies="after:Waila;after:NotEnoughItems")
 @NetworkMod(channels = {"JABBA"}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 
 public class mod_BetterBarrels {
@@ -61,6 +63,7 @@ public class mod_BetterBarrels {
 	private static int itemTuningForkID = -1;	
 	private static int itemBSpaceUpgID = -1;
 	private static int itemLockingPlanksID = -1;
+	private static int itemHammerID = -1;
 	
 	public static boolean fullBarrelTexture  = true;
 	public static boolean highRezTexture     = true;
@@ -77,6 +80,7 @@ public class mod_BetterBarrels {
 	public static Item itemTuningFork    = null;
 	public static Item itemBSpaceUpg     = null;	
 	public static Item itemLockingPlanks = null;
+	public static Item itemHammer = null;
 	
 	public static int RENDER_SHELF = -1;
 	
@@ -101,6 +105,7 @@ public class mod_BetterBarrels {
 			itemBSpaceUpgID     = config.get("item",   "BSpaceUpg",       3505).getInt();
 			itemLockingPlanksID = config.get("item",   "LockingPlanks",   3506).getInt();	
 			itemUpgradeCoreID   = config.get("item",   "UpgradeCore",     3507).getInt();
+			itemHammerID        = config.get("item",   "Hammer",          3508).getInt();			
 			
 			fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
@@ -132,9 +137,11 @@ public class mod_BetterBarrels {
 		itemUpgradeCore       = new ItemUpgradeCore(itemUpgradeCoreID);
 		itemUpgradeSide       = new ItemUpgradeSide(itemUpgradeSideID);
 		itemMover             = new ItemBarrelMover(itemMoverID);
+		itemHammer            = new ItemBarrelHammer(itemHammerID);
 		
 		LanguageRegistry.addName(blockBarrel, "Better Barrel");
-		LanguageRegistry.addName(new ItemStack(itemMover,0,0),   moverName);
+		LanguageRegistry.addName(new ItemStack(itemMover,0,0),    moverName);
+		LanguageRegistry.addName(new ItemStack(itemHammer,0,0),   "Barrel Hammer");
 
 		//blockMiniBarrel     = new BlockMiniBarrel(miniBarrelID);
 		//blockBarrelShelf    = new BlockBarrelShelf(barrelShelfID);		
@@ -257,6 +264,8 @@ public class mod_BetterBarrels {
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		if (Loader.isModLoaded("NotEnoughItems"))
+			BBNeiTooltip.registerHandler();;
 	}	
 
 	//@ServerStopping

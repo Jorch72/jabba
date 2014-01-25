@@ -46,5 +46,12 @@ public class UpgradeCore {
 		2,
 		1,
 		1
-	};	    
+	};	 
+    
+    public static String[] mapMetaDescript = {
+    	"Increases the storage capacity by 64 stacks",
+    	"Turns the barrel into a BSpace barrel",
+    	"Allows the barrel to emit redstone",
+    	"Allows the barrel to automatically output"
+    };
 }
