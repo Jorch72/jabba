@@ -247,6 +247,16 @@ public class TileEntityBarrel extends TileEntity{
 			this.coreUpgrades.add(UpgradeCore.REDSTONE);
 			this.hasRedstone = true;
 		}		
+
+		if (type == UpgradeCore.HOPPER){
+			this.coreUpgrades.add(UpgradeCore.HOPPER);
+			this.hasHopper = true;
+		}
+		
+		if (type == UpgradeCore.ENDER){
+			this.coreUpgrades.add(UpgradeCore.ENDER);
+			this.hasEnder = true;
+		}		
 		
 		stack.stackSize -= 1;
 		this.onInventoryChanged();
