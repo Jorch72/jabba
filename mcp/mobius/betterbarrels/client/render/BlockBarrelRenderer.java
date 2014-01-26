@@ -4,11 +4,14 @@ import org.lwjgl.opengl.GL11;
 
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
+import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
@@ -112,13 +115,9 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		}		
 		
 		int worldHeight = world.getHeight();
-		BlockBarrel block      = (BlockBarrel)tile;		
+		BlockBarrel block       = (BlockBarrel)tile;	
+		TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
 		Tessellator tessellator = Tessellator.instance;
-		//tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x-1, y, z));
-		//tessellator.setBrightness(world.getLightBrightnessForSkyBlocks(x, y, z, 15));
-		//tessellator.setBrightness(world.getLightBrightnessForSkyBlocks(x,y,z, 7));
-		//System.out.printf("%s\n", block.getLightValue(world, x, y, z));
-		//tessellator.setBrightness(0xFFFFFF);
 		
 		Icon iconSide, iconTop, iconLabel;
 		iconSide  = BlockBarrel.text_side;
@@ -140,6 +139,35 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		double minYLabel = iconLabel.getMinV();
 		double maxYLabel = iconLabel.getMaxV();			
 		
+		double[] minX = new double[6];
+		double[] maxX = new double[6];
+		double[] minY = new double[6];
+		double[] maxY = new double[6];
+		
+		for (int side = 0; side < 6; side++){
+			if (side == 0 || side == 1){
+				minX[side] = minXTop;
+				maxX[side] = maxXTop;
+				minY[side] = minYTop;
+				maxY[side] = maxYTop;				
+			}
+			else if (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER){
+				minX[side] = minXLabel;
+				maxX[side] = maxXLabel;
+				minY[side] = minYLabel;
+				maxY[side] = maxYLabel;
+			}
+			
+			else {
+				minX[side] = minXSide;
+				maxX[side] = maxXSide;
+				minY[side] = minYSide;
+				maxY[side] = maxYSide;				
+			}
+				
+		}
+		
+		
 		double xMin = x, xMax = x + 1;
 		double yMin = y, yMax = y + 1;
 		double zMin = z, zMax = z + 1;		
@@ -160,55 +188,55 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		if (renderSide[0])
 		{ // DOWN
 			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y - 1, z));
-			tessellator.addVertexWithUV(xMin, yMin, zMax, minXTop, minYTop);
-			tessellator.addVertexWithUV(xMin, yMin, zMin, minXTop, maxYTop);
-			tessellator.addVertexWithUV(xMax, yMin, zMin, maxXTop, maxYTop);
-			tessellator.addVertexWithUV(xMax, yMin, zMax, maxXTop, minYTop);
+			tessellator.addVertexWithUV(xMin, yMin, zMax, minX[0], minY[0]);
+			tessellator.addVertexWithUV(xMin, yMin, zMin, minX[0], maxY[0]);
+			tessellator.addVertexWithUV(xMax, yMin, zMin, maxX[0], maxY[0]);
+			tessellator.addVertexWithUV(xMax, yMin, zMax, maxX[0], minY[0]);
 		}
 		
 		if (renderSide[1])
 		{ // UP
 			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y + 1, z));
-			tessellator.addVertexWithUV(xMin, yMax, zMin, minXTop, minYTop);
-			tessellator.addVertexWithUV(xMin, yMax, zMax, minXTop, maxYTop);
-			tessellator.addVertexWithUV(xMax, yMax, zMax, maxXTop, maxYTop);
-			tessellator.addVertexWithUV(xMax, yMax, zMin, maxXTop, minYTop);
+			tessellator.addVertexWithUV(xMin, yMax, zMin, minX[1], minY[1]);
+			tessellator.addVertexWithUV(xMin, yMax, zMax, minX[1], maxY[1]);
+			tessellator.addVertexWithUV(xMax, yMax, zMax, maxX[1], maxY[1]);
+			tessellator.addVertexWithUV(xMax, yMax, zMin, maxX[1], minY[1]);
 		}
 		
 		if (renderSide[2])
 		{
 			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z - 1));
-			tessellator.addVertexWithUV(xMax, yMax, zMin, minXSide, minYSide);
-			tessellator.addVertexWithUV(xMax, yMin, zMin, minXSide, maxYSide);
-			tessellator.addVertexWithUV(xMin, yMin, zMin, maxXSide, maxYSide);
-			tessellator.addVertexWithUV(xMin, yMax, zMin, maxXSide, minYSide);
+			tessellator.addVertexWithUV(xMax, yMax, zMin, minX[2], minY[2]);
+			tessellator.addVertexWithUV(xMax, yMin, zMin, minX[2], maxY[2]);
+			tessellator.addVertexWithUV(xMin, yMin, zMin, maxX[2], maxY[2]);
+			tessellator.addVertexWithUV(xMin, yMax, zMin, maxX[2], minY[2]);
 		}
 		
 		if (renderSide[3])
 		{
-			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z - 1));			
-			tessellator.addVertexWithUV(xMin, yMax, zMax, minXSide, minYSide);
-			tessellator.addVertexWithUV(xMin, yMin, zMax, minXSide, maxYSide);
-			tessellator.addVertexWithUV(xMax, yMin, zMax, maxXSide, maxYSide);
-			tessellator.addVertexWithUV(xMax, yMax, zMax, maxXSide, minYSide);
+			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z + 1));			
+			tessellator.addVertexWithUV(xMin, yMax, zMax, minX[3], minY[3]);
+			tessellator.addVertexWithUV(xMin, yMin, zMax, minX[3], maxY[3]);
+			tessellator.addVertexWithUV(xMax, yMin, zMax, maxX[3], maxY[3]);
+			tessellator.addVertexWithUV(xMax, yMax, zMax, maxX[3], minY[3]);
 		}
 		
 		if (renderSide[4])
 		{
 			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x - 1 , y, z));			
-			tessellator.addVertexWithUV(xMin, yMin, zMax, minXLabel, maxYLabel);
-			tessellator.addVertexWithUV(xMin, yMax, zMax, minXLabel, minYLabel);
-			tessellator.addVertexWithUV(xMin, yMax, zMin, maxXLabel, minYLabel);
-			tessellator.addVertexWithUV(xMin, yMin, zMin, maxXLabel, maxYLabel);
+			tessellator.addVertexWithUV(xMin, yMin, zMax, minX[4], maxY[4]);
+			tessellator.addVertexWithUV(xMin, yMax, zMax, minX[4], minY[4]);
+			tessellator.addVertexWithUV(xMin, yMax, zMin, maxX[4], minY[4]);
+			tessellator.addVertexWithUV(xMin, yMin, zMin, maxX[4], maxY[4]);
 		}
 		
 		if (renderSide[5])
 		{
 			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x + 1 , y, z));			
-			tessellator.addVertexWithUV(xMax, yMin, zMin, minXSide, minYSide);
-			tessellator.addVertexWithUV(xMax, yMax, zMin, minXSide, maxYSide);
-			tessellator.addVertexWithUV(xMax, yMax, zMax, maxXSide, maxYSide);
-			tessellator.addVertexWithUV(xMax, yMin, zMax, maxXSide, minYSide);
+			tessellator.addVertexWithUV(xMax, yMin, zMin, minX[5], maxY[5]);
+			tessellator.addVertexWithUV(xMax, yMax, zMin, minX[5], minY[5]);
+			tessellator.addVertexWithUV(xMax, yMax, zMax, maxX[5], minY[5]);
+			tessellator.addVertexWithUV(xMax, yMin, zMax, maxX[5], maxY[5]);
 		}
 		
 		return true;
