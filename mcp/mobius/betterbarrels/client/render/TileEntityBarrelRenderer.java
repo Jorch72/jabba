@@ -89,17 +89,20 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         	for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){
         		int textureIndex = 0;
             	if (this.isItemDisplaySide(barrelEntity, forgeSide))
-            		textureIndex = 16*textureUpgrade + 1;  		
+            		if ((forgeSide == ForgeDirection.UP) || (forgeSide == ForgeDirection.DOWN))
+            			textureIndex = 16*textureUpgrade + 5;
+            		else
+            			textureIndex = 16*textureUpgrade + 6;
             	else if ((forgeSide == ForgeDirection.UP) || (forgeSide == ForgeDirection.DOWN))
             		textureIndex = 16*textureUpgrade;
             	else
             		textureIndex = 16*textureUpgrade + 2;
             	
             	this.setLight(barrelEntity, forgeSide);
-            	this.renderBarrelSide(textureIndex, forgeSide, barrelPos);            	
+            	this.renderBarrelSide(textureIndex, forgeSide, orientation, barrelPos);            	
             	
-            	if (this.isItemDisplaySide(barrelEntity, forgeSide))
-            		this.renderBarrelSide(3, forgeSide, barrelPos);
+            	//if (this.isItemDisplaySide(barrelEntity, forgeSide))
+            	//	this.renderBarrelSide(3, forgeSide, barrelPos);
 
             	
             	//TODO : Desactivated for speed testing
@@ -120,42 +123,45 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 					
 				if (barrelEntity.storage.hasItem() &&  this.isItemDisplaySide(barrelEntity, forgeSide))
 				{
-					this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, barrelPos, 8.0F, 65.0F, 75.0F);
+					if (forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP)
+						this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 64.0F);
+					else
+						this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 75.0F);
 					String barrelString = this.getBarrelString(barrelEntity);
-					this.renderTextOnBlock(barrelString, forgeSide, barrelPos, 2.0F, 128.0F, 10.0F, 255, 255, 255, 0, true);
+					this.renderTextOnBlock(barrelString, forgeSide, orientation, barrelPos, 2.0F, 128.0F, 10.0F, 255, 255, 255, 0, true);
 					
 				}
 
 				//TODO : Simplified version for speed
 				if (barrelEntity.storage.isGhosting() && this.isItemDisplaySide(barrelEntity, forgeSide))
-					this.renderIconOnBlock(8, forgeSide, barrelPos, 2F, 223F, 215F, -0.01F);				
+					this.renderIconOnBlock(8, forgeSide, orientation, barrelPos, 2F, 223F, 215F, -0.01F);				
 				
 				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.REDSTONE)
-					this.renderIconOnBlock(10, forgeSide, barrelPos, 8F, 64F, 64F, -0.01F);
+					this.renderIconOnBlock(10, forgeSide, orientation, barrelPos, 8F, 64F, 64F, -0.01F);
 
 				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.HOPPER)
-					this.renderIconOnBlock(11, forgeSide, barrelPos, 8F, 64F, 64F, -0.01F);				
+					this.renderIconOnBlock(11, forgeSide, orientation, barrelPos, 8F, 64F, 64F, -0.01F);				
 				
 				if (isHammer && this.isItemDisplaySide(barrelEntity, forgeSide)){
 					int offsetY = 0;
 					if (barrelEntity.nStorageUpg > 0){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreStorage, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
-						this.renderTextOnBlock("x"+String.valueOf(barrelEntity.nStorageUpg), forgeSide, barrelPos, 2.0F, 35.0F, offsetY + 15.0F, 255, 255, 255, 0, false);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreStorage, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderTextOnBlock("x"+String.valueOf(barrelEntity.nStorageUpg), forgeSide, orientation, barrelPos, 2.0F, 35.0F, offsetY + 15.0F, 255, 255, 255, 0, false);
 						offsetY += 35;
 					}
 						
 					if (barrelEntity.hasRedstone){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreRedstone, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreRedstone, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
 						offsetY += 35;
 					}
 					
 					if (barrelEntity.hasHopper){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreHopper, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreHopper, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
 						offsetY += 35;
 					}
 					
 					if (barrelEntity.hasEnder){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, barrelPos, 2.0F, 0.0F, offsetY);
+						this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
 						offsetY += 35;
 					}					
 				}
@@ -235,7 +241,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         return outstring;
 	}
 	
-	protected void renderBarrelSide(int index,  ForgeDirection side, Coordinates barrelPos){
+	protected void renderBarrelSide(int index,  ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos){
     	
         //float revert = reverted ? -0.9991F : 1F;
         //side = reverted ? side.getOpposite() : side;
@@ -244,7 +250,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         
     	GL11.glPushMatrix();
     	
-        this.alignRendering(side, barrelPos);
+        this.alignRendering(side, orientation, barrelPos);
         this.moveRendering(16.0F, 0.0, 0.0, 0.0);
         
     	this.texManager.bindTexture(blocksSheetRes);

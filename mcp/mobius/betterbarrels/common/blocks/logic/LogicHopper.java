@@ -35,7 +35,6 @@ public class LogicHopper {
 						barrel.storage.onInventoryChanged();
 						transaction = true;
 					}
-
 				}
 			}
 		}

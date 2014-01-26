@@ -57,7 +57,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, var6 * var8, var7 * var8);		
 	}    
     
-	protected void renderTextOnBlock(String renderString, ForgeDirection side, Coordinates barrelPos, float size, double posx, double posy, int red, int green, int blue, int alpha, boolean centered){
+	protected void renderTextOnBlock(String renderString, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, int red, int green, int blue, int alpha, boolean centered){
 
     	if (renderString == null || renderString.equals("")){return;}
         	
@@ -65,7 +65,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 
     	GL11.glPushMatrix();
 
-    	this.alignRendering(side, barrelPos);
+    	this.alignRendering(side, orientation, barrelPos);
         this.moveRendering(size, posx, posy, -0.01);
         
         GL11.glDepthMask(false);            	
@@ -83,14 +83,14 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();       
     }
 
-	protected void renderStackOnBlock(ItemStack stack, ForgeDirection side, Coordinates barrelPos, float size, double posx, double posy){
+	protected void renderStackOnBlock(ItemStack stack, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy){
     	
     	if (stack == null){return;}
 
         
     	GL11.glPushMatrix();
 
-    	this.alignRendering(side, barrelPos);
+    	this.alignRendering(side, orientation, barrelPos);
         this.moveRendering(size, posx, posy, -0.01, 0.1f);
         
         if (!ForgeHooksClient.renderInventoryItem(this.renderBlocks, this.texManager, stack, true, 0.0F, 0.0F, 0.0F))
@@ -101,10 +101,10 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();    	 
     }
 
-	protected void renderIconOnBlock(int index,  ForgeDirection side, Coordinates barrelPos, float size, double posx, double posy, double zdepth){
+	protected void renderIconOnBlock(int index,  ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, double zdepth){
     	GL11.glPushMatrix();
         
-    	this.alignRendering(side, barrelPos);
+    	this.alignRendering(side, orientation, barrelPos);
         this.moveRendering(size, posx, posy, zdepth);
         
         this.texManager.bindTexture(itemsSheetRes);
@@ -113,10 +113,10 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();        
     }	
 	
-	protected void alignRendering(ForgeDirection side, Coordinates position){
+	protected void alignRendering(ForgeDirection side, ForgeDirection orientation, Coordinates position){
         GL11.glTranslated(position.x + 0.5F, position.y + 0.5F, position.z + 0.5F);     // We align the rendering on the center of the block
         GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
-        GL11.glRotatef(this.getRotationYForSide(side), 0.0F, 1.0F, 0.0F); // We rotate it so it face the right face
+        GL11.glRotatef(this.getRotationYForSide(side, orientation), 0.0F, 1.0F, 0.0F); // We rotate it so it face the right face
         GL11.glRotatef(this.getRotationXForSide(side), 1.0F, 0.0F, 0.0F);
         GL11.glTranslated(-0.5F, -0.5F, -0.5f);		
 	}
@@ -132,8 +132,9 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         GL11.glScalef(size, size, 0);		
 	}		
 	
-    protected float getRotationYForSide(ForgeDirection side){
-    	int sideRotation[]  = {0,0,0,2,3,1};
+    protected float getRotationYForSide(ForgeDirection side, ForgeDirection orientation){
+    	int orientRotation[] = {0,0,0,2,3,1,0};
+    	int sideRotation[]  = {orientRotation[orientation.ordinal()],orientRotation[orientation.ordinal()],0,2,3,1};
     	return sideRotation[side.ordinal()] * 90F;
     }
 
