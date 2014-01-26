@@ -19,8 +19,9 @@ public class LogicHopper {
 	private int[] sideConvert = {0, 1, 4, 5, 3, 2, -1};	
 	
 	public boolean run(TileEntityBarrel barrel){
-		ArrayList<ForgeDirection> validDirections = new ArrayList<ForgeDirection>();
 		boolean transaction = false;
+		ItemStack  stack = barrel.storage.getStackInSlot(1);
+		if (stack == null || stack.stackSize == 0) return false;
 		
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS){
 			if (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.HOPPER){
@@ -29,7 +30,7 @@ public class LogicHopper {
 				TileEntity targetEntity = barrel.worldObj.getBlockTileEntity(barrel.xCoord + side.offsetX, barrel.yCoord + side.offsetY, barrel.zCoord + side.offsetZ);
 				if ((targetEntity instanceof IInventory) && !this.isFull((IInventory)targetEntity, side.getOpposite())){
 					
-					ItemStack  stack = barrel.storage.getStackInSlot(1);
+					stack = barrel.storage.getStackInSlot(1);
 					if(stack != null && stack.stackSize > 0 && this.pushItemToInventory((IInventory)targetEntity, side.getOpposite(), stack)){
 						barrel.storage.onInventoryChanged();
 						transaction = true;
