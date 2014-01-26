@@ -132,6 +132,9 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 				
 				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.REDSTONE)
 					this.renderIconOnBlock(10, forgeSide, barrelPos, 8F, 64F, 64F, -0.01F);
+
+				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.HOPPER)
+					this.renderIconOnBlock(11, forgeSide, barrelPos, 8F, 64F, 64F, -0.01F);				
 				
 				if (isHammer && this.isItemDisplaySide(barrelEntity, forgeSide)){
 					int offsetY = 0;

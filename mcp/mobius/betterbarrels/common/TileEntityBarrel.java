@@ -150,6 +150,7 @@ public class TileEntityBarrel extends TileEntity{
 				
 				this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
 				this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
+				this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
 				
 				for (ForgeDirection s : ForgeDirection.VALID_DIRECTIONS){
 					int sideType = this.sideUpgrades[s.ordinal()];
@@ -201,19 +202,27 @@ public class TileEntityBarrel extends TileEntity{
 		if (this.sideUpgrades[side.ordinal()] != UpgradeSide.NONE) {return;}
 		
 		if (type == UpgradeSide.STICKER){
-			if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
+			//if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
 			this.sideUpgrades[side.ordinal()] = UpgradeSide.STICKER;
 		}
 
-		if (type == UpgradeSide.REDSTONE){
+		else if (type == UpgradeSide.REDSTONE){
 			if (this.hasUpgrade(UpgradeCore.REDSTONE))
 				this.sideUpgrades[side.ordinal()] = UpgradeSide.REDSTONE;
 			else{
 				BarrelPacketHandler.sendChat(player, "This facade requires a redstone core update.");
 				return;
 			}
-			
 		}		
+		
+		else if (type == UpgradeSide.HOPPER){
+			if (this.hasUpgrade(UpgradeCore.HOPPER))
+				this.sideUpgrades[side.ordinal()] = UpgradeSide.HOPPER;
+			else{
+				BarrelPacketHandler.sendChat(player, "This facade requires a hopper core update.");
+				return;
+			}
+		}			
 		
 		stack.stackSize -= 1;
 		this.onInventoryChanged();
