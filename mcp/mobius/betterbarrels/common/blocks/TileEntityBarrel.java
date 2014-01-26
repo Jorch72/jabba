@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
@@ -24,18 +25,19 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.ForgeDirection;
 
 
-//public class TileEntityBarrel extends TileEntity implements ISidedInventory {
-public class TileEntityBarrel extends TileEntity{
+public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDeepStorageUnit {
 	private static int version = 3;
 	
     private long clickTime = -20; //Click timer for double click handling
@@ -554,5 +556,94 @@ public class TileEntityBarrel extends TileEntity{
     		ret.add(list[i]);
     	return ret;
 
-    }    
+    }
+    
+    /*/////////////////////////////////////*/
+    /* IInventory Interface Implementation */
+    /*/////////////////////////////////////*/
+    
+	@Override
+	public int getSizeInventory() {return this.storage.getSizeInventory();}
+	@Override
+	public ItemStack getStackInSlot(int islot) {
+		ItemStack stack = this.storage.getStackInSlot(islot);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
+		return stack; 
+	}
+	@Override
+	public ItemStack decrStackSize(int islot, int quantity) {
+		TileEntity ent = this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
+		ItemStack stack;
+		if (ent instanceof TileEntityHopper)
+			stack = this.storage.decrStackSize_Hopper(islot, quantity);
+		else
+			stack = this.storage.decrStackSize(islot, quantity);
+		
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		return stack;
+	}
+	@Override
+	public void setInventorySlotContents(int islot, ItemStack stack) { 
+		this.storage.setInventorySlotContents(islot, stack);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+	}
+	@Override
+	public ItemStack getStackInSlotOnClosing(int var1) {return null;}	
+	@Override
+	public String getInvName() {return "mcp.mobius.betterbarrel";}
+	@Override
+	public int getInventoryStackLimit() {return 64;}
+	@Override
+	public boolean isUseableByPlayer(EntityPlayer var1) {return this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;}
+	@Override
+	public void openChest() {}
+	@Override
+	public void closeChest() {}
+
+	
+	
+	@Override
+	public boolean isInvNameLocalized() {return false;}
+	@Override
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.storage.isItemValidForSlot(i, itemstack);}
+
+	@Override
+	public ItemStack getStoredItemType() {
+		return this.storage.getStoredItemType();
+	}
+
+	@Override
+	public void setStoredItemCount(int amount) {
+		this.storage.setStoredItemCount(amount);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+	}
+
+	@Override
+	public void setStoredItemType(ItemStack type, int amount) {
+		this.storage.setStoredItemType(type, amount);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+	}
+
+	@Override
+	public int getMaxStoredCount() {
+		return this.storage.getMaxStoredCount();
+	}
+
+	@Override
+	public int[] getAccessibleSlotsFromSide(int var1) {
+		// TODO : Prevent sides with an hopper upgrade to react as a valid slot.
+		return this.storage.getAccessibleSlotsFromSide(var1);
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack itemstack, int side) {
+		// TODO : Prevent sides with an hopper upgrade to react as a valid slot.
+		return this.storage.canInsertItem(slot, itemstack, side);
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
+		// TODO : Prevent sides with an hopper upgrade to react as a valid slot.		
+		return this.storage.canExtractItem(slot, itemstack, side);
+	}    
 }
