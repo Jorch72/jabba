@@ -7,8 +7,10 @@ import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.ForgeDirection;
@@ -121,11 +123,15 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		Tessellator tessellator = Tessellator.instance;
 		
 		Icon iconSide, iconTop, iconLabel, iconLabelTop;
+		Icon iconStack = null;
 		int  levelStructural = barrel.levelStructural;
 		iconSide     = BlockBarrel.text_side[levelStructural];
 		iconTop      = BlockBarrel.text_top[levelStructural];
 		iconLabel    = BlockBarrel.text_label[levelStructural];
 		iconLabelTop = BlockBarrel.text_labeltop[levelStructural];
+		
+		//if (barrel.storage.hasItem())
+		//	iconStack = barrel.storage.getItem().getItem().getIconFromDamage(barrel.storage.getItem().getItemDamage());
 		
 		double minXSide = iconSide.getMinU();
 		double maxXSide = iconSide.getMaxU();
@@ -146,6 +152,11 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		double maxXLabelTop = iconLabelTop.getMaxU();
 		double minYLabelTop = iconLabelTop.getMinV();
 		double maxYLabelTop = iconLabelTop.getMaxV();		
+		
+		double minXStack = iconStack != null ? iconStack.getMinU() : 0;
+		double maxXStack = iconStack != null ? iconStack.getMaxU() : 0;
+		double minYStack = iconStack != null ? iconStack.getMinV() : 0;
+		double maxYStack = iconStack != null ? iconStack.getMaxV() : 0;		
 		
 		double[] minX = new double[6];
 		double[] maxX = new double[6];
@@ -177,9 +188,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 				minY[side] = minYSide;
 				maxY[side] = maxYSide;				
 			}
-				
 		}
-		
 		
 		double xMin = x, xMax = x + 1;
 		double yMin = y, yMax = y + 1;
@@ -223,6 +232,11 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMax, yMin, zMin, minX[2], maxY[2]);
 			tessellator.addVertexWithUV(xMin, yMin, zMin, maxX[2], maxY[2]);
 			tessellator.addVertexWithUV(xMin, yMax, zMin, maxX[2], minY[2]);
+			
+			//if(iconStack != null && (barrel.sideUpgrades[2] == UpgradeSide.FRONT || barrel.sideUpgrades[2] == UpgradeSide.STICKER)){
+			//	renderer.renderFaceZNeg(tile, x, y, z - 0.01, iconStack);
+			//}
+			
 		}
 		
 		if (renderSide[3])
@@ -254,7 +268,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		
 		return true;
 	}
-
+	
 	@Override
 	public boolean shouldRender3DInInventory() {
 		return true;

@@ -54,34 +54,7 @@ public class BlockBarrel extends BlockContainer{
     		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
     	}
     }
-    
-    /*
-    @Override
-    @SideOnly(Side.CLIENT)
-    public Icon getIcon(int side, int metadata){
-    	// Meta is not equal to 0 if the TE is properly set and we don't want normal block rendering
-    	if (metadata != 0)
-    		return text_blank;
-    	
-    	// This whole part exists only to get proper inventory rendering of the block
-    	ForgeDirection forgeSide = ForgeDirection.getOrientation(side);
-    	
-    	if ((forgeSide == ForgeDirection.UP) || (forgeSide == ForgeDirection.DOWN))
-    		return text_top;    	
-    	else if (forgeSide == ForgeDirection.WEST)
-    		return text_label;
-    	else
-    		return text_side;    		
-    }
-    */
-    
-    /*
-    @Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-    	world.setBlockMetadataWithNotify(x, y, z, 1, 1 & 2);    	
-    }
-    */
-    
+   
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack par6ItemStack){
     	// We get the orientation and check if the TE is already properly created.

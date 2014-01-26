@@ -85,36 +85,6 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	        
 	        if (!mod_BetterBarrels.fullBarrelTexture)
 	        	textureUpgrade = 0;
-	        
-        	for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){
-        		int textureIndex = 0;
-            	if (this.isItemDisplaySide(barrelEntity, forgeSide))
-            		if ((forgeSide == ForgeDirection.UP) || (forgeSide == ForgeDirection.DOWN))
-            			textureIndex = 16*textureUpgrade + 5;
-            		else
-            			textureIndex = 16*textureUpgrade + 6;
-            	else if ((forgeSide == ForgeDirection.UP) || (forgeSide == ForgeDirection.DOWN))
-            		textureIndex = 16*textureUpgrade;
-            	else
-            		textureIndex = 16*textureUpgrade + 2;
-            	
-            	this.setLight(barrelEntity, forgeSide);
-            	this.renderBarrelSide(textureIndex, forgeSide, orientation, barrelPos);            	
-            	
-            	//if (this.isItemDisplaySide(barrelEntity, forgeSide))
-            	//	this.renderBarrelSide(3, forgeSide, barrelPos);
-
-            	
-            	//TODO : Desactivated for speed testing
-            	//Here we render inside the barrel if we have a transparent barrel.
-            	/*
-            	if (barrelEntity.storageRemote)
-                	this.renderBarrelSide(textureFile, textureIndex, forgeSide, barrelPos, true, false);
-                */
-
-        	}	        
-
-        	//this.renderPlasma(ForgeDirection.SOUTH, barrelPos);	         	
 
         	boolean isHammer = this.mc.thePlayer.getHeldItem() != null ? this.mc.thePlayer.getHeldItem().getItem() instanceof ItemBarrelHammer ? true : false : false;
         	
@@ -165,41 +135,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 						offsetY += 35;
 					}					
 				}
-				
-				//TODO : Desactivated for speed
-				/*
-				if (this.isItemDisplaySide(forgeSide, blockOrientation))
-				{	
-					if ((barrelEntity.upgradeCapacity > 0) && (mod_BetterBarrels.showUpgradeSymbols)) 
-						this.renderIconOnBlock(ITEM_FILE,  barrelEntity.upgradeCapacity, forgeSide, barrelPos, 0.5F, 0.5F, 52.0F, 0.01F);
-					
-					if(barrelEntity.storage.isGhosting())
-						this.renderIconOnBlock(ITEM_FILE, 8, forgeSide, barrelPos, 0.5F, 27.5F, 52.0F, 0.01F);
-					
-					if(barrelEntity.storage.isPrivate())
-						this.renderIconOnBlock(ITEM_FILE, 9, forgeSide, barrelPos, 0.5F, 0.0F, 52.0F, 0.01F);
-				}
-				*/
 			}
-
-     
-	        /*
-        	for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){	        
-            	//Here we render the sign itself (and so, we can control it in funky ways !)
-				this.setLight(barrelEntity, forgeSide);        		
-        		
-            	if (this.isItemDisplaySide(forgeSide, blockOrientation)){
-
-            		//TODO : Removed alpha blending rendering of remote storage to test for fps drop
-            		// We render the sign half translucent.
-            		//if(barrelEntity.storageRemote){
-            		//	postponedSigns.put(barrelEntity, barrelPos);
-            		//}
-            		//else
-        			this.renderBarrelSide(textureFile, 3, forgeSide, barrelPos, false, false);
-            	}
-        	}
-        	*/
         	
 	        this.loadState();
         	
