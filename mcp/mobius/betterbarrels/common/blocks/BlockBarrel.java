@@ -26,10 +26,10 @@ import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
 public class BlockBarrel extends BlockContainer{
 
-	private static Icon text_side  = null;
-	private static Icon text_top   = null;
-	private static Icon text_label = null;
-	private static Icon text_blank = null;	
+	public static Icon text_side  = null;
+	public static Icon text_top   = null;
+	public static Icon text_label = null;
+	public static Icon text_blank = null;	
 	
     public BlockBarrel(int par1){
         super(par1, Material.wood);
@@ -52,6 +52,7 @@ public class BlockBarrel extends BlockContainer{
     	BlockBarrel.text_blank = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "blank");
     }
     
+    /*
     @Override
     @SideOnly(Side.CLIENT)
     public Icon getIcon(int side, int metadata){
@@ -69,11 +70,14 @@ public class BlockBarrel extends BlockContainer{
     	else
     		return text_side;    		
     }
+    */
     
+    /*
     @Override
 	public void onBlockAdded(World world, int x, int y, int z) {
     	world.setBlockMetadataWithNotify(x, y, z, 1, 1 & 2);    	
     }
+    */
     
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack par6ItemStack){
@@ -233,6 +237,11 @@ public class BlockBarrel extends BlockContainer{
     	return barrel.getRedstonePower(side);
     }
 
+	@Override
+	public int getRenderType(){
+		return mod_BetterBarrels.blockBarrelRendererID;
+	}    
+    
     /*
     @Override
     public boolean isBlockNormalCube(World world, int x, int y, int z){

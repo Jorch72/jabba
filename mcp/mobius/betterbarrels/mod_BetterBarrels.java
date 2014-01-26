@@ -82,6 +82,8 @@ public class mod_BetterBarrels {
 	public static Item itemLockingPlanks = null;
 	public static Item itemHammer = null;
 	
+	public static int blockBarrelRendererID = -1;
+	
 	public static int RENDER_SHELF = -1;
 	
 	public static String moverName = "Dolly";
