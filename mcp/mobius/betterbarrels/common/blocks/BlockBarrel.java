@@ -26,10 +26,10 @@ import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
 public class BlockBarrel extends BlockContainer{
 
-	public static Icon text_side  = null;
-	public static Icon text_top   = null;
-	public static Icon text_label = null;
-	public static Icon text_blank = null;	
+	public static Icon[] text_side     = new Icon[16];
+	public static Icon[] text_top      = new Icon[16];
+	public static Icon[] text_label    = new Icon[16];
+	public static Icon[] text_labeltop = new Icon[16];
 	
     public BlockBarrel(int par1){
         super(par1, Material.wood);
@@ -45,11 +45,14 @@ public class BlockBarrel extends BlockContainer{
 	}
 	
     @Override    
-    public void registerIcons(IconRegister par1IconRegister){
-    	BlockBarrel.text_side  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_side");
-    	BlockBarrel.text_top   = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_top");
-    	BlockBarrel.text_label = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_label");
-    	BlockBarrel.text_blank = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "blank");
+    public void registerIcons(IconRegister iconRegister){
+    	for (int i=0; i<16; i++)
+    	{
+    		BlockBarrel.text_side[i]     = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_side_"     + String.valueOf(i));
+    		BlockBarrel.text_top[i]      = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_top_"      + String.valueOf(i));
+    		BlockBarrel.text_label[i]    = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_label_"    + String.valueOf(i));
+    		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
+    	}
     }
     
     /*

@@ -21,10 +21,11 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		BlockBarrel barrel      = (BlockBarrel)block;
 		Tessellator tessellator = Tessellator.instance;
 		
-		Icon iconSide, iconTop, iconLabel;
-		iconSide  = BlockBarrel.text_side;
-		iconTop   = BlockBarrel.text_top;
-		iconLabel = BlockBarrel.text_label;
+		Icon iconSide, iconTop, iconLabel, iconLabelTop;
+		iconSide     = BlockBarrel.text_side[0];
+		iconTop      = BlockBarrel.text_top[0];
+		iconLabel    = BlockBarrel.text_label[0];
+		iconLabelTop = BlockBarrel.text_labeltop[0];
 		
 		double minXSide = iconSide.getMinU();
 		double maxXSide = iconSide.getMaxU();
@@ -119,10 +120,12 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
 		Tessellator tessellator = Tessellator.instance;
 		
-		Icon iconSide, iconTop, iconLabel;
-		iconSide  = BlockBarrel.text_side;
-		iconTop   = BlockBarrel.text_top;
-		iconLabel = BlockBarrel.text_label;		
+		Icon iconSide, iconTop, iconLabel, iconLabelTop;
+		int  levelStructural = barrel.levelStructural;
+		iconSide     = BlockBarrel.text_side[levelStructural];
+		iconTop      = BlockBarrel.text_top[levelStructural];
+		iconLabel    = BlockBarrel.text_label[levelStructural];
+		iconLabelTop = BlockBarrel.text_labeltop[levelStructural];
 		
 		double minXSide = iconSide.getMinU();
 		double maxXSide = iconSide.getMaxU();
@@ -139,25 +142,35 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		double minYLabel = iconLabel.getMinV();
 		double maxYLabel = iconLabel.getMaxV();			
 		
+		double minXLabelTop = iconLabelTop.getMinU();
+		double maxXLabelTop = iconLabelTop.getMaxU();
+		double minYLabelTop = iconLabelTop.getMinV();
+		double maxYLabelTop = iconLabelTop.getMaxV();		
+		
 		double[] minX = new double[6];
 		double[] maxX = new double[6];
 		double[] minY = new double[6];
 		double[] maxY = new double[6];
 		
 		for (int side = 0; side < 6; side++){
-			if (side == 0 || side == 1){
+			if ((side == 0 || side == 1) && (barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
+				minX[side] = minXLabelTop;
+				maxX[side] = maxXLabelTop;
+				minY[side] = minYLabelTop;
+				maxY[side] = maxYLabelTop;				
+			}
+			else if ((side == 0 || side == 1) && (barrel.sideUpgrades[side] != UpgradeSide.STICKER)){
 				minX[side] = minXTop;
 				maxX[side] = maxXTop;
 				minY[side] = minYTop;
 				maxY[side] = maxYTop;				
-			}
+			}			
 			else if (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER){
 				minX[side] = minXLabel;
 				maxX[side] = maxXLabel;
 				minY[side] = minYLabel;
 				maxY[side] = maxYLabel;
 			}
-			
 			else {
 				minX[side] = minXSide;
 				maxX[side] = maxXSide;
