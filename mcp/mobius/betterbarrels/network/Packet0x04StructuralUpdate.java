@@ -6,7 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import mcp.mobius.betterbarrels.common.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
 public class Packet0x04StructuralUpdate {

@@ -1,4 +1,4 @@
-package mcp.mobius.betterbarrels.common;
+package mcp.mobius.betterbarrels.common.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;

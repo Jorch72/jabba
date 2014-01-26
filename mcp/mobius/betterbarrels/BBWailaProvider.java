@@ -3,7 +3,7 @@ package mcp.mobius.betterbarrels;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import mcp.mobius.betterbarrels.common.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;

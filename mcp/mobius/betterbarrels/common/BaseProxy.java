@@ -13,7 +13,7 @@ public class BaseProxy {
 		// Nothing here as this is the server side proxy
 	}
 
-    void updatePlayerInventory(EntityPlayer player)
+    public void updatePlayerInventory(EntityPlayer player)
     {
         if (player instanceof EntityPlayerMP)
         {

@@ -5,9 +5,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
 import mcp.mobius.betterbarrels.client.render.TileEntityBarrelRenderer;
 import mcp.mobius.betterbarrels.common.BaseProxy;
-import mcp.mobius.betterbarrels.common.TileEntityBarrel;
-//import mcp.mobius.betterbarrels.common.TileEntityBarrelShelf;
-//import mcp.mobius.betterbarrels.common.TileEntityMiniBarrel;
+import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 
 public class ClientProxy extends BaseProxy {
 	

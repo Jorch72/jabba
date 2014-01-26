@@ -1,4 +1,4 @@
-package mcp.mobius.betterbarrels.common;
+package mcp.mobius.betterbarrels.common.blocks;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
@@ -47,7 +48,51 @@ public class TileEntityBarrel extends TileEntity{
 	public boolean hasRedstone        = false;
 	public boolean hasHopper          = false;
 	public boolean hasEnder           = false;
+	public boolean isTicking          = false;
 	public byte    nStorageUpg        = 0;
+	public byte    nTicks             = 0;
+	
+	public LogicHopper logicHopper    = LogicHopper.instance();
+	
+	/* UPDATE HANDLING */
+	@Override
+	public boolean canUpdate(){
+		return this.isTicking;
+	}
+	
+	@Override
+	public void updateEntity() {
+		this.nTicks += 1;
+		if (this.nTicks % 8 == 0){
+			if (this.logicHopper.run(this)){
+				this.onInventoryChanged();
+				PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+			}
+			this.nTicks = 0;
+		}
+	}
+	
+	private void startTicking(){
+		this.isTicking = true;
+		if (!this.worldObj.loadedTileEntityList.contains(this))
+			this.worldObj.addTileEntity(this);
+	}
+	
+	private void stopTicking(){
+		this.isTicking = false;
+		if (this.worldObj.loadedTileEntityList.contains(this))
+			this.worldObj.loadedTileEntityList.remove(this);
+	}
+	
+	/*
+	private void setTicking(){
+		if (this.worldObj == null) return;
+		if (this.isTicking)
+			this.startTicking();
+		else
+			this.stopTicking();
+	}
+	*/
 	
 	/* SLOT HANDLING */
 	
@@ -151,6 +196,11 @@ public class TileEntityBarrel extends TileEntity{
 				this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
 				this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
 				this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
+				
+				if (this.hasHopper)
+					this.startTicking();
+				else
+					this.stopTicking();
 				
 				for (ForgeDirection s : ForgeDirection.VALID_DIRECTIONS){
 					int sideType = this.sideUpgrades[s.ordinal()];
@@ -258,6 +308,7 @@ public class TileEntityBarrel extends TileEntity{
 		if (type == UpgradeCore.HOPPER){
 			this.coreUpgrades.add(UpgradeCore.HOPPER);
 			this.hasHopper = true;
+			this.startTicking();
 		}
 		
 		if (type == UpgradeCore.ENDER){
@@ -292,6 +343,7 @@ public class TileEntityBarrel extends TileEntity{
 	private void switchLocked(){
 		this.storage.switchGhosting();
 		this.onInventoryChanged();
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
@@ -384,6 +436,8 @@ public class TileEntityBarrel extends TileEntity{
         NBTTag.setBoolean("redstone",      this.hasRedstone);
         NBTTag.setBoolean("hopper",        this.hasHopper);
         NBTTag.setBoolean("ender",         this.hasEnder);
+        NBTTag.setBoolean("ticking",       this.isTicking);
+        NBTTag.setByte("nticks",           this.nTicks);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
         NBTTag.setByte("nStorageUpg",   this.nStorageUpg);
     }  	
@@ -407,7 +461,12 @@ public class TileEntityBarrel extends TileEntity{
     	this.hasHopper       = NBTTag.getBoolean("hopper");
     	this.hasEnder        = NBTTag.getBoolean("ender");
     	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
+    	this.isTicking       = NBTTag.getBoolean("ticking");
+    	this.nTicks          = NBTTag.getByte("nticks");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
+    	
+    	if (this.worldObj != null && this.isTicking)
+    		this.startTicking();
     }	
 
 	/* V2 COMPATIBILITY METHODS */
