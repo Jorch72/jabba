@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -91,9 +91,9 @@ public class ItemBarrelMover extends Item {
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	this.itemIcon    = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "dolly_empty");
+    	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_empty");
     	ItemBarrelMover.text_empty  = this.itemIcon;
-    	ItemBarrelMover.text_filled = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "dolly_filled");
+    	ItemBarrelMover.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_filled");
     }    
     
     @Override
@@ -363,7 +363,7 @@ public class ItemBarrelMover extends Item {
 		
 		stack.setItemDamage(1);
 		//stack.setItemName(mod_BetterBarrels.moverName + " (" + moverName + ")");
-		stack.setItemName(mod_BetterBarrels.moverName + " (Full)");
+		stack.setItemName(BetterBarrels.moverName + " (Full)");
 		
 		return true;		
 	}

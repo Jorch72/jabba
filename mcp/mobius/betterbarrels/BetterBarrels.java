@@ -32,10 +32,10 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid=mod_BetterBarrels.modid, name="JABBA", version="1.1.0", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.0", dependencies="after:Waila;after:NotEnoughItems")
 @NetworkMod(channels = {"JABBA"}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 
-public class mod_BetterBarrels {
+public class BetterBarrels {
 
 	public static final String modid = "JABBA";
 	
@@ -43,7 +43,7 @@ public class mod_BetterBarrels {
 	
     // The instance of your mod that Forge uses.
 	@Instance("ProfMobius_BetterBarrels")
-	public static mod_BetterBarrels instance;
+	public static BetterBarrels instance;
 	
 	// Says where the client and server 'proxy' code is loaded.
 	@SidedProxy(clientSide="mcp.mobius.betterbarrels.client.ClientProxy", serverSide="mcp.mobius.betterbarrels.common.BaseProxy")
@@ -149,13 +149,11 @@ public class mod_BetterBarrels {
 		//blockBarrelShelf    = new BlockBarrelShelf(barrelShelfID);		
 		//itemTuningFork      = new ItemTuningFork(itemTuningForkID);
 		//itemBSpaceUpg       = new ItemBSpaceInterface(itemBSpaceUpgID);
-		//itemLockingPlanks   = new ItemBarrelLocker(itemLockingPlanksID);		
 		
 		//LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
 		//LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
 		//LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
 		//LanguageRegistry.addName(itemBSpaceUpg,   "B-Space Interface (WIP)");
-		//LanguageRegistry.addName(itemLockingPlanks, "Locking Planks (WIP)");
 		
 		for(int i=0; i<ItemUpgradeStructural.upgradeNames.length; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeStructural, 1, i);
@@ -212,9 +210,6 @@ public class mod_BetterBarrels {
 
 		//GameRegistry.addRecipe(new ItemStack(itemTuningFork, 1, 0), new Object[]
 		//		{" P "," PP", "P  ", 'P', Item.ingotIron});		
-
-		//GameRegistry.addRecipe(new ItemStack(itemBSpaceUpg), new Object[] 
-		//		{"XPX", "PBP", "XPX",'B', Item.enderPearl, 'P', Block.pistonBase, 'X', new ItemStack(blockBarrel)});		
 		
 		proxy.registerEventHandler();
 		

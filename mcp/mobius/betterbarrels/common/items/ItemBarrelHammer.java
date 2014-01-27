@@ -1,6 +1,6 @@
 package mcp.mobius.betterbarrels.common.items;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.util.Icon;
@@ -22,7 +22,7 @@ public class ItemBarrelHammer extends Item {
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	this.itemIcon    = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "hammer");
+    	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "hammer");
     }    
     
     @Override

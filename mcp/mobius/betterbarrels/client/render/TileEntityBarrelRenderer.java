@@ -2,7 +2,7 @@ package mcp.mobius.betterbarrels.client.render;
 
 import java.util.HashMap;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
@@ -18,10 +18,10 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	public static HashMap<TileEntityBarrel, Coordinates> postponedSigns = new HashMap<TileEntityBarrel, Coordinates>();
 	public static TileEntityBarrelRenderer _instance = null;
 	
-    protected static ItemStack coreStorage  = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 0);
-    protected static ItemStack coreEnder    = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 1);
-    protected static ItemStack coreRedstone = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 2);
-    protected static ItemStack coreHopper   = new ItemStack(mod_BetterBarrels.itemUpgradeCore, 0, 3);	
+    protected static ItemStack coreStorage  = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 0);
+    protected static ItemStack coreEnder    = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 1);
+    protected static ItemStack coreRedstone = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 2);
+    protected static ItemStack coreHopper   = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 3);	
 	
     //protected int textureSideRef = Minecraft.getMinecraft().renderEngine.getTexture("/mcp/mobius/betterbarrels/textures/block.png");
     //protected int textureIconRef = Minecraft.getMinecraft().renderEngine.getTexture("/mcp/mobius/betterbarrels/textures/items.png");
@@ -47,17 +47,13 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	        GL11.glDisable(GL11.GL_BLEND);
 	        GL11.glDisable(GL11.GL_LIGHTING);  			
 
-	        int textureUpgrade = barrelEntity.levelStructural;
-	        
-	        if (!mod_BetterBarrels.fullBarrelTexture)
-	        	textureUpgrade = 0;
-
         	boolean isHammer = this.mc.thePlayer.getHeldItem() != null ? this.mc.thePlayer.getHeldItem().getItem() instanceof ItemBarrelHammer ? true : false : false;
+        	boolean hasItem  = barrelEntity.storage.hasItem();
         	
 	        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){					
 				this.setLight(barrelEntity, forgeSide);
 					
-				if (barrelEntity.storage.hasItem() &&  this.isItemDisplaySide(barrelEntity, forgeSide))
+				if (hasItem &&  this.isItemDisplaySide(barrelEntity, forgeSide))
 				{
 					if (forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP)
 						this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 64.0F);
@@ -67,30 +63,34 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 					this.renderTextOnBlock(barrelString, forgeSide, orientation, barrelPos, 2.0F, 128.0F, 10.0F, 255, 255, 255, 0, true);
 					
 				}
+	        }
 				
-				if (isHammer && this.isItemDisplaySide(barrelEntity, forgeSide)){
-					int offsetY = 0;
-					if (barrelEntity.nStorageUpg > 0){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreStorage, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
-						this.renderTextOnBlock("x"+String.valueOf(barrelEntity.nStorageUpg), forgeSide, orientation, barrelPos, 2.0F, 35.0F, offsetY + 15.0F, 255, 255, 255, 0, false);
-						offsetY += 35;
-					}
+			if (isHammer){
+		        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){
+		        	if (this.isItemDisplaySide(barrelEntity, forgeSide)){
+						int offsetY = 0;
+						if (barrelEntity.nStorageUpg > 0){
+							this.renderStackOnBlock(TileEntityBarrelRenderer.coreStorage, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+							this.renderTextOnBlock("x"+String.valueOf(barrelEntity.nStorageUpg), forgeSide, orientation, barrelPos, 2.0F, 35.0F, offsetY + 15.0F, 255, 255, 255, 0, false);
+							offsetY += 35;
+						}
+							
+						if (barrelEntity.hasRedstone){
+							this.renderStackOnBlock(TileEntityBarrelRenderer.coreRedstone, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+							offsetY += 35;
+						}
 						
-					if (barrelEntity.hasRedstone){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreRedstone, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
-						offsetY += 35;
-					}
-					
-					if (barrelEntity.hasHopper){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreHopper, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
-						offsetY += 35;
-					}
-					
-					if (barrelEntity.hasEnder){
-						this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
-						offsetY += 35;
-					}					
-				}
+						if (barrelEntity.hasHopper){
+							this.renderStackOnBlock(TileEntityBarrelRenderer.coreHopper, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+							offsetY += 35;
+						}
+						
+						if (barrelEntity.hasEnder){
+							this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+							offsetY += 35;
+						}	
+		        	}
+		        }
 			}
         	
 	        this.loadState();

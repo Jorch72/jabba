@@ -2,7 +2,7 @@ package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import java.util.List;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -40,7 +40,7 @@ public class ItemUpgradeSide extends ItemUpgrade {
     public void registerIcons(IconRegister par1IconRegister)
     {
     	for(int i=0 ; i < ItemUpgradeSide.upgradeNames.length; i++)
-    		ItemUpgradeSide.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "sideupg_" + String.valueOf(i));
+    		ItemUpgradeSide.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "sideupg_" + String.valueOf(i));
     }	
 	
     @Override

@@ -1,6 +1,6 @@
 package mcp.mobius.betterbarrels.common.items.upgrades;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.item.Item;
 
 public class UpgradeCore {
@@ -12,10 +12,10 @@ public class UpgradeCore {
 	
 	public static Item[] mapItem = {
 		null,
-		mod_BetterBarrels.itemUpgradeCore,
-		mod_BetterBarrels.itemUpgradeCore,
-		mod_BetterBarrels.itemUpgradeCore,
-		mod_BetterBarrels.itemUpgradeCore,		
+		BetterBarrels.itemUpgradeCore,
+		BetterBarrels.itemUpgradeCore,
+		BetterBarrels.itemUpgradeCore,
+		BetterBarrels.itemUpgradeCore,		
 	};
 	
 	public static int[] mapMeta = {	//Map index to metadata

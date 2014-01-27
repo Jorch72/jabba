@@ -2,7 +2,7 @@ package mcp.mobius.betterbarrels.client.render;
 
 import org.lwjgl.opengl.GL11;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
@@ -363,7 +363,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 
 	@Override
 	public int getRenderId() {
-		return mod_BetterBarrels.blockBarrelRendererID;
+		return BetterBarrels.blockBarrelRendererID;
 	}
 
 }

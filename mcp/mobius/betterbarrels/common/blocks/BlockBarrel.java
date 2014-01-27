@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
@@ -51,13 +51,13 @@ public class BlockBarrel extends BlockContainer{
     public void registerIcons(IconRegister iconRegister){
     	for (int i=0; i<16; i++)
     	{
-    		BlockBarrel.text_side[i]     = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_side_"     + String.valueOf(i));
-    		BlockBarrel.text_top[i]      = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_top_"      + String.valueOf(i));
-    		BlockBarrel.text_label[i]    = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_label_"    + String.valueOf(i));
-    		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
-    		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "facade_hopper");
-    		BlockBarrel.text_siders      = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "facade_redstone");
-    		BlockBarrel.text_lock        = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "overlay_locked");
+    		BlockBarrel.text_side[i]     = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_side_"     + String.valueOf(i));
+    		BlockBarrel.text_top[i]      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_top_"      + String.valueOf(i));
+    		BlockBarrel.text_label[i]    = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_label_"    + String.valueOf(i));
+    		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
+    		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_hopper");
+    		BlockBarrel.text_siders      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_redstone");
+    		BlockBarrel.text_lock        = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_locked");
     	}
     }
    
@@ -144,7 +144,7 @@ public class BlockBarrel extends BlockContainer{
     	if ((barrelEntity != null) && (barrelEntity.levelStructural > 0)){
     		int currentUpgrade = barrelEntity.levelStructural;
     		while (currentUpgrade > 0){
-    			ItemStack droppedStack = new ItemStack(mod_BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
+    			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
     			this.dropStack(world, droppedStack, x, y, z);
     			currentUpgrade -= 1;
     		}
@@ -221,7 +221,7 @@ public class BlockBarrel extends BlockContainer{
 
 	@Override
 	public int getRenderType(){
-		return mod_BetterBarrels.blockBarrelRendererID;
+		return BetterBarrels.blockBarrelRendererID;
 	}    
     
     /*

@@ -4,7 +4,7 @@ import java.util.List;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -55,7 +55,7 @@ public class ItemUpgradeStructural extends ItemUpgrade{
     public void registerIcons(IconRegister par1IconRegister)
     {
     	for(int i=0 ; i < ItemUpgradeStructural.upgradeNames.length; i++)
-    		ItemUpgradeStructural.upgradeIcons[i]  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "capaupg_mk" + String.valueOf(i+1));
+    		ItemUpgradeStructural.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "capaupg_mk" + String.valueOf(i+1));
     }	
 	
     @Override

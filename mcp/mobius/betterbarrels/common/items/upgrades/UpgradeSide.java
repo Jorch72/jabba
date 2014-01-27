@@ -1,6 +1,6 @@
 package mcp.mobius.betterbarrels.common.items.upgrades;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.item.Item;
 
 public class UpgradeSide {
@@ -13,9 +13,9 @@ public class UpgradeSide {
 	public static Item[] mapItem = {
 		null,
 		null,
-		mod_BetterBarrels.itemUpgradeSide,
-		mod_BetterBarrels.itemUpgradeSide,
-		mod_BetterBarrels.itemUpgradeSide,
+		BetterBarrels.itemUpgradeSide,
+		BetterBarrels.itemUpgradeSide,
+		BetterBarrels.itemUpgradeSide,
 	};
 	
 	public static int[] mapMeta = {

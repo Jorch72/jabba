@@ -6,7 +6,7 @@ import java.util.List;
 
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import cpw.mods.fml.common.network.PacketDispatcher;
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
@@ -226,7 +226,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				
 			} else if (this.levelStructural > 0){
 				
-    			ItemStack droppedStack = new ItemStack(mod_BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
+    			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
 				this.dropItemInWorld(player, droppedStack , 0.02);
 				this.levelStructural -= 1;				
 				
@@ -367,7 +367,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
             }
 		}
 
-		mod_BetterBarrels.proxy.updatePlayerInventory(player);
+		BetterBarrels.proxy.updatePlayerInventory(player);
 		this.clickTime = this.worldObj.getWorldTime();	
 		
 		this.onInventoryChanged();
