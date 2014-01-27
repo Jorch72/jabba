@@ -534,7 +534,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public void onInventoryChanged(){
 		super.onInventoryChanged();
 
-		if (this.hasUpgrade(UpgradeCore.REDSTONE))
+		if (this.hasUpgrade(UpgradeCore.REDSTONE) || this.hasUpgrade(UpgradeCore.HOPPER))
 			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));		
 	}    
     
@@ -635,15 +635,21 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}
 
 	@Override
-	public int[] getAccessibleSlotsFromSide(int var1) {
+	public int[] getAccessibleSlotsFromSide(int side) {
 		// TODO : Prevent sides with an hopper upgrade to react as a valid slot.
-		return this.storage.getAccessibleSlotsFromSide(var1);
+		if (this.sideUpgrades[side] == UpgradeSide.HOPPER)
+			return new int[]{1};
+		else
+			return this.storage.getAccessibleSlotsFromSide(side);
 	}
 
 	@Override
 	public boolean canInsertItem(int slot, ItemStack itemstack, int side) {
 		// TODO : Prevent sides with an hopper upgrade to react as a valid slot.
-		return this.storage.canInsertItem(slot, itemstack, side);
+		if (this.sideUpgrades[side] == UpgradeSide.HOPPER)
+			return false;
+		else
+			return this.storage.canInsertItem(slot, itemstack, side);
 	}
 
 	@Override
