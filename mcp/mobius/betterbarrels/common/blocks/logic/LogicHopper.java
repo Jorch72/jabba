@@ -92,7 +92,23 @@ public class LogicHopper {
     	    
     	    
     	} else {
-    		
+    		int nslots = inventory.getSizeInventory();
+    		for (int slot = 0; slot < nslots; slot++){
+    	    	ItemStack targetStack = inventory.getStackInSlot(slot);
+    	    	
+    	    	if (targetStack == null){
+    	    		targetStack = stack.copy();
+    	    		targetStack.stackSize = 1;
+    	    		inventory.setInventorySlotContents(slot, targetStack);
+    	    		stack.stackSize -= 1;
+    	    		return true;
+    	    		
+    	    	} else if (targetStack.isItemEqual(stack) && targetStack.stackSize != targetStack.getMaxStackSize()) {
+    	    		targetStack.stackSize += 1;
+    	    		stack.stackSize -= 1;
+    	    		return true;
+    	    	}    			
+    		}
     		
     	}
 
