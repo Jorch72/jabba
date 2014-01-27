@@ -30,6 +30,9 @@ public class BlockBarrel extends BlockContainer{
 	public static Icon[] text_top      = new Icon[16];
 	public static Icon[] text_label    = new Icon[16];
 	public static Icon[] text_labeltop = new Icon[16];
+	public static Icon   text_sidehopper = null;
+	public static Icon   text_siders     = null;
+	public static Icon   text_lock       = null;
 	
     public BlockBarrel(int par1){
         super(par1, Material.wood);
@@ -52,6 +55,9 @@ public class BlockBarrel extends BlockContainer{
     		BlockBarrel.text_top[i]      = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_top_"      + String.valueOf(i));
     		BlockBarrel.text_label[i]    = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_label_"    + String.valueOf(i));
     		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
+    		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "facade_hopper");
+    		BlockBarrel.text_siders      = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "facade_redstone");
+    		BlockBarrel.text_lock        = iconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "overlay_locked");
     	}
     }
    

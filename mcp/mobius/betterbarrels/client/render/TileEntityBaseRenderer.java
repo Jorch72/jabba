@@ -37,20 +37,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 	protected int   boundTexIndex;    
     
 	protected void setLight(TileEntity tileEntity, ForgeDirection side){
-		int xOffset = 0;
-		int zOffset = 0;
-		int yOffset = 0;
-	
-		switch(side.ordinal()){
-			case 0:	xOffset =  0; zOffset =  0; yOffset = -1; break;
-			case 1:	xOffset =  0; zOffset =  0; yOffset = 1; break;		
-			case 2:	xOffset =  0; zOffset = -1; yOffset = 0; break;
-			case 3:	xOffset =  0; zOffset =  1; yOffset = 0; break;
-			case 4:	xOffset = -1; zOffset =  0; yOffset = 0; break;
-			case 5:	xOffset =  1; zOffset =  0; yOffset = 0; break;
-		}
-		
-        int ambientLight = tileEntity.worldObj.getLightBrightnessForSkyBlocks(tileEntity.xCoord + xOffset, tileEntity.yCoord + yOffset, tileEntity.zCoord + zOffset, 0);
+        int ambientLight = tileEntity.worldObj.getLightBrightnessForSkyBlocks(tileEntity.xCoord + side.offsetX, tileEntity.yCoord + side.offsetY, tileEntity.zCoord + side.offsetZ, 0);
         int var6 = ambientLight % 65536;
         int var7 = ambientLight / 65536;
         float var8 = 0.8F;

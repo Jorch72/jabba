@@ -122,13 +122,16 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
 		Tessellator tessellator = Tessellator.instance;
 		
-		Icon iconSide, iconTop, iconLabel, iconLabelTop;
+		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock;
 		Icon iconStack = null;
 		int  levelStructural = barrel.levelStructural;
-		iconSide     = BlockBarrel.text_side[levelStructural];
-		iconTop      = BlockBarrel.text_top[levelStructural];
-		iconLabel    = BlockBarrel.text_label[levelStructural];
-		iconLabelTop = BlockBarrel.text_labeltop[levelStructural];
+		iconSide       = BlockBarrel.text_side[levelStructural];
+		iconTop        = BlockBarrel.text_top[levelStructural];
+		iconLabel      = BlockBarrel.text_label[levelStructural];
+		iconLabelTop   = BlockBarrel.text_labeltop[levelStructural];
+		iconSideHopper = BlockBarrel.text_sidehopper;
+		iconSideRS     = BlockBarrel.text_siders;
+		iconLock       = BlockBarrel.text_lock;
 		
 		//if (barrel.storage.hasItem())
 		//	iconStack = barrel.storage.getItem().getItem().getIconFromDamage(barrel.storage.getItem().getItemDamage());
@@ -153,6 +156,21 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		double minYLabelTop = iconLabelTop.getMinV();
 		double maxYLabelTop = iconLabelTop.getMaxV();		
 		
+		double minXSideHopper = iconSideHopper.getMinU();
+		double maxXSideHopper = iconSideHopper.getMaxU();
+		double minYSideHopper = iconSideHopper.getMinV();
+		double maxYSideHopper = iconSideHopper.getMaxV();		
+	
+		double minXSideRS = iconSideRS.getMinU();
+		double maxXSideRS = iconSideRS.getMaxU();
+		double minYSideRS = iconSideRS.getMinV();
+		double maxYSideRS = iconSideRS.getMaxV();		
+		
+		double minXLock = iconLock.getMinU();
+		double maxXLock = iconLock.getMaxU();
+		double minYLock = iconLock.getMinV();
+		double maxYLock = iconLock.getMaxV();	
+		
 		double minXStack = iconStack != null ? iconStack.getMinU() : 0;
 		double maxXStack = iconStack != null ? iconStack.getMaxU() : 0;
 		double minYStack = iconStack != null ? iconStack.getMinV() : 0;
@@ -162,6 +180,12 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		double[] maxX = new double[6];
 		double[] minY = new double[6];
 		double[] maxY = new double[6];
+		
+		boolean[] hasOverlay = new boolean[6]; 
+		double[] minOverlayX = new double[6];
+		double[] maxOverlayX = new double[6];
+		double[] minOverlayY = new double[6];
+		double[] maxOverlayY = new double[6];		
 		
 		for (int side = 0; side < 6; side++){
 			if ((side == 0 || side == 1) && (barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
@@ -175,7 +199,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 				maxX[side] = maxXTop;
 				minY[side] = minYTop;
 				maxY[side] = maxYTop;				
-			}			
+			}	
 			else if (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER){
 				minX[side] = minXLabel;
 				maxX[side] = maxXLabel;
@@ -188,6 +212,28 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 				minY[side] = minYSide;
 				maxY[side] = maxYSide;				
 			}
+			
+			if (barrel.sideUpgrades[side] == UpgradeSide.HOPPER){
+				hasOverlay[side]  = true;
+				minOverlayX[side] = minXSideHopper;
+				maxOverlayX[side] = maxXSideHopper;
+				minOverlayY[side] = minYSideHopper;
+				maxOverlayY[side] = maxYSideHopper;					
+			}
+			else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE){
+				hasOverlay[side]  = true;
+				minOverlayX[side] = minXSideRS;
+				maxOverlayX[side] = maxXSideRS;
+				minOverlayY[side] = minYSideRS;
+				maxOverlayY[side] = maxYSideRS;					
+			}		
+			else if ( barrel.storage.isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
+				hasOverlay[side]  = true;
+				minOverlayX[side] = maxXLock;
+				maxOverlayX[side] = minXLock;
+				minOverlayY[side] = maxYLock;
+				maxOverlayY[side] = minYLock;					
+			}				
 		}
 		
 		double xMin = x, xMax = x + 1;
@@ -214,6 +260,14 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMin, yMin, zMin, minX[0], maxY[0]);
 			tessellator.addVertexWithUV(xMax, yMin, zMin, maxX[0], maxY[0]);
 			tessellator.addVertexWithUV(xMax, yMin, zMax, maxX[0], minY[0]);
+			
+			if (hasOverlay[0]){
+				tessellator.addVertexWithUV(xMin, yMin, zMax, minOverlayX[0], minOverlayY[0]);
+				tessellator.addVertexWithUV(xMin, yMin, zMin, minOverlayX[0], maxOverlayY[0]);
+				tessellator.addVertexWithUV(xMax, yMin, zMin, maxOverlayX[0], maxOverlayY[0]);
+				tessellator.addVertexWithUV(xMax, yMin, zMax, maxOverlayX[0], minOverlayY[0]);				
+			}
+			
 		}
 		
 		if (renderSide[1])
@@ -223,6 +277,13 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMin, yMax, zMax, minX[1], maxY[1]);
 			tessellator.addVertexWithUV(xMax, yMax, zMax, maxX[1], maxY[1]);
 			tessellator.addVertexWithUV(xMax, yMax, zMin, maxX[1], minY[1]);
+			
+			if (hasOverlay[1]){
+				tessellator.addVertexWithUV(xMin, yMax, zMin, minOverlayX[1], minOverlayY[1]);
+				tessellator.addVertexWithUV(xMin, yMax, zMax, minOverlayX[1], maxOverlayY[1]);
+				tessellator.addVertexWithUV(xMax, yMax, zMax, maxOverlayX[1], maxOverlayY[1]);
+				tessellator.addVertexWithUV(xMax, yMax, zMin, maxOverlayX[1], minOverlayY[1]);				
+			}			
 		}
 		
 		if (renderSide[2])
@@ -233,9 +294,12 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMin, yMin, zMin, maxX[2], maxY[2]);
 			tessellator.addVertexWithUV(xMin, yMax, zMin, maxX[2], minY[2]);
 			
-			//if(iconStack != null && (barrel.sideUpgrades[2] == UpgradeSide.FRONT || barrel.sideUpgrades[2] == UpgradeSide.STICKER)){
-			//	renderer.renderFaceZNeg(tile, x, y, z - 0.01, iconStack);
-			//}
+			if (hasOverlay[2]){
+				tessellator.addVertexWithUV(xMax, yMax, zMin, minOverlayX[2], minOverlayY[2]);
+				tessellator.addVertexWithUV(xMax, yMin, zMin, minOverlayX[2], maxOverlayY[2]);
+				tessellator.addVertexWithUV(xMin, yMin, zMin, maxOverlayX[2], maxOverlayY[2]);
+				tessellator.addVertexWithUV(xMin, yMax, zMin, maxOverlayX[2], minOverlayY[2]);	
+			}
 			
 		}
 		
@@ -246,6 +310,15 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMin, yMin, zMax, minX[3], maxY[3]);
 			tessellator.addVertexWithUV(xMax, yMin, zMax, maxX[3], maxY[3]);
 			tessellator.addVertexWithUV(xMax, yMax, zMax, maxX[3], minY[3]);
+
+			if (hasOverlay[3]){
+				tessellator.addVertexWithUV(xMin, yMax, zMax, minOverlayX[3], minOverlayY[3]);
+				tessellator.addVertexWithUV(xMin, yMin, zMax, minOverlayX[3], maxOverlayY[3]);
+				tessellator.addVertexWithUV(xMax, yMin, zMax, maxOverlayX[3], maxOverlayY[3]);
+				tessellator.addVertexWithUV(xMax, yMax, zMax, maxOverlayX[3], minOverlayY[3]);	
+			}
+						
+			
 		}
 		
 		if (renderSide[4])
@@ -255,6 +328,13 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMin, yMax, zMax, minX[4], minY[4]);
 			tessellator.addVertexWithUV(xMin, yMax, zMin, maxX[4], minY[4]);
 			tessellator.addVertexWithUV(xMin, yMin, zMin, maxX[4], maxY[4]);
+			
+			if (hasOverlay[4]){
+				tessellator.addVertexWithUV(xMin, yMin, zMax, minOverlayX[4], minOverlayY[4]);
+				tessellator.addVertexWithUV(xMin, yMax, zMax, minOverlayX[4], maxOverlayY[4]);
+				tessellator.addVertexWithUV(xMin, yMax, zMin, maxOverlayX[4], maxOverlayY[4]);
+				tessellator.addVertexWithUV(xMin, yMin, zMin, maxOverlayX[4], minOverlayY[4]);	
+			}			
 		}
 		
 		if (renderSide[5])
@@ -264,6 +344,13 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMax, yMax, zMin, minX[5], minY[5]);
 			tessellator.addVertexWithUV(xMax, yMax, zMax, maxX[5], minY[5]);
 			tessellator.addVertexWithUV(xMax, yMin, zMax, maxX[5], maxY[5]);
+			
+			if (hasOverlay[5]){
+				tessellator.addVertexWithUV(xMax, yMin, zMin, minOverlayX[5], minOverlayY[5]);
+				tessellator.addVertexWithUV(xMax, yMax, zMin, minOverlayX[5], maxOverlayY[5]);
+				tessellator.addVertexWithUV(xMax, yMax, zMax, maxOverlayX[5], maxOverlayY[5]);
+				tessellator.addVertexWithUV(xMax, yMin, zMax, maxOverlayX[5], minOverlayY[5]);	
+			}					
 		}
 		
 		return true;

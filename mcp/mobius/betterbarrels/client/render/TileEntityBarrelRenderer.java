@@ -32,40 +32,6 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 		return _instance;
 	}
 	
-	//TODO : Removed 2nd pass to test rendering speed
-	/*
-	public void secondPassRendering(TileEntityBarrel barrelEntity, Coordinates barrelPos) {
-		int blockOrientation = barrelEntity.blockOrientation;
-
-        String textureFile = BLOCK_FILE;
-        
-        if (mod_BetterBarrels.highRezTexture)
-        	textureFile = BLOCK32_FILE;
-		
-    	for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){	        
-        	//Here we render the sign itself (and so, we can control it in funky ways !)
-        	if (this.isItemDisplaySide(forgeSide, blockOrientation)){
-
-    	        GL11.glEnable(GL11.GL_BLEND);
-    	        //GL11.glDisable(GL11.GL_CULL_FACE);
-    	        //GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_SRC_ALPHA);
-    	        GL11.glBlendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
-    	        //GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_SRC_ALPHA);
-    	        GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
-    	        GL11.glDepthMask(false);     
-    	        
-    	        this.renderBarrelSide(textureFile, 3, forgeSide, barrelPos, false, true);
-    	        
-    			GL11.glDepthMask(true);
-     
-        		
-    			GL11.glDisable(GL11.GL_BLEND);
-        	}
-    	}		
-		
-	}
-	*/
-	
 	@Override
 	public void renderTileEntityAt(TileEntity tileEntity, double xpos, double ypos, double zpos, float var8) {
 		if (tileEntity instanceof TileEntityBarrel)
@@ -101,16 +67,6 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 					this.renderTextOnBlock(barrelString, forgeSide, orientation, barrelPos, 2.0F, 128.0F, 10.0F, 255, 255, 255, 0, true);
 					
 				}
-
-				//TODO : Simplified version for speed
-				if (barrelEntity.storage.isGhosting() && this.isItemDisplaySide(barrelEntity, forgeSide))
-					this.renderIconOnBlock(8, forgeSide, orientation, barrelPos, 2F, 223F, 215F, -0.01F);				
-				
-				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.REDSTONE)
-					this.renderIconOnBlock(10, forgeSide, orientation, barrelPos, 8F, 64F, 64F, -0.01F);
-
-				if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.HOPPER)
-					this.renderIconOnBlock(11, forgeSide, orientation, barrelPos, 8F, 64F, 64F, -0.01F);				
 				
 				if (isHammer && this.isItemDisplaySide(barrelEntity, forgeSide)){
 					int offsetY = 0;
@@ -201,28 +157,5 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.STICKER) return true;
 		return false;
 	}
-	
-    //TODO : Desactivated to test rendering speed
-    /*
-    private void renderPlasma(ForgeDirection side, Coordinates barrelPos){
-    	GL11.glPushMatrix();
-
-    	//GL11.glBindTexture(GL11.GL_TEXTURE_2D, PlasmaTexture.getTextureIndex());
-    	
-    	PlasmaTexture.bindTexture();
-
-        GL11.glTranslated(barrelPos.x + 0.5F, barrelPos.y + 0.5F, barrelPos.z + 0.5F);     // We align the rendering on the center of the block
-        GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
-        GL11.glRotatef(this.getRotationYForSide(side), 0.0F, 1.0F, 0.0F); // We rotate it so it face the right face
-        GL11.glRotatef(this.getRotationXForSide(side), 1.0F, 0.0F, 0.0F);
-        GL11.glTranslated(-0.5F, -0.5F, -0.5F);
-        GL11.glScalef(scale*4.0F, scale*4.0F, 0.0000F);
-
-        this.drawTexturedModalRect(0, 0, 16, 16, 16, 16);    	
-    	
-        GL11.glPopMatrix();    	
-    }
-    */
-    
-    
+   
 }
