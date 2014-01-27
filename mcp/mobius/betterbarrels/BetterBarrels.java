@@ -14,6 +14,7 @@ import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
+import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
@@ -61,7 +62,6 @@ public class BetterBarrels {
 	private static int itemUpgradeSideID = -1;
 	private static int itemMoverID = -1;
 	private static int itemTuningForkID = -1;	
-	private static int itemBSpaceUpgID = -1;
 	private static int itemLockingPlanksID = -1;
 	private static int itemHammerID = -1;
 	
@@ -78,7 +78,6 @@ public class BetterBarrels {
 	public static Item itemUpgradeSide   = null;
 	public static Item itemMover         = null;
 	public static Item itemTuningFork    = null;
-	public static Item itemBSpaceUpg     = null;	
 	public static Item itemLockingPlanks = null;
 	public static Item itemHammer = null;
 	
@@ -104,7 +103,6 @@ public class BetterBarrels {
 			itemUpgradeSideID       = config.get("item",   "Sticker",         3502).getInt();
 			itemMoverID         = config.get("item",   "Mover",           3503).getInt();
 			itemTuningForkID    = config.get("item",   "TuningFork",      3504).getInt();
-			itemBSpaceUpgID     = config.get("item",   "BSpaceUpg",       3505).getInt();
 			itemLockingPlanksID = config.get("item",   "LockingPlanks",   3506).getInt();	
 			itemUpgradeCoreID   = config.get("item",   "UpgradeCore",     3507).getInt();
 			itemHammerID        = config.get("item",   "Hammer",          3508).getInt();			
@@ -140,21 +138,21 @@ public class BetterBarrels {
 		itemUpgradeSide       = new ItemUpgradeSide(itemUpgradeSideID);
 		itemMover             = new ItemBarrelMover(itemMoverID);
 		itemHammer            = new ItemBarrelHammer(itemHammerID);
+		itemTuningFork        = new ItemTuningFork(itemTuningForkID);
 		
 		LanguageRegistry.addName(blockBarrel, "Better Barrel");
 		LanguageRegistry.addName(new ItemStack(itemMover,0,0),    moverName);
 		LanguageRegistry.addName(new ItemStack(itemHammer,0,0),   "Barrel Hammer");
-
+		LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
+		
 		//blockMiniBarrel     = new BlockMiniBarrel(miniBarrelID);
 		//blockBarrelShelf    = new BlockBarrelShelf(barrelShelfID);		
-		//itemTuningFork      = new ItemTuningFork(itemTuningForkID);
-		//itemBSpaceUpg       = new ItemBSpaceInterface(itemBSpaceUpgID);
-		
+
+				
 		//LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
 		//LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
-		//LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
-		//LanguageRegistry.addName(itemBSpaceUpg,   "B-Space Interface (WIP)");
 		
+				
 		for(int i=0; i<ItemUpgradeStructural.upgradeNames.length; i++){
 			ItemStack upgrade = new ItemStack(itemUpgradeStructural, 1, i);
 			LanguageRegistry.addName(upgrade, ItemUpgradeStructural.upgradeNames[i]);
@@ -182,9 +180,6 @@ public class BetterBarrels {
 		proxy.registerRenderers();
 		proxy.registerEventHandler();		
 
-		//GameRegistry.addRecipe(new ItemStack(itemTuningFork, 1, 0), new Object[]
-		//		{" P "," PP", "P  ", 'P', Item.ingotIron});		
-		
         //TickRegistry.registerTickHandler(new BarrelServerTickHandler(), Side.SERVER);
         FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
 	}

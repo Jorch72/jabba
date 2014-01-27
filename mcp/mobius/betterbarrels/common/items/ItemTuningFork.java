@@ -2,10 +2,8 @@ package mcp.mobius.betterbarrels.common.items;
 
 import java.util.Random;
 
-import mcp.mobius.betterbarrels.mod_BetterBarrels;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
-import mcp.mobius.betterbarrels.common.StorageLocal;
-import mcp.mobius.betterbarrels.common.TileEntityBarrel;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -34,7 +32,7 @@ public class ItemTuningFork extends Item {
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	this.itemIcon  = par1IconRegister.registerIcon(mod_BetterBarrels.modid + ":" + "bspace_fork");
+    	this.itemIcon  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "bspace_fork");
     }		
 	
 	/*

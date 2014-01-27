@@ -48,7 +48,13 @@ public class RecipeHandler {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemHammer, 1, 0), new Object[]
 				{"III","ISI", " S ", 
 			 Character.valueOf('I'), "ingotIron", 
-			 Character.valueOf('S'), Item.stick}));			
+			 Character.valueOf('S'), Item.stick}));	
+		
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemTuningFork, 1, 0), new Object[]
+				{" P "," EP", "P  ", 
+				'P', "ingotIron",
+				'E', Item.enderPearl
+				}));		
 	}
 	
 	private void addStructuralUpgrade(int level, Item variableComponent){
