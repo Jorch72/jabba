@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.ForgeDirection;
@@ -120,6 +121,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		int worldHeight = world.getHeight();
 		BlockBarrel block       = (BlockBarrel)tile;	
 		TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
+		ItemStack        stack  = barrel.storage.getItem();
 		Tessellator tessellator = Tessellator.instance;
 		
 		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock;
@@ -133,8 +135,10 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		iconSideRS     = BlockBarrel.text_siders;
 		iconLock       = BlockBarrel.text_lock;
 		
-		//if (barrel.storage.hasItem())
-		//	iconStack = barrel.storage.getItem().getItem().getIconFromDamage(barrel.storage.getItem().getItemDamage());
+		/*
+		if (barrel.storage.hasItem())
+			iconStack = stack.getItem().getIconFromDamage(stack.getItemDamage());
+		*/
 		
 		double minXSide = iconSide.getMinU();
 		double maxXSide = iconSide.getMaxU();
@@ -350,7 +354,22 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 				tessellator.addVertexWithUV(xMax, yMax, zMin, minOverlayX[5], maxOverlayY[5]);
 				tessellator.addVertexWithUV(xMax, yMax, zMax, maxOverlayX[5], maxOverlayY[5]);
 				tessellator.addVertexWithUV(xMax, yMin, zMax, maxOverlayX[5], minOverlayY[5]);	
-			}					
+			}
+
+			if (stack != null){
+				
+			}
+			
+			/*
+			if (iconStack != null){
+				System.out.printf("%s\n",iconStack.getIconName());
+				tessellator.addVertexWithUV(xMax + 1.0, yMin, zMin, minXStack, minYStack);
+				tessellator.addVertexWithUV(xMax, yMax, zMin, minXStack, maxYStack);
+				tessellator.addVertexWithUV(xMax, yMax, zMax, maxXStack, maxYStack);
+				tessellator.addVertexWithUV(xMax, yMin, zMax, maxXStack, minYStack);				
+			}
+			*/
+
 		}
 		
 		return true;

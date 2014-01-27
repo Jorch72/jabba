@@ -52,10 +52,10 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         	boolean hasItem  = barrelEntity.storage.hasItem();
         	
         	int color = ItemUpgradeStructural.textColor[barrelEntity.levelStructural];
-        	
+
 	        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){					
 				this.setLight(barrelEntity, forgeSide);
-					
+				
 				if (hasItem &&  this.isItemDisplaySide(barrelEntity, forgeSide))
 				{
 					if (forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP)

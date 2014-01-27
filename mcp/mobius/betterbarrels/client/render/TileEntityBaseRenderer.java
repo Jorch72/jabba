@@ -44,7 +44,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         int ambientLight = tileEntity.worldObj.getLightBrightnessForSkyBlocks(tileEntity.xCoord + side.offsetX, tileEntity.yCoord + side.offsetY, tileEntity.zCoord + side.offsetZ, 0);
         int var6 = ambientLight % 65536;
         int var7 = ambientLight / 65536;
-        float var8 = 0.8F;
+        float var8 = 1.0F;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, var6 * var8, var7 * var8);		
 	}    
 
@@ -92,7 +92,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
     	GL11.glPushMatrix();
 
     	this.alignRendering(side, orientation, barrelPos);
-        this.moveRendering(size, posx, posy, -0.01, 0.1f);
+        this.moveRendering(size, posx, posy, -0.001);
         
         if (!ForgeHooksClient.renderInventoryItem(this.renderBlocks, this.texManager, stack, true, 0.0F, 0.0F, 0.0F))
         {
@@ -123,14 +123,10 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 	}
 	
 	protected void moveRendering(float size, double posX, double posY, double posz){
-		this.moveRendering(size, posX, posY, posz, 0.0f);
-	}	
-
-	protected void moveRendering(float size, double posX, double posY, double posz, float flatenning){
 		GL11.glTranslated(0, 0, posz);
-        GL11.glScalef(scale, scale, flatenning);			  // We flatten the rendering and scale it to the right size
+        GL11.glScalef(scale, scale, -0.0001f);			  // We flatten the rendering and scale it to the right size
         GL11.glTranslated(posX, posY, 0);		  // Finally, we translate the icon itself to the correct position
-        GL11.glScalef(size, size, 0);		
+        GL11.glScalef(size, size, 1.0f);		
 	}		
 	
     protected float getRotationYForSide(ForgeDirection side, ForgeDirection orientation){
