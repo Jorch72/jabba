@@ -24,9 +24,6 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
     protected static ItemStack coreRedstone = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 2);
     protected static ItemStack coreHopper   = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 3);	
 	
-    //protected int textureSideRef = Minecraft.getMinecraft().renderEngine.getTexture("/mcp/mobius/betterbarrels/textures/block.png");
-    //protected int textureIconRef = Minecraft.getMinecraft().renderEngine.getTexture("/mcp/mobius/betterbarrels/textures/items.png");
-
 	public static TileEntityBarrelRenderer instance(){
 		if (_instance == null)
 			_instance = new TileEntityBarrelRenderer();
@@ -39,11 +36,9 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         {
 			this.saveState();
 			
-			// First, we get the associated block metadata for orientation
-			//int blockOrientation = ((TileEntityBarrel) tileEntity).orientation.ordinal();
 			ForgeDirection orientation    = ((TileEntityBarrel) tileEntity).orientation;
 			TileEntityBarrel barrelEntity = (TileEntityBarrel)tileEntity;
-			Coordinates barrelPos = new Coordinates(xpos, ypos, zpos);
+			Coordinates barrelPos         = new Coordinates(xpos, ypos, zpos);
 			
 	        GL11.glDisable(GL11.GL_BLEND);
 	        GL11.glDisable(GL11.GL_LIGHTING);  			
@@ -52,19 +47,17 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         	boolean hasItem  = barrelEntity.storage.hasItem();
         	
         	int color = ItemUpgradeStructural.textColor[barrelEntity.levelStructural];
-
+        	
 	        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){					
-				this.setLight(barrelEntity, forgeSide);
-				
-				if (hasItem &&  this.isItemDisplaySide(barrelEntity, forgeSide))
-				{
+				if (hasItem &&  this.isItemDisplaySide(barrelEntity, forgeSide)){
+					this.setLight(barrelEntity, forgeSide);
+					
 					if (forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP)
 						this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 64.0F);
 					else
 						this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 75.0F);
 					String barrelString = this.getBarrelString(barrelEntity);
 					this.renderTextOnBlock(barrelString, forgeSide, orientation, barrelPos, 2.0F, 128.0F, 10.0F, color, TileEntityBaseRenderer.ALIGNCENTER);
-					
 				}
 	        }
 				
