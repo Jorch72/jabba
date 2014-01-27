@@ -36,6 +36,10 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 	protected boolean hasLight;
 	protected int   boundTexIndex;    
     
+	protected static byte ALIGNLEFT = 0x00;
+	protected static byte ALIGNCENTER = 0x01;
+	protected static byte ALIGNRIGHT = 0x02;
+	
 	protected void setLight(TileEntity tileEntity, ForgeDirection side){
         int ambientLight = tileEntity.worldObj.getLightBrightnessForSkyBlocks(tileEntity.xCoord + side.offsetX, tileEntity.yCoord + side.offsetY, tileEntity.zCoord + side.offsetZ, 0);
         int var6 = ambientLight % 65536;
@@ -43,8 +47,13 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         float var8 = 0.8F;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, var6 * var8, var7 * var8);		
 	}    
-    
-	protected void renderTextOnBlock(String renderString, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, int red, int green, int blue, int alpha, boolean centered){
+
+	protected void renderTextOnBlock(String renderString, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, int red, int green, int blue, int alpha, byte align){
+		int color = (alpha << 24) | (red << 16) | (blue << 8) | green;
+		this.renderTextOnBlock(renderString, side, orientation, barrelPos, size, posx, posy, color, align);
+	}
+	
+	protected void renderTextOnBlock(String renderString, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, int color, byte align){
 
     	if (renderString == null || renderString.equals("")){return;}
         	
@@ -58,16 +67,21 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
         GL11.glDepthMask(false);            	
         GL11.glDisable(GL11.GL_LIGHTING);
 
-        int color = (alpha << 24) | (red << 16) | (blue << 8) | green;
-        
-        if (centered){
-        	this.getFontRenderer().drawString(renderString, -stringWidth / 2, 0, color);
-        } else {
+        switch (align){
+        case 0:
         	this.getFontRenderer().drawString(renderString, 0, 0, color);
+        	break;
+        case 1:
+        	this.getFontRenderer().drawString(renderString, -stringWidth / 2, 0, color);
+        	break;
+        case 2:
+        	this.getFontRenderer().drawString(renderString, -stringWidth, 0, color);
+        	break;        	
         }
         
         GL11.glDepthMask(true);
-        GL11.glPopMatrix();       
+        GL11.glPopMatrix();
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
 	protected void renderStackOnBlock(ItemStack stack, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy){

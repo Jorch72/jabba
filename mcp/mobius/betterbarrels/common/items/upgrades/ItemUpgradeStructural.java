@@ -22,6 +22,15 @@ public class ItemUpgradeStructural extends ItemUpgrade{
 			 						 		"Capacity MKVI (End stone)",
 			 						 		"Capacity MKVII (Emerald)" };
 	
+    public static int[] textColor = {
+    		0x00FFFFFF,
+    		0x00FFFFFF,
+	 		0x00000000,
+	 		0x00000000,
+	 		0x00000000,
+	 		0x00FFFFFF,
+	 		0x00000000,
+	 		0x00000000,};    
 	
     public ItemUpgradeStructural(int par1)
     {
