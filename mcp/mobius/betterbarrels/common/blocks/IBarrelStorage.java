@@ -9,6 +9,7 @@ public interface IBarrelStorage extends ISidedInventory, IDeepStorageUnit{
 	
 	public boolean   hasItem();
 	public ItemStack getItem();
+	public ItemStack getItemForRender();
 	public void      setItem(ItemStack stack);
     public boolean   sameItem(ItemStack stack);
     

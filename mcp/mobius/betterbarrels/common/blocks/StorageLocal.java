@@ -2,6 +2,7 @@ package mcp.mobius.betterbarrels.common.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
@@ -12,7 +13,8 @@ public class StorageLocal implements IBarrelStorage{
 	private ItemStack prevInputStack  = null;
 	private ItemStack outputStack     = null;	// Slot 1
 	private ItemStack prevOutputStack = null;
-	private ItemStack itemTemplate    = null;
+	private ItemStack itemTemplate      = null;
+	private ItemStack renderingTemplate = null;
 	private boolean   inventoryDirty  = false;
 	
 	private int totalAmount   = 0;	//Total number of items
@@ -46,6 +48,21 @@ public class StorageLocal implements IBarrelStorage{
 	public boolean   hasItem(){ return this.itemTemplate == null ? false : true; }
     @Override    
 	public ItemStack getItem(){ return this.itemTemplate; }
+    @Override
+    public ItemStack getItemForRender(){
+    	if (this.renderingTemplate == null){
+			this.renderingTemplate = this.itemTemplate.copy();    		
+    		if (this.renderingTemplate.hasTagCompound() && this.renderingTemplate.getTagCompound().hasKey("ench"))
+    			this.renderingTemplate.getTagCompound().removeTag("ench");
+    		if (this.renderingTemplate.hasTagCompound() && this.renderingTemplate.getTagCompound().hasKey("CustomPotionEffects"))
+    			this.renderingTemplate.getTagCompound().removeTag("CustomPotionEffects");    		
+    		if (this.renderingTemplate.itemID == Item.potion.itemID)
+    			this.renderingTemplate.setItemDamage(0);
+    	}
+    	return this.renderingTemplate;
+    }
+    
+    
     @Override	
 	public void      setItem(ItemStack stack){
     	if (stack != null){
@@ -53,6 +70,7 @@ public class StorageLocal implements IBarrelStorage{
     		this.itemTemplate.stackSize = 0;
     	} else {
     		this.itemTemplate = null;
+    		this.renderingTemplate = null;
     	}
 	}    
     
@@ -346,6 +364,7 @@ public class StorageLocal implements IBarrelStorage{
 			this.itemTemplate = null;
 			this.outputStack  = null;
 			this.inputStack   = null;
+			this.renderingTemplate = null;			
 		}
 		
 		this.prevOutputStack = this.outputStack != null ? this.outputStack.copy() : null;

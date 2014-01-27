@@ -53,9 +53,9 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 					this.setLight(barrelEntity, forgeSide);
 					
 					if (forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP)
-						this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 64.0F);
+						this.renderStackOnBlock(barrelEntity.storage.getItemForRender(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 64.0F);
 					else
-						this.renderStackOnBlock(barrelEntity.storage.getItem(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 75.0F);
+						this.renderStackOnBlock(barrelEntity.storage.getItemForRender(), forgeSide, orientation, barrelPos, 8.0F, 65.0F, 75.0F);
 					String barrelString = this.getBarrelString(barrelEntity);
 					this.renderTextOnBlock(barrelString, forgeSide, orientation, barrelPos, 2.0F, 128.0F, 10.0F, color, TileEntityBaseRenderer.ALIGNCENTER);
 				}
