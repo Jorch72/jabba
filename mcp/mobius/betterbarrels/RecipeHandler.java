@@ -4,6 +4,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class RecipeHandler {
@@ -11,6 +12,16 @@ public class RecipeHandler {
 	public static RecipeHandler _instance = new RecipeHandler();
 	private RecipeHandler(){}
 	public static RecipeHandler instance() { return RecipeHandler._instance; }	
+	
+	public void registerOres(){
+		OreDictionary.registerOre("ingotIron",  Item.ingotIron);
+		OreDictionary.registerOre("ingotGold",  Item.ingotGold);
+		OreDictionary.registerOre("slimeball",  Item.slimeBall);
+		OreDictionary.registerOre("gemDiamond", Item.diamond);
+		OreDictionary.registerOre("gemEmerald", Item.emerald);
+		OreDictionary.registerOre("chestWood",  Block.chest);
+		OreDictionary.registerOre("stickWood",  Item.stick);		
+	}
 	
 	public void registerRecipes(){
 		this.addStructuralUpgrade(0, "plankWood");
@@ -48,12 +59,12 @@ public class RecipeHandler {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemHammer, 1, 0), new Object[]
 				{"III","ISI", " S ", 
 			 Character.valueOf('I'), "ingotIron", 
-			 Character.valueOf('S'), Item.stick}));	
+			 Character.valueOf('S'), "stickWood"}));	
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemTuningFork, 1, 0), new Object[]
 				{" P "," EP", "P  ", 
-				'P', "ingotIron",
-				'E', Item.enderPearl
+			Character.valueOf('P'), "ingotIron",
+			Character.valueOf('E'), Item.enderPearl
 				}));		
 	}
 	

@@ -119,15 +119,7 @@ public class BetterBarrels {
 			config.save();
 		}
 		
-		OreDictionary.registerOre("ingotIron",  Item.ingotIron);
-		OreDictionary.registerOre("ingotGold",  Item.ingotGold);
-		OreDictionary.registerOre("slimeball",  Item.slimeBall);
-		OreDictionary.registerOre("gemDiamond", Item.diamond);
-		OreDictionary.registerOre("gemEmerald", Item.emerald);
-		OreDictionary.registerOre("chestWood",  Block.chest);
-		
-		//PlasmaTexture.precomputeTables();
-		//PlasmaTexture.generateTexture();
+		RecipeHandler.instance().registerOres();
 	}
 	
 	@EventHandler
