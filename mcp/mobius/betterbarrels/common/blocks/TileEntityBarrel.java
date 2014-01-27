@@ -567,7 +567,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
 	public ItemStack getStackInSlot(int islot) {
 		ItemStack stack = this.storage.getStackInSlot(islot);
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
+		this.onInventoryChanged();
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 		return stack; 
 	}
 	@Override
@@ -579,12 +580,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		else
 			stack = this.storage.decrStackSize(islot, quantity);
 		
+		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 		return stack;
 	}
 	@Override
 	public void setInventorySlotContents(int islot, ItemStack stack) { 
 		this.storage.setInventorySlotContents(islot, stack);
+		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	@Override
@@ -615,12 +618,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
 	public void setStoredItemCount(int amount) {
 		this.storage.setStoredItemCount(amount);
+		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
 		this.storage.setStoredItemType(type, amount);
+		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 

@@ -162,6 +162,8 @@ public class StorageLocal implements IBarrelStorage{
     
 	@Override	
     public ItemStack getStack(int amount){
+		this.onInventoryChanged();
+		
 		ItemStack retStack = null;
 		if (this.hasItem()){
 			amount = Math.min(amount, this.getItem().getMaxStackSize());
@@ -171,6 +173,7 @@ public class StorageLocal implements IBarrelStorage{
 			this.totalAmount  -= amount;
 			retStack.stackSize = amount;
 		}
+		
 		this.onInventoryChanged();		
 		return retStack;    	
     }
