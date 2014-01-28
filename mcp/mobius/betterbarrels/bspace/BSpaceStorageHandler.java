@@ -32,35 +32,21 @@ public class BSpaceStorageHandler {
 	public static BSpaceStorageHandler instance() { return BSpaceStorageHandler._instance; }		
 
 	public HashMap<Integer, Coordinates> registeredStorages = new HashMap<Integer, Coordinates>();
-	public HashMap<Integer, HashSet<Integer>> links          = new HashMap<Integer, HashSet<Integer>>(); 
+	public HashMap<Integer, HashSet<Integer>> links         = new HashMap<Integer, HashSet<Integer>>(); 
 	
 	private int maxID   = 0;
-	
+
 	public int getNextID(){
 		this.maxID += 1;
 		return this.maxID;
 	}
-	
-	/*
-	public int registerStorage(int dim, int x, int y, int z){
-		this.registeredStorages.put(++id, new Coordinates(dim,x,y,z));
-		System.out.printf("Registered new storage at %d %d %d %d with id %d\n", dim, x, y, z, id);
-		return id;
-	}
-	*/
-	
+
 	public void updateStorage(int id, int dim, int x, int y, int z){
 		this.registeredStorages.put(id, new Coordinates(dim,x,y,z));
 		this.writeToFile();
 	}	
-	
-	public void removeStorage(int id){
-		/*
-		this.registeredStorages.remove(id);
-		this.writeToFile();
-		*/		
-	}
 
+	/*
 	public void linkStorages(int source, int target){
 
 		if (!links.containsKey(source))
@@ -115,6 +101,7 @@ public class BSpaceStorageHandler {
 		}
 		return null;
 	}
+	*/
 	
 	private void writeToNBT(NBTTagCompound nbt){
 		nbt.setInteger("maxID",   this.maxID);

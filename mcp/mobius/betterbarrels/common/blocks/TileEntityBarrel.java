@@ -99,23 +99,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			this.worldObj.loadedTileEntityList.remove(this);
 	}
 	
-	@Override
-	public void invalidate(){
-		super.invalidate();
-		if (!this.worldObj.isRemote)
-			BSpaceStorageHandler.instance().removeStorage(this.id);
-	}	
-	
-	/*
-	private void setTicking(){
-		if (this.worldObj == null) return;
-		if (this.isTicking)
-			this.startTicking();
-		else
-			this.stopTicking();
-	}
-	*/
-	
 	/* SLOT HANDLING */
 	
 	public int getMaxUpgradeSlots(){
@@ -265,18 +248,18 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}		
 
-		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null){
-			BarrelPacketHandler.sendChat(player, "The fork has lost the original source.");
-			stack.setItemDamage(0);
-			stack.setTagCompound(new NBTTagCompound());			
-			return;			
-		}
+		//if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null){
+		//	BarrelPacketHandler.sendChat(player, "The fork has lost the original source.");
+		//	stack.setItemDamage(0);
+		//	stack.setTagCompound(new NBTTagCompound());			
+		//	return;			
+		//}
 		
 		BarrelPacketHandler.sendChat(player, "Barrels are resonating together.");	
 		stack.setItemDamage(0);
 		stack.setTagCompound(new NBTTagCompound());
 		
-		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
+		//BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
 	}	
 	
 	/* UPGRADE ACTIONS */
@@ -368,7 +351,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (this.sideUpgrades[side.ordinal()] != UpgradeSide.NONE) {return;}
 		
 		if (type == UpgradeSide.STICKER){
-			//if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
 			this.sideUpgrades[side.ordinal()] = UpgradeSide.STICKER;
 			this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
 		}
