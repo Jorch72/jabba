@@ -168,6 +168,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	/* PLAYER INTERACTIONS */
 	
 	public void leftClick(EntityPlayer player){
+		if (this.worldObj.isRemote) return;		
+		
 		ItemStack droppedStack = null;
 		if (player.isSneaking())
 			droppedStack = this.storage.getStack(1); 
@@ -182,6 +184,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}
 	
 	public void rightClick(EntityPlayer player, int side){
+		if (this.worldObj.isRemote) return;
+		
 		ItemStack stack = player.getHeldItem();
 
 		if (!player.isSneaking() && stack != null && (stack.getItem() instanceof ItemBarrelHammer))
@@ -261,10 +265,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 		
 		BarrelPacketHandler.sendChat(player, "Barrels are resonating together.");	
-		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
-		
 		stack.setItemDamage(0);
 		stack.setTagCompound(new NBTTagCompound());
+		
+		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
 	}	
 	
 	/* UPGRADE ACTIONS */

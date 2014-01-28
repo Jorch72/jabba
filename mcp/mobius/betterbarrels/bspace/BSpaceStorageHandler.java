@@ -32,7 +32,7 @@ public class BSpaceStorageHandler {
 	public static BSpaceStorageHandler instance() { return BSpaceStorageHandler._instance; }		
 
 	public HashMap<Integer, Coordinates> registeredStorages = new HashMap<Integer, Coordinates>();
-	public HashMap<Integer, ArrayList<Integer>> links          = new HashMap<Integer, ArrayList<Integer>>(); 
+	public HashMap<Integer, HashSet<Integer>> links          = new HashMap<Integer, HashSet<Integer>>(); 
 	
 	private int maxID   = 0;
 	
@@ -55,23 +55,49 @@ public class BSpaceStorageHandler {
 	}	
 	
 	public void removeStorage(int id){
+		/*
 		this.registeredStorages.remove(id);
-		this.writeToFile();		
-		System.out.printf("Removed storage with id %d\n", id);		
+		this.writeToFile();
+		*/		
 	}
 
 	public void linkStorages(int source, int target){
 
 		if (!links.containsKey(source))
-			links.put(source, new ArrayList<Integer>());
+			links.put(source, new HashSet<Integer>());
 		
-		links.put(target, new ArrayList<Integer>());
+		// We create a new set for this barrel
+		links.put(target, new HashSet<Integer>());
+
+		// We remove all references of this target in the current link table
+		for (HashSet<Integer> set : links.values())
+			set.remove(target);
 		
+		// We add this target to the source
 		links.get(source).add(target);
-		links.get(target).add(source);
 		
-		BSpaceStorageHandler.instance().getBarrel(source).isLinked = true;
-		BSpaceStorageHandler.instance().getBarrel(target).isLinked = true;
+		// We add the source, target and all previous targets to a tempo hashset
+		HashSet<Integer> transferSet = new HashSet<Integer>();
+		transferSet.add(source);
+		transferSet.add(target);
+		transferSet.addAll(links.get(source));
+		
+		// We update the hashset of all the elements in the source hashset and remove self referencing.
+		for (Integer i : links.get(source)){
+			links.get(i).clear();
+			links.get(i).addAll(transferSet);
+			links.get(i).remove(i);
+			
+			TileEntityBarrel b = BSpaceStorageHandler.instance().getBarrel(i);
+			if (b != null)
+				b.isLinked = true;
+		}
+		
+		// Finally, we cleanup the mess by removing barrels without link data anymore
+		for (Integer i : links.keySet()){
+			if (links.get(i).size() == 0)
+				links.remove(i);
+		}
 		
 		this.writeToFile();		
 	}
@@ -108,13 +134,13 @@ public class BSpaceStorageHandler {
 	
 	private void readFromNBT(NBTTagCompound nbt){
 		this.maxID = nbt.hasKey("maxID") ? nbt.getInteger("maxID") : 0;
-		this.links = new HashMap<Integer, ArrayList<Integer>>();
+		this.links = new HashMap<Integer, HashSet<Integer>>();
 		
 		if (nbt.hasKey("links"))
 			for (Object obj : nbt.getCompoundTag("links").getTags()){
 				NBTTagIntArray tag = (NBTTagIntArray)obj;
 				int key = Integer.parseInt(tag.getName());
-				this.links.put(key, this.convertArrayList(tag.intArray));
+				this.links.put(key, this.convertHashSet(tag.intArray));
 			}
 		
 		if (nbt.hasKey("IDs")){
@@ -194,7 +220,7 @@ public class BSpaceStorageHandler {
     }
     
     
-    private int[] convertInts(List<Integer> integers)
+    private int[] convertInts(Set<Integer> integers)
     {
         int[] ret = new int[integers.size()];
         Iterator<Integer> iterator = integers.iterator();
@@ -205,9 +231,9 @@ public class BSpaceStorageHandler {
         return ret;
     }
     
-    private ArrayList<Integer> convertArrayList(int[] list)
+    private HashSet<Integer> convertHashSet(int[] list)
     {
-    	ArrayList<Integer> ret = new ArrayList<Integer>();
+    	HashSet<Integer> ret = new HashSet<Integer>();
     	for (int i = 0; i < list.length; i++)
     		ret.add(list[i]);
     	return ret;
