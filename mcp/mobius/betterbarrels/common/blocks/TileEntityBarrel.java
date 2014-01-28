@@ -55,7 +55,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public boolean isTicking          = false;
 	public byte    nStorageUpg        = 0;
 	public byte    nTicks             = 0;
-	public int     id                 = BSpaceStorageHandler.instance().getNextID();
+	public long    id                 = -1;
 	
 	public LogicHopper logicHopper    = LogicHopper.instance();
 	
@@ -92,7 +92,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
 	public void invalidate(){
 		super.invalidate();
-		BSpaceStorageHandler.instance().removeStorage(this.id);
+		if (!this.worldObj.isRemote)
+			BSpaceStorageHandler.instance().removeStorage(this.id);
 	}	
 	
 	/*
@@ -451,6 +452,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
     public void writeToNBT(NBTTagCompound NBTTag)
     {
+		if (this.id == -1)
+			 this.id = BSpaceStorageHandler.instance().getNextID();
+		
 		BSpaceStorageHandler.instance().updateStorage(this.id, this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord);
 		
         super.writeToNBT(NBTTag);
@@ -466,7 +470,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setByte("nticks",           this.nTicks);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
         NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
-        NBTTag.setInteger("bspaceid", 	   this.id);
+        NBTTag.setLong("bspaceid", 	   this.id);
         
     }  	
 
@@ -491,7 +495,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
     	this.isTicking       = NBTTag.getBoolean("ticking");
     	this.nTicks          = NBTTag.getByte("nticks");
-    	this.id              = NBTTag.getInteger("bspaceid");
+    	this.id              = NBTTag.getLong("bspaceid");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     	
     	if (this.worldObj != null){
@@ -532,6 +536,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.storage.setGhosting(storage.isGhosting());
     	this.storage.setStoredItemType(storage.getItem(), storage.getAmount());
 
+    	// We get a new id
+    	this.id = BSpaceStorageHandler.instance().getNextID();
+    	
+    	// We update the rendering if possible
+    	if (this.worldObj != null){
+        	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
+    	}    	
+    	
     	//this.worldObj.setBlockMetadataWithNotify(this.xCoord, this.yCoord, this.zCoord, 1, 1 & 2);
 	}
 	

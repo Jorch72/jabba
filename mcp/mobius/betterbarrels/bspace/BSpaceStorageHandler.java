@@ -20,13 +20,13 @@ public class BSpaceStorageHandler {
 	private BSpaceStorageHandler(){}
 	public static BSpaceStorageHandler instance() { return BSpaceStorageHandler._instance; }		
 
-	public HashMap<Integer, Coordinates> registeredStorages = new HashMap<Integer, Coordinates>();
+	public HashMap<Long, Coordinates> registeredStorages = new HashMap<Long, Coordinates>();
 	
-	private int topID = 0;
+	private long maxID = 0;
 	
-	public int getNextID(){
-		this.topID += 1;
-		return this.topID;
+	public long getNextID(){
+		this.maxID += 1;
+		return this.maxID;
 	}
 	
 	/*
@@ -37,15 +37,27 @@ public class BSpaceStorageHandler {
 	}
 	*/
 	
-	public void updateStorage(int id, int dim, int x, int y, int z){
+	public void updateStorage(long id, int dim, int x, int y, int z){
 		this.registeredStorages.put(id, new Coordinates(dim,x,y,z));
+		this.writeToFile();
 	}	
 	
-	public void removeStorage(int id){
+	public void removeStorage(long id){
 		this.registeredStorages.remove(id);
+		this.writeToFile();		
 		System.out.printf("Removed storage with id %d\n", id);		
 	}
 
+	
+	private void writeToNBT(NBTTagCompound nbt){
+		nbt.setLong("maxID", this.maxID);
+	}
+	
+	private void readFromNBT(NBTTagCompound nbt){
+		this.maxID = nbt.hasKey("maxID") ? nbt.getLong("maxID") : 0;
+	}
+	
+	/* FILE HANDLING */
 	
     private File saveDir;
     private File[] saveFiles;
@@ -55,6 +67,8 @@ public class BSpaceStorageHandler {
 	public void writeToFile(){
         try
         {
+        	this.writeToNBT(saveTag);
+        	
             File saveFile = saveFiles[saveTo];
             if(!saveFile.exists())
                 saveFile.createNewFile();
@@ -106,5 +120,7 @@ public class BSpaceStorageHandler {
         {
             throw new RuntimeException(e);
         }
+        
+        this.readFromNBT(saveTag);
     }	
 }
