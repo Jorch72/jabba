@@ -41,10 +41,24 @@ public class BSpaceStorageHandler {
 		return this.maxID;
 	}
 
-	public void updateStorage(int id, int dim, int x, int y, int z){
+	public void updateBarrel(int id, int dim, int x, int y, int z){
 		this.registeredStorages.put(id, new Coordinates(dim,x,y,z));
 		this.writeToFile();
 	}	
+
+	public TileEntityBarrel getBarrel(int id){
+		if (this.registeredStorages.containsKey(id)){
+			Coordinates coord = this.registeredStorages.get(id);
+			IBlockAccess world = DimensionManager.getWorld(coord.dim);
+			if (world == null) return null;
+			TileEntity   te    = world.getBlockTileEntity(MathHelper.floor_double(coord.x), MathHelper.floor_double(coord.y), MathHelper.floor_double(coord.z));
+			if (!(te instanceof TileEntityBarrel)) return null;
+			TileEntityBarrel barrel = (TileEntityBarrel)te;
+			if (barrel.id != id) return null;
+			return barrel;
+		}
+		return null;
+	}
 
 	/*
 	public void linkStorages(int source, int target){
@@ -87,21 +101,11 @@ public class BSpaceStorageHandler {
 		
 		this.writeToFile();		
 	}
+	*/	
 	
-	public TileEntityBarrel getBarrel(int id){
-		if (this.registeredStorages.containsKey(id)){
-			Coordinates coord = this.registeredStorages.get(id);
-			IBlockAccess world = DimensionManager.getWorld(coord.dim);
-			if (world == null) return null;
-			TileEntity   te    = world.getBlockTileEntity(MathHelper.floor_double(coord.x), MathHelper.floor_double(coord.y), MathHelper.floor_double(coord.z));
-			if (!(te instanceof TileEntityBarrel)) return null;
-			TileEntityBarrel barrel = (TileEntityBarrel)te;
-			if (barrel.id != id) return null;
-			return barrel;
-		}
-		return null;
-	}
-	*/
+	/*====================================*/
+	/*            NBT HANDLING            */
+	/*====================================*/
 	
 	private void writeToNBT(NBTTagCompound nbt){
 		nbt.setInteger("maxID",   this.maxID);
@@ -139,7 +143,9 @@ public class BSpaceStorageHandler {
 		}
 	}
 	
-	/* FILE HANDLING */
+	/*====================================*/
+	/*            FILE HANDLING           */
+	/*====================================*/
 	
     private File saveDir;
     private File[] saveFiles;
@@ -206,6 +212,9 @@ public class BSpaceStorageHandler {
         this.readFromNBT(saveTag);
     }
     
+	/*====================================*/
+	/*          TYPE CONVERSION           */
+	/*====================================*/    
     
     private int[] convertInts(Set<Integer> integers)
     {

@@ -217,7 +217,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		//stack.setItemDamage(stack.getMaxDamage());
 		stack.setItemDamage(1);
 		stack.setTagCompound(new NBTTagCompound());
-		stack.getTagCompound().setInteger("tuneID", this.id);
+		stack.getTagCompound().setInteger("tuneID",     this.id);
 		stack.getTagCompound().setInteger("structural", this.levelStructural);
 		stack.getTagCompound().setByte("storage",       this.nStorageUpg);
 		
@@ -248,12 +248,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}		
 
-		//if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null){
-		//	BarrelPacketHandler.sendChat(player, "The fork has lost the original source.");
-		//	stack.setItemDamage(0);
-		//	stack.setTagCompound(new NBTTagCompound());			
-		//	return;			
-		//}
+		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null){
+			BarrelPacketHandler.sendChat(player, "The fork has lost the original source.");
+			stack.setItemDamage(0);
+			stack.setTagCompound(new NBTTagCompound());			
+			return;			
+		}
 		
 		BarrelPacketHandler.sendChat(player, "Barrels are resonating together.");	
 		stack.setItemDamage(0);
@@ -531,7 +531,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (this.id == -1)
 			 this.id = BSpaceStorageHandler.instance().getNextID();
 		
-		BSpaceStorageHandler.instance().updateStorage(this.id, this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord);
+		BSpaceStorageHandler.instance().updateBarrel(this.id, this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord);
 		
         super.writeToNBT(NBTTag);
         NBTTag.setInteger("version",       TileEntityBarrel.version);        
