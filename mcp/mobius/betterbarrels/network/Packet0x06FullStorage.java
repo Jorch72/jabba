@@ -40,7 +40,7 @@ public class Packet0x06FullStorage{
 			outputStream.writeInt(barrel.xCoord);
 			outputStream.writeInt(barrel.yCoord);
 			outputStream.writeInt(barrel.zCoord);
-			BarrelPacketHandler.writeNBTTagCompound(barrel.storage.writeTagCompound(), outputStream);
+			BarrelPacketHandler.writeNBTTagCompound(barrel.getStorage().writeTagCompound(), outputStream);
 			
 		}catch(IOException e){}
 		

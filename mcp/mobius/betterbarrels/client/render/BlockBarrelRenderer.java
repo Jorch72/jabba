@@ -121,7 +121,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		int worldHeight = world.getHeight();
 		BlockBarrel block       = (BlockBarrel)tile;	
 		TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
-		ItemStack        stack  = barrel.storage.getItem();
+		ItemStack        stack  = barrel.getStorage().getItem();
 		Tessellator tessellator = Tessellator.instance;
 		
 		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock;
@@ -231,7 +231,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 				minOverlayY[side] = minYSideRS;
 				maxOverlayY[side] = maxYSideRS;					
 			}		
-			else if ( barrel.storage.isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
+			else if ( barrel.getStorage().isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
 				hasOverlay[side]  = true;
 				minOverlayX[side] = maxXLock;
 				maxOverlayX[side] = minXLock;

@@ -173,13 +173,13 @@ public class BlockBarrel extends BlockContainer{
     	}    	
     	
     	// We drop the stacks
-        if ((barrelEntity != null) && (barrelEntity.storage.hasItem()))
+        if ((barrelEntity != null) && (barrelEntity.getStorage().hasItem()))
         {
         	barrelEntity.updateEntity();
         	int ndroppedstacks = 0;
         	ItemStack droppedstack = new ItemStack(0,0,0);
         	while ((droppedstack != null) && (ndroppedstacks <= 64)){
-        		droppedstack    = barrelEntity.storage.getStack();
+        		droppedstack    = barrelEntity.getStorage().getStack();
         		ndroppedstacks += 1;
         		
         		if (droppedstack != null)

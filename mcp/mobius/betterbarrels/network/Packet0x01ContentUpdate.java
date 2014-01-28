@@ -46,8 +46,8 @@ public class Packet0x01ContentUpdate {
 			outputStream.writeInt(barrel.yCoord);
 			outputStream.writeInt(barrel.zCoord);
 			
-			outputStream.writeInt(barrel.storage.getAmount());
-			Packet.writeItemStack(barrel.storage.getItem(), outputStream);
+			outputStream.writeInt(barrel.getStorage().getAmount());
+			Packet.writeItemStack(barrel.getStorage().getItem(), outputStream);
 
 		}catch(IOException e){}
 		

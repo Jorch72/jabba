@@ -30,14 +30,14 @@ public class BarrelPacketHandler implements IPacketHandler {
 				Packet0x01ContentUpdate packetCast = new Packet0x01ContentUpdate(packet);
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				if (barrel != null)
-					barrel.storage.setStoredItemType(packetCast.stack, packetCast.amount);
+					barrel.getStorage().setStoredItemType(packetCast.stack, packetCast.amount);
 				//Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);				
 			}
 			else if (header == 0x02){
 				Packet0x02GhostUpdate packetCast = new Packet0x02GhostUpdate(packet);
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				if (barrel != null){
-					barrel.storage.setGhosting(packetCast.locked);
+					barrel.getStorage().setGhosting(packetCast.locked);
 					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);
 				}
 			}
@@ -73,7 +73,7 @@ public class BarrelPacketHandler implements IPacketHandler {
 				Packet0x06FullStorage packetCast = new Packet0x06FullStorage(packet);
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				if (barrel != null){
-					barrel.storage = packetCast.storage;
+					barrel.setStorage(packetCast.storage);
 				}
 			}	
 			else if (header == 0x07){

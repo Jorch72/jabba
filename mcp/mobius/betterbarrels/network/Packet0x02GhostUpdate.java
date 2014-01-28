@@ -39,7 +39,7 @@ public class Packet0x02GhostUpdate {
 			outputStream.writeInt(barrel.yCoord);
 			outputStream.writeInt(barrel.zCoord);
 			
-			outputStream.writeBoolean(barrel.storage.isGhosting());
+			outputStream.writeBoolean(barrel.getStorage().isGhosting());
 		}catch(IOException e){}
 		
 		packet.channel = "JABBA";

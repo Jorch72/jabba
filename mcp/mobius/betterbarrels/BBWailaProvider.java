@@ -21,7 +21,7 @@ public class BBWailaProvider implements IWailaDataProvider {
 	@Override
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,	IWailaConfigHandler config) {
 		TileEntityBarrel tebarrel = (TileEntityBarrel)accessor.getTileEntity();
-		ItemStack barrelStack = tebarrel.storage.getItem();
+		ItemStack barrelStack = tebarrel.getStorage().getItem();
 		
 		currenttip.add(String.format("Structural level : %d", tebarrel.levelStructural));
 		currenttip.add(String.format("Upgrade slots : %d / %d", tebarrel.getFreeSlots(), tebarrel.getMaxUpgradeSlots()));		
@@ -30,14 +30,14 @@ public class BBWailaProvider implements IWailaDataProvider {
 			if(config.getConfig("bb.itemtype"))
 				currenttip.add(barrelStack.getDisplayName());
 			if(config.getConfig("bb.itemnumb"))
-					currenttip.add(String.format("%d / %d items", tebarrel.storage.getAmount(), tebarrel.storage.getItem().getMaxStackSize() * tebarrel.storage.getMaxStacks()));
+					currenttip.add(String.format("%d / %d items", tebarrel.getStorage().getAmount(), tebarrel.getStorage().getItem().getMaxStackSize() * tebarrel.getStorage().getMaxStacks()));
 			if(config.getConfig("bb.space"))
-					currenttip.add(String.format("%d stacks max", tebarrel.storage.getMaxStacks()));			
+					currenttip.add(String.format("%d stacks max", tebarrel.getStorage().getMaxStacks()));			
 		} else {
 			if(config.getConfig("bb.itemtype"))
 				currenttip.add("<Empty>");
 			if(config.getConfig("bb.space"))
-				currenttip.add(String.format("%d stacks max", tebarrel.storage.getMaxStacks()));			
+				currenttip.add(String.format("%d stacks max", tebarrel.getStorage().getMaxStacks()));			
 		}
 		
 		return currenttip;

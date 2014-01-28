@@ -44,22 +44,30 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
     private long clickTime = -20; //Click timer for double click handling
 	
-    public IBarrelStorage storage     = new StorageLocal();
-	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
-	public int levelStructural        = 0;
-	public int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
-	public int[] sideMetadata         = {0, 0, 0, 0, 0, 0};
-	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
-	public boolean hasRedstone        = false;
-	public boolean hasHopper          = false;
-	public boolean hasEnder           = false;
-	public boolean isTicking          = false;
-	public boolean isLinked           = false;
-	public byte    nStorageUpg        = 0;
-	public byte    nTicks             = 0;
-	public int     id                 = -1;
+    private IBarrelStorage storage     = new StorageLocal();
+	public  ForgeDirection orientation = ForgeDirection.UNKNOWN;
+	public  int levelStructural        = 0;
+	public  int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
+	public  int[] sideMetadata         = {0, 0, 0, 0, 0, 0};
+	public  ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
+	public  boolean hasRedstone        = false;
+	public  boolean hasHopper          = false;
+	public  boolean hasEnder           = false;
+	public  boolean isTicking          = false;
+	public  boolean isLinked           = false;
+	public  byte    nStorageUpg        = 0;
+	public  byte    nTicks             = 0;
+	public  int     id                 = -1;
 	
 	public LogicHopper logicHopper    = LogicHopper.instance();
+	
+	public IBarrelStorage getStorage(){
+		return this.storage;
+	}
+	
+	public void setStorage(IBarrelStorage storage){
+		this.storage = storage;
+	}
 	
 	/* UPDATE HANDLING */
 	@Override
@@ -149,18 +157,18 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (!this.hasRedstone) 
 			return 0;
 		else
-			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_FULL && this.storage.getAmount() == this.storage.getMaxStoredCount())
+			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_FULL && this.getStorage().getAmount() == this.getStorage().getMaxStoredCount())
 				return 15;
-			else if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_EMPT && this.storage.getAmount() == 0)
+			else if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_EMPT && this.getStorage().getAmount() == 0)
 				return 15;
 			else if  (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_PROP)
 				
-				if (this.storage.getAmount() == 0)
+				if (this.getStorage().getAmount() == 0)
 					return 0;
-				else if (this.storage.getAmount() == this.storage.getMaxStoredCount())
+				else if (this.getStorage().getAmount() == this.getStorage().getMaxStoredCount())
 					return 15;
 				else
-					return MathHelper.floor_float(((float)this.storage.getAmount() / (float)this.storage.getMaxStoredCount()) * 14) + 1;
+					return MathHelper.floor_float(((float)this.getStorage().getAmount() / (float)this.getStorage().getMaxStoredCount()) * 14) + 1;
 			else
 				return 0;
 	}
@@ -172,9 +180,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		
 		ItemStack droppedStack = null;
 		if (player.isSneaking())
-			droppedStack = this.storage.getStack(1); 
+			droppedStack = this.getStorage().getStack(1); 
 		else
-			droppedStack = this.storage.getStack();
+			droppedStack = this.getStorage().getStack();
 
 		if ((droppedStack != null) && (droppedStack.stackSize > 0))
 			this.dropItemInWorld(player, droppedStack, 0.02);
@@ -217,7 +225,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}
 
-		if (this.storage.hasItem()){
+		if (this.getStorage().hasItem()){
 			BarrelPacketHandler.sendChat(player, "Barrel content is preventing it from resonating.");
 			return;
 		}
@@ -238,7 +246,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}
 
-		if (this.storage.hasItem()){
+		if (this.getStorage().hasItem()){
 			BarrelPacketHandler.sendChat(player, "Barrel content is preventing it from resonating.");
 			return;
 		}
@@ -316,8 +324,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				}
 
 			} else if (this.coreUpgrades.size() > 0) {
-				int newMaxStoredItems = (this.storage.getMaxStacks() - 64) * this.storage.getItem().getMaxStackSize();
-				if (this.storage.getAmount() > newMaxStoredItems)
+				int newMaxStoredItems = (this.getStorage().getMaxStacks() - 64) * this.getStorage().getItem().getMaxStackSize();
+				if (this.getStorage().getAmount() > newMaxStoredItems)
 					
 					BarrelPacketHandler.sendChat(player, "Please remove some stacks first.");
 				
@@ -325,7 +333,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 					this.coreUpgrades.remove(0);
 					ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[UpgradeCore.STORAGE], 1, UpgradeCore.mapMeta[UpgradeCore.STORAGE]);
 					this.dropItemInWorld(player, droppedStack , 0.02);
-					this.storage.rmStorageUpgrade();
+					this.getStorage().rmStorageUpgrade();
 					this.nStorageUpg -= 1;
 				}
 				
@@ -408,7 +416,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 		if (type == UpgradeCore.STORAGE){
 			this.coreUpgrades.add(UpgradeCore.STORAGE);
-			this.storage.addStorageUpgrade();
+			this.getStorage().addStorageUpgrade();
 			this.nStorageUpg += 1;
 			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);				
 		}
@@ -454,7 +462,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	/* OTHER ACTIONS */
 	
 	private void switchLocked(){
-		this.storage.switchGhosting();
+		this.getStorage().switchGhosting();
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
@@ -462,7 +470,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	private void manualStackAdd(EntityPlayer player){
 		ItemStack heldStack = player.inventory.getCurrentItem();
-		this.storage.addStack(heldStack);
+		this.getStorage().addStack(heldStack);
 		
 		if (this.worldObj.getWorldTime() - this.clickTime < 10L){
 			InventoryPlayer playerInv = player.inventory;
@@ -471,7 +479,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
             	ItemStack slotStack = playerInv.getStackInSlot(invSlot);
             	
             	// We add the items to the barrel and update player inventory
-            	if (this.storage.addStack(slotStack) > 0){
+            	if (this.getStorage().addStack(slotStack) > 0){
                 	if (slotStack.stackSize == 0)
                 		playerInv.setInventorySlotContents(invSlot, (ItemStack)null);
             	}
@@ -556,7 +564,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setBoolean("ticking",       this.isTicking);
         NBTTag.setBoolean("linked",        this.isLinked);
         NBTTag.setByte("nticks",           this.nTicks);
-        NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
+        NBTTag.setCompoundTag("storage",   this.getStorage().writeTagCompound());
         NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
         NBTTag.setInteger("bspaceid", 	   this.id);
         
@@ -586,7 +594,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.isLinked        = NBTTag.getBoolean("linked");
     	this.nTicks          = NBTTag.getByte("nticks");
     	this.id              = NBTTag.getInteger("bspaceid");
-    	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
+    	this.getStorage().readTagCompound(NBTTag.getCompoundTag("storage"));
     	
     	if (this.worldObj != null){
         	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
@@ -618,13 +626,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	int freeSlots = this.getFreeSlots();
     	for (int i = 0; i < freeSlots; i++){
 			this.coreUpgrades.add(UpgradeCore.STORAGE);
-			this.storage.addStorageUpgrade();
+			this.getStorage().addStorageUpgrade();
 			this.nStorageUpg += 1;
     	}
 
     	// Fix for the content
-    	this.storage.setGhosting(storage.isGhosting());
-    	this.storage.setStoredItemType(storage.getItem(), storage.getAmount());
+    	this.getStorage().setGhosting(storage.isGhosting());
+    	this.getStorage().setStoredItemType(storage.getItem(), storage.getAmount());
 
     	// We get a new id
     	this.id = BSpaceStorageHandler.instance().getNextID();
@@ -695,10 +703,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     /*/////////////////////////////////////*/
     
 	@Override
-	public int getSizeInventory() {return this.storage.getSizeInventory();}
+	public int getSizeInventory() {return this.getStorage().getSizeInventory();}
 	@Override
 	public ItemStack getStackInSlot(int islot) {
-		ItemStack stack = this.storage.getStackInSlot(islot);
+		ItemStack stack = this.getStorage().getStackInSlot(islot);
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 		return stack; 
@@ -708,9 +716,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		TileEntity ent = this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
 		ItemStack stack;
 		if (ent instanceof TileEntityHopper)
-			stack = this.storage.decrStackSize_Hopper(islot, quantity);
+			stack = this.getStorage().decrStackSize_Hopper(islot, quantity);
 		else
-			stack = this.storage.decrStackSize(islot, quantity);
+			stack = this.getStorage().decrStackSize(islot, quantity);
 		
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
@@ -718,7 +726,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}
 	@Override
 	public void setInventorySlotContents(int islot, ItemStack stack) { 
-		this.storage.setInventorySlotContents(islot, stack);
+		this.getStorage().setInventorySlotContents(islot, stack);
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
@@ -740,30 +748,30 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
 	public boolean isInvNameLocalized() {return false;}
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.storage.isItemValidForSlot(i, itemstack);}
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.getStorage().isItemValidForSlot(i, itemstack);}
 
 	@Override
 	public ItemStack getStoredItemType() {
-		return this.storage.getStoredItemType();
+		return this.getStorage().getStoredItemType();
 	}
 
 	@Override
 	public void setStoredItemCount(int amount) {
-		this.storage.setStoredItemCount(amount);
+		this.getStorage().setStoredItemCount(amount);
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
-		this.storage.setStoredItemType(type, amount);
+		this.getStorage().setStoredItemType(type, amount);
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 
 	@Override
 	public int getMaxStoredCount() {
-		return this.storage.getMaxStoredCount();
+		return this.getStorage().getMaxStoredCount();
 	}
 
 	@Override
@@ -772,7 +780,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (this.sideUpgrades[side] == UpgradeSide.HOPPER)
 			return new int[]{1};
 		else
-			return this.storage.getAccessibleSlotsFromSide(side);
+			return this.getStorage().getAccessibleSlotsFromSide(side);
 	}
 
 	@Override
@@ -781,12 +789,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (this.sideUpgrades[side] == UpgradeSide.HOPPER)
 			return false;
 		else
-			return this.storage.canInsertItem(slot, itemstack, side);
+			return this.getStorage().canInsertItem(slot, itemstack, side);
 	}
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
 		// TODO : Prevent sides with an hopper upgrade to react as a valid slot.		
-		return this.storage.canExtractItem(slot, itemstack, side);
+		return this.getStorage().canExtractItem(slot, itemstack, side);
 	}    
 }
