@@ -55,8 +55,15 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public boolean isTicking          = false;
 	public byte    nStorageUpg        = 0;
 	public byte    nTicks             = 0;
+	public int     id                 = BSpaceStorageHandler.instance().getNextID();
 	
 	public LogicHopper logicHopper    = LogicHopper.instance();
+	
+	@Override
+	public void invalidate(){
+		super.invalidate();
+		BSpaceStorageHandler.instance().removeStorage(this.id);
+	}
 	
 	/* UPDATE HANDLING */
 	@Override
@@ -444,7 +451,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
     public void writeToNBT(NBTTagCompound NBTTag)
     {
-		
+		BSpaceStorageHandler.instance().updateStorage(this.id, this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord);
 		
         super.writeToNBT(NBTTag);
         NBTTag.setInteger("version",       TileEntityBarrel.version);        
@@ -458,7 +465,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setBoolean("ticking",       this.isTicking);
         NBTTag.setByte("nticks",           this.nTicks);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
-        NBTTag.setByte("nStorageUpg",   this.nStorageUpg);
+        NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
+        NBTTag.setInteger("bspaceid", 	   this.id);
+        
     }  	
 
 	@Override	
@@ -482,12 +491,15 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
     	this.isTicking       = NBTTag.getBoolean("ticking");
     	this.nTicks          = NBTTag.getByte("nticks");
+    	this.id              = NBTTag.getInteger("bspaceid");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     	
-    	if (this.worldObj != null && this.isTicking)
-    		this.startTicking();
-    	
-    	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
+    	if (this.worldObj != null){
+        	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
+        	if (this.isTicking)
+        		this.startTicking();
+    	}
+
     }	
 
 	/* V2 COMPATIBILITY METHODS */
@@ -520,7 +532,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.storage.setGhosting(storage.isGhosting());
     	this.storage.setStoredItemType(storage.getItem(), storage.getAmount());
 
-    	
     	//this.worldObj.setBlockMetadataWithNotify(this.xCoord, this.yCoord, this.zCoord, 1, 1 & 2);
 	}
 	
