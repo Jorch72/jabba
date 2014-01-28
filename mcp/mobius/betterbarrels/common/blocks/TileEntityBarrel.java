@@ -48,6 +48,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
 	public int levelStructural        = 0;
 	public int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
+	public int[] sideMetadata         = {0, 0, 0, 0, 0, 0};
 	public ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
 	public boolean hasRedstone        = false;
 	public boolean hasHopper          = false;
@@ -147,8 +148,18 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (!this.hasRedstone) 
 			return 0;
 		else
-			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.storage.getAmount() == this.storage.getMaxStoredCount())
+			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_FULL && this.storage.getAmount() == this.storage.getMaxStoredCount())
 				return 15;
+			else if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_EMPT && this.storage.getAmount() == 0)
+				return 15;
+			else if  (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_PROP)
+				
+				if (this.storage.getAmount() == 0)
+					return 0;
+				else if (this.storage.getAmount() == this.storage.getMaxStoredCount())
+					return 15;
+				else
+					return MathHelper.floor_float(((float)this.storage.getAmount() / (float)this.storage.getMaxStoredCount()) * 14) + 1;
 			else
 				return 0;
 	}
@@ -171,8 +182,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	public void rightClick(EntityPlayer player, int side){
 		ItemStack stack = player.getHeldItem();
-		
-		if (!player.isSneaking())
+
+		if (!player.isSneaking() && stack != null && (stack.getItem() instanceof ItemBarrelHammer))
+			this.configSide(stack, player, ForgeDirection.getOrientation(side));		
+		else if (!player.isSneaking())
 			this.manualStackAdd(player);		
 		else if (player.isSneaking() && stack == null)
 			this.switchLocked();
@@ -206,6 +219,19 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	/* UPGRADE ACTIONS */
 
+	private void configSide(ItemStack stack, EntityPlayer player, ForgeDirection side){
+		int type = this.sideUpgrades[side.ordinal()];
+		
+		if (type == UpgradeSide.REDSTONE){
+			this.sideMetadata[side.ordinal()] = this.sideMetadata[side.ordinal()] + 1;
+			if (this.sideMetadata[side.ordinal()] > UpgradeSide.RS_PROP)
+				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
+			
+			this.onInventoryChanged();
+			PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);			
+		}
+	}
+	
 	private void removeUpgrade(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		int type = this.sideUpgrades[side.ordinal()]; 
 		
@@ -272,6 +298,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		ItemStack droppedStack = new ItemStack(UpgradeSide.mapItem[type], 1, UpgradeSide.mapMeta[type]);
 		this.dropItemInWorld(player, droppedStack , 0.02);
 		this.sideUpgrades[side.ordinal()] = UpgradeSide.NONE;
+		this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
 	}
 	
 	private void applySideUpgrade(ItemStack stack, EntityPlayer player, ForgeDirection side){
@@ -281,11 +308,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (type == UpgradeSide.STICKER){
 			//if ((side == ForgeDirection.UP) || (side == ForgeDirection.DOWN)) {return;}
 			this.sideUpgrades[side.ordinal()] = UpgradeSide.STICKER;
+			this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
 		}
 
 		else if (type == UpgradeSide.REDSTONE){
-			if (this.hasUpgrade(UpgradeCore.REDSTONE))
+			if (this.hasUpgrade(UpgradeCore.REDSTONE)){
 				this.sideUpgrades[side.ordinal()] = UpgradeSide.REDSTONE;
+				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
+			}
 			else{
 				BarrelPacketHandler.sendChat(player, "This facade requires a redstone core update.");
 				return;
@@ -293,8 +323,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}		
 		
 		else if (type == UpgradeSide.HOPPER){
-			if (this.hasUpgrade(UpgradeCore.HOPPER))
+			if (this.hasUpgrade(UpgradeCore.HOPPER)){
 				this.sideUpgrades[side.ordinal()] = UpgradeSide.HOPPER;
+				this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
+			}
 			else{
 				BarrelPacketHandler.sendChat(player, "This facade requires a hopper core update.");
 				return;
@@ -461,6 +493,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setInteger("version",       TileEntityBarrel.version);        
         NBTTag.setInteger("orientation",   this.orientation.ordinal());
         NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
+        NBTTag.setIntArray("sideMeta",     this.sideMetadata);
         NBTTag.setIntArray("coreUpgrades", this.convertInts(this.coreUpgrades));
         NBTTag.setInteger("structural",    this.levelStructural);
         NBTTag.setBoolean("redstone",      this.hasRedstone);
@@ -487,6 +520,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	    	
     	this.orientation     = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
     	this.sideUpgrades    = NBTTag.getIntArray("sideUpgrades");
+    	this.sideMetadata    = NBTTag.getIntArray("sideMeta");
     	this.coreUpgrades    = this.convertArrayList(NBTTag.getIntArray("coreUpgrades"));
     	this.levelStructural = NBTTag.getInteger("structural");
     	this.hasRedstone     = NBTTag.getBoolean("redstone");
@@ -577,7 +611,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		super.onInventoryChanged();
 
 		if (this.hasUpgrade(UpgradeCore.REDSTONE) || this.hasUpgrade(UpgradeCore.HOPPER))
-			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));		
+			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
 	}    
     
     private int[] convertInts(List<Integer> integers)

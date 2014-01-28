@@ -14,6 +14,7 @@ public class Packet0x03SideUpgradeUpdate {
 	public byte header;
 	public int  x,y,z;
 	public int[] sideUpgrades = new int[6];
+	public int[] sideMetadata = new int[6];	
 
 	public Packet0x03SideUpgradeUpdate(Packet250CustomPayload packet){
 		DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
@@ -26,6 +27,9 @@ public class Packet0x03SideUpgradeUpdate {
 
 			for (int i = 0; i < 6; i++)
 				this.sideUpgrades[i] = inputStream.readInt();			
+
+			for (int i = 0; i < 6; i++)
+				this.sideMetadata[i] = inputStream.readInt();			
 			
 		} catch (IOException e){}
 	}
@@ -44,6 +48,9 @@ public class Packet0x03SideUpgradeUpdate {
 			
 			for (int i = 0; i < 6; i++)
 				outputStream.writeInt(barrel.sideUpgrades[i]);
+			
+			for (int i = 0; i < 6; i++)
+				outputStream.writeInt(barrel.sideMetadata[i]);			
 			
 		}catch(IOException e){}
 		
