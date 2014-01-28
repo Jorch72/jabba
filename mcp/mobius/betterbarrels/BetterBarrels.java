@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
@@ -29,6 +30,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -120,6 +122,7 @@ public class BetterBarrels {
 		}
 		
 		RecipeHandler.instance().registerOres();
+		proxy.registerEventHandler();				
 	}
 	
 	@EventHandler
@@ -170,7 +173,6 @@ public class BetterBarrels {
 		
 		RecipeHandler.instance().registerRecipes();
 		proxy.registerRenderers();
-		proxy.registerEventHandler();		
 
         //TickRegistry.registerTickHandler(new BarrelServerTickHandler(), Side.SERVER);
         FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
@@ -180,12 +182,11 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		if (Loader.isModLoaded("NotEnoughItems"))
-			BBNeiTooltip.registerHandler();;
+		proxy.postInit();
 	}	
 
-	//@ServerStopping
-	//public void serverStopping(FMLServerStoppingEvent var1) {
-	//	SaveHandler.saveData();
-	//}
+	@EventHandler
+	public void serverStopping(FMLServerStoppingEvent event) {
+		BSpaceStorageHandler.instance().writeToFile();
+	}
 }

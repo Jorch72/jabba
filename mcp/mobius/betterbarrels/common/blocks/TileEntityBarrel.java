@@ -7,6 +7,7 @@ import java.util.List;
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
@@ -22,7 +23,6 @@ import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x06FullStorage;
-import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -59,12 +59,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	public LogicHopper logicHopper    = LogicHopper.instance();
 	
-	@Override
-	public void invalidate(){
-		super.invalidate();
-		BSpaceStorageHandler.instance().removeStorage(this.id);
-	}
-	
 	/* UPDATE HANDLING */
 	@Override
 	public boolean canUpdate(){
@@ -94,6 +88,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (this.worldObj.loadedTileEntityList.contains(this))
 			this.worldObj.loadedTileEntityList.remove(this);
 	}
+	
+	@Override
+	public void invalidate(){
+		super.invalidate();
+		BSpaceStorageHandler.instance().removeStorage(this.id);
+	}	
 	
 	/*
 	private void setTicking(){

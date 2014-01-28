@@ -1,12 +1,15 @@
 package mcp.mobius.betterbarrels.common;
 
+import mcp.mobius.betterbarrels.bspace.BBEventHandler;
+import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.MinecraftForge;
 
 public class BaseProxy {
 	
 	public void registerEventHandler(){
-		//MinecraftForge.EVENT_BUS.register(new ServerEventHandler());		
+		MinecraftForge.EVENT_BUS.register(new BBEventHandler());
 	}
 	
 	public void registerRenderers() {
@@ -22,4 +25,6 @@ public class BaseProxy {
         }
     }	
 	
+    public void postInit(){}
+    
 }

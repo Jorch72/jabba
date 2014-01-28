@@ -1,8 +1,12 @@
 package mcp.mobius.betterbarrels.client;
 
+import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.Loader;
+import mcp.mobius.betterbarrels.BBNeiTooltip;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.bspace.BBEventHandler;
 import mcp.mobius.betterbarrels.client.render.BlockBarrelRenderer;
 import mcp.mobius.betterbarrels.client.render.TileEntityBarrelRenderer;
 import mcp.mobius.betterbarrels.common.BaseProxy;
@@ -19,6 +23,8 @@ public class ClientProxy extends BaseProxy {
 		RenderingRegistry.registerBlockHandler(BetterBarrels.blockBarrelRendererID, new BlockBarrelRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBarrel.class, new TileEntityBarrelRenderer());
 		
+		
+		
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMiniBarrel.class,  new TileEntityMiniBarrelRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBarrelShelf.class,  new TileEntityBarrelShelfRenderer());
 		//mod_BetterBarrels.RENDER_SHELF = RenderingRegistry.getNextAvailableRenderId();
@@ -28,6 +34,13 @@ public class ClientProxy extends BaseProxy {
 	public void registerEventHandler(){
 		//TODO : Turned off registering end of rendering event to check for fps drop
 		
-		//MinecraftForge.EVENT_BUS.register(new ClientEventHandler());		
+		MinecraftForge.EVENT_BUS.register(new BBEventHandler());
+	
+	}
+	
+	public void postInit(){
+		if (Loader.isModLoaded("NotEnoughItems"))
+			BBNeiTooltip.registerHandler();		
 	}	
 }
+
