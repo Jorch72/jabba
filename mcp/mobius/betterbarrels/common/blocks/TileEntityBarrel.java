@@ -486,6 +486,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	
     	if (this.worldObj != null && this.isTicking)
     		this.startTicking();
+    	
+    	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
     }	
 
 	/* V2 COMPATIBILITY METHODS */

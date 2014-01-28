@@ -74,7 +74,12 @@ public class BarrelPacketHandler implements IPacketHandler {
 				if (barrel != null){
 					barrel.storage = packetCast.storage;
 				}
-			}				
+			}	
+			else if (header == 0x07){
+				Packet0x07ForceRender packetCast = new Packet0x07ForceRender(packet);
+				Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);
+			}			
+			
 		}				
 	}
 

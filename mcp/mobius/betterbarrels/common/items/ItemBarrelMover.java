@@ -4,8 +4,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
+import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x07ForceRender;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.Entity;
@@ -282,7 +289,7 @@ public class ItemBarrelMover extends Item {
 		
 		world.setBlock(targX, targY, targZ, blockID, blockMeta, 1 + 2);
 		world.getBlockTileEntity(targX, targY, targZ).readFromNBT(nbtContainer);
-
+		
 		TileEntity entity = world.getBlockTileEntity(targX, targY, targZ);
 		
 		/* IC2 orientation fix part2 */
@@ -296,6 +303,9 @@ public class ItemBarrelMover extends Item {
 		stack.getTagCompound().removeTag("Container");
 		try{ stack.getTagCompound().getCompoundTag("display").removeTag("Name");
 		} catch (Exception e){}
+
+		world.markBlockForUpdate(targX, targY, targZ);		
+		
 		return true;
 		
 		
@@ -409,8 +419,6 @@ public class ItemBarrelMover extends Item {
 			barrelOrientation = ForgeDirection.DOWN;
 		}
 
-		System.out.printf("%s\n", playerLook.yCoord);		
-		
         return barrelOrientation;
         
 	}
