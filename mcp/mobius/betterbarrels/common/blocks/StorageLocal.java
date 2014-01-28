@@ -1,5 +1,9 @@
 package mcp.mobius.betterbarrels.common.blocks;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -15,7 +19,6 @@ public class StorageLocal implements IBarrelStorage{
 	private ItemStack prevOutputStack = null;
 	private ItemStack itemTemplate      = null;
 	private ItemStack renderingTemplate = null;
-	private boolean   inventoryDirty  = false;
 	
 	private int totalAmount   = 0;	//Total number of items
 	private int stackAmount   = 0;	//Number of items in a stack
@@ -23,15 +26,11 @@ public class StorageLocal implements IBarrelStorage{
 	private int basestacks    = 64;				//Base amount of stacks in the barrel, before upgrades
 	private int maxstacks     = 64;				//Maximum amount of stacks in the barrel (post upgrade)
 	private int upgCapacity   = 0;				//Current capacity upgrade level
-	private int storageID     = -1;
 	private boolean keepLastItem = false;	//Ghosting mod. If true, we don't reset the item type when the barrel is empty
-	private boolean isPrivate    = false;
-	private String  username     = "";
 	
-	private boolean dirty = true;
+	private Set<Coordinates> linkedStorages = new HashSet<Coordinates>();
 	
 	public StorageLocal(){ this.onInventoryChanged(); }	
-	public StorageLocal(int ID){ this.storageID = ID; this.onInventoryChanged(); }
 	public StorageLocal(NBTTagCompound tag){ this.readTagCompound(tag); this.onInventoryChanged(); }
 	
 	private ItemStack getStackFromSlot(int slot){ return slot == 0 ? this.inputStack : this.outputStack; }
@@ -103,9 +102,6 @@ public class StorageLocal implements IBarrelStorage{
 		retTag.setBoolean("keepLastItem", this.keepLastItem);
 		retTag.setInteger("maxstacks",    this.maxstacks);
 		retTag.setInteger("upgCapacity",  this.upgCapacity);
-		retTag.setInteger("StorageID",    this.storageID);
-		retTag.setBoolean("private",      this.isPrivate);
-		retTag.setString("username",      this.username);
         
         if (this.getItem() != null){
             NBTTagCompound var3 = new NBTTagCompound();
@@ -119,11 +115,8 @@ public class StorageLocal implements IBarrelStorage{
 		this.totalAmount      = tag.getInteger("amount");
 		this.maxstacks        = tag.getInteger("maxstacks");
 		this.upgCapacity      = tag.getInteger("upgCapacity");
-		this.storageID        = tag.getInteger("StorageID");
     	this.itemTemplate     = tag.hasKey("current_item") ? ItemStack.loadItemStackFromNBT(tag.getCompoundTag("current_item")) : null;		
     	this.keepLastItem     = tag.hasKey("keepLastItem") ? tag.getBoolean("keepLastItem") : false;
-    	this.isPrivate        = tag.hasKey("private") ? tag.getBoolean("private") : false;
-    	this.username         = tag.hasKey("username") ? tag.getString("username") : "";
     	this.setItem(this.itemTemplate);
 	}    
     
@@ -185,30 +178,7 @@ public class StorageLocal implements IBarrelStorage{
 	public boolean isGhosting() { return this.keepLastItem; }
 	@Override
 	public void setGhosting(boolean locked) { this.keepLastItem = locked; }	
-	@Override
-	public boolean isPrivate() { return this.isPrivate; }
-	@Override
-	public void    setPrivate(boolean status) { this.isPrivate = status; }
-	@Override
-	public void    setUsername(String username) { this.username = username; }
-	@Override
-	public String  getUsername() { return this.username; }
-	@Override
-	public boolean canInteractStrong(String username) {	return true; }	//TODO : Not urgent. Required for access rights.
-	@Override
-	public boolean canInteract(String username) { return true;	}		//TODO : Not urgent. Required for access rights.	
-    
-    /* REMOTE STORAGE HANDLING */
-	@Override
-    public int getStorageID() { return this.storageID; }	
-	
-	@Override
-	public void    setDirty()   { this.dirty = true; };
-	@Override
-	public void    clearDirty() { this.dirty = false; };
-	@Override
-	public boolean isDirty()    { return this.dirty; };	
-	
+
 	/* AMOUNT HANDLING */
 	@Override
 	public int   getAmount() { return this.totalAmount; }	
@@ -329,7 +299,6 @@ public class StorageLocal implements IBarrelStorage{
 	@Override
 	public void onInventoryChanged() {
 		// TODO : Might need to do some cleanup here
-		this.setDirty();
 		
 		if (this.inputStack != null){
 			if (!this.hasItem())

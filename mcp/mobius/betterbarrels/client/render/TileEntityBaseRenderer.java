@@ -2,7 +2,7 @@ package mcp.mobius.betterbarrels.client.render;
 
 import org.lwjgl.opengl.GL11;
 
-import mcp.mobius.betterbarrels.client.Coordinates;
+import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;

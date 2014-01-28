@@ -191,16 +191,6 @@ public class BlockBarrel extends BlockContainer{
         
     }
 
-	@Override
-    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z){
-    	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
-    	if (player != null && barrelEntity != null && !barrelEntity.storage.canInteract(player.username)){
-    		return false;
-    	}
-    	return super.removeBlockByPlayer(world, player, x, y, z);
-		
-    }
-	
 	/* REDSTONE HANDLING */
 
 	@Override

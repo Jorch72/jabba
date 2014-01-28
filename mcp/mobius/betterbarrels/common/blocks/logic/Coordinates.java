@@ -1,0 +1,29 @@
+package mcp.mobius.betterbarrels.common.blocks.logic;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.DimensionManager;
+
+public final class Coordinates{
+	public final int dim;
+	public final double x, y, z;
+	public Coordinates(int dim, double x, double y, double z){
+		this.dim = dim; this.x = x; this.y = y; this.z = z;
+	};
+	
+	public TileEntity getEntityAt(){
+		IBlockAccess world = DimensionManager.getWorld(this.dim);
+		if (world == null) return null;
+		return world.getBlockTileEntity(MathHelper.floor_double(this.x), MathHelper.floor_double(this.y) , MathHelper.floor_double(this.z));
+	}
+	
+	public boolean equals(Object o)  {
+		Coordinates c = (Coordinates)o;
+		return (this.dim == c.dim) && (this.x == c.x) && (this.y == c.y) && (this.z == c.z);
+	};
+	
+	public int hashCode() {
+		return MathHelper.floor_double(this.dim + 31 * this.x + 877 * this.y + 3187 * this.z);
+	}
+}

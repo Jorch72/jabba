@@ -32,19 +32,7 @@ public interface IBarrelStorage extends ISidedInventory, IDeepStorageUnit{
     public boolean switchGhosting();
     public boolean isGhosting();
     public void    setGhosting(boolean locked);
-    public boolean isPrivate();
-    public void    setPrivate(boolean status);
-    public void    setUsername(String username);
-    public String  getUsername();
-    public boolean canInteractStrong(String username);
-    public boolean canInteract(String username); 
-    
-    /* REMOTE STORAGE HANDLING */
-    public int getStorageID(); 
-    
-	public void    setDirty();
-	public void    clearDirty();
-	public boolean isDirty();
+
 	//public void    upgCapacity(int level);
 	public void    addStorageUpgrade();
 	public void    rmStorageUpgrade();	

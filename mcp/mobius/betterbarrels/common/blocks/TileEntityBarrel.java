@@ -9,6 +9,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
+import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
@@ -21,6 +22,7 @@ import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x06FullStorage;
+import mcp.mobius.betterbarrels.server.BSpaceStorageHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -174,10 +176,25 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			this.applyUpgradeStructural(stack, player);
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemBarrelHammer))
 			this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
+		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork))
+			this.handleTuningFork(stack, player, ForgeDirection.getOrientation(side));		
 		else
 			this.manualStackAdd(player);
 	}
 
+	/* THE TUNING FORK */
+	private void handleTuningFork(ItemStack stack, EntityPlayer player, ForgeDirection side){
+		if (!this.hasEnder){
+			BarrelPacketHandler.sendChat(player, "This barrel is not reacting to the fork.");
+			return;
+		}
+
+		if (this.storage.hasItem()){
+			BarrelPacketHandler.sendChat(player, "Barrel content is preventing it from resonating.");
+			return;
+		}
+		
+	}
 	
 	/* UPGRADE ACTIONS */
 

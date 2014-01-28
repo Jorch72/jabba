@@ -337,9 +337,6 @@ public class ItemBarrelMover extends Item {
 		if (!isTEMovable(containerTE))
 			return false;
 		
-		if (containerTE instanceof TileEntityBarrel && !((TileEntityBarrel) containerTE).storage.canInteract(player.username))
-			return false;
-		
 		containerTE.writeToNBT(nbtContainer);
 		
 		nbtTarget.setInteger("ID",   blockID);

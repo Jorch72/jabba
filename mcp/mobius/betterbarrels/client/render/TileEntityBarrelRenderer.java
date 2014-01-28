@@ -3,8 +3,8 @@ package mcp.mobius.betterbarrels.client.render;
 import java.util.HashMap;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
-import mcp.mobius.betterbarrels.client.Coordinates;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
@@ -16,7 +16,6 @@ import org.lwjgl.opengl.GL11;
 
 public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 
-	public static HashMap<TileEntityBarrel, Coordinates> postponedSigns = new HashMap<TileEntityBarrel, Coordinates>();
 	public static TileEntityBarrelRenderer _instance = null;
 	
     protected static ItemStack coreStorage  = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 0);
@@ -38,7 +37,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 			
 			ForgeDirection orientation    = ((TileEntityBarrel) tileEntity).orientation;
 			TileEntityBarrel barrelEntity = (TileEntityBarrel)tileEntity;
-			Coordinates barrelPos         = new Coordinates(xpos, ypos, zpos);
+			Coordinates barrelPos         = new Coordinates(0, xpos, ypos, zpos);
 			
 	        GL11.glDisable(GL11.GL_BLEND);
 	        GL11.glDisable(GL11.GL_LIGHTING);  			
