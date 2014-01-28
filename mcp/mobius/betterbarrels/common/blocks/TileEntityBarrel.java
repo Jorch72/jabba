@@ -54,9 +54,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public boolean hasHopper          = false;
 	public boolean hasEnder           = false;
 	public boolean isTicking          = false;
+	public boolean isLinked           = false;
 	public byte    nStorageUpg        = 0;
 	public byte    nTicks             = 0;
-	public long    id                 = -1;
+	public int     id                 = -1;
 	
 	public LogicHopper logicHopper    = LogicHopper.instance();
 	
@@ -197,14 +198,16 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			this.applyUpgradeStructural(stack, player);
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemBarrelHammer))
 			this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
-		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork))
-			this.handleTuningFork(stack, player, ForgeDirection.getOrientation(side));		
+		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() == 0))
+			this.tuneFork(stack, player, ForgeDirection.getOrientation(side));	
+		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() != 0))
+			this.tuneBarrel(stack, player, ForgeDirection.getOrientation(side));			
 		else
 			this.manualStackAdd(player);
 	}
 
 	/* THE TUNING FORK */
-	private void handleTuningFork(ItemStack stack, EntityPlayer player, ForgeDirection side){
+	private void tuneFork(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		if (!this.hasEnder){
 			BarrelPacketHandler.sendChat(player, "This barrel is not reacting to the fork.");
 			return;
@@ -215,7 +218,54 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}
 		
+		// Here we sync the fork to the original barrel frequency if the fork is not already tuned.
+		//stack.setItemDamage(stack.getMaxDamage());
+		stack.setItemDamage(1);
+		stack.setTagCompound(new NBTTagCompound());
+		stack.getTagCompound().setInteger("tuneID", this.id);
+		stack.getTagCompound().setInteger("structural", this.levelStructural);
+		stack.getTagCompound().setByte("storage",       this.nStorageUpg);
+		
 	}
+	
+	private void tuneBarrel(ItemStack stack, EntityPlayer player, ForgeDirection side){
+		if (!this.hasEnder){
+			BarrelPacketHandler.sendChat(player, "This barrel is not reacting to the fork.");
+			return;
+		}
+
+		if (this.storage.hasItem()){
+			BarrelPacketHandler.sendChat(player, "Barrel content is preventing it from resonating.");
+			return;
+		}
+		
+		int  structural = stack.getTagCompound().getInteger("structural");
+		byte storage    = stack.getTagCompound().getByte("storage");
+		int  barrelID   = stack.getTagCompound().getInteger("tuneID");
+		
+		if (this.levelStructural != structural || this.nStorageUpg != storage){
+			BarrelPacketHandler.sendChat(player, "Structure too different to find a common frequency.");
+			return;			
+		}
+
+		if (this.id == barrelID){
+			stack.setItemDamage(1);
+			return;
+		}		
+
+		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null){
+			BarrelPacketHandler.sendChat(player, "The fork has lost the original source.");
+			stack.setItemDamage(0);
+			stack.setTagCompound(new NBTTagCompound());			
+			return;			
+		}
+		
+		BarrelPacketHandler.sendChat(player, "Barrels are resonating together.");	
+		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
+		
+		stack.setItemDamage(0);
+		stack.setTagCompound(new NBTTagCompound());
+	}	
 	
 	/* UPGRADE ACTIONS */
 
@@ -500,10 +550,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setBoolean("hopper",        this.hasHopper);
         NBTTag.setBoolean("ender",         this.hasEnder);
         NBTTag.setBoolean("ticking",       this.isTicking);
+        NBTTag.setBoolean("linked",        this.isLinked);
         NBTTag.setByte("nticks",           this.nTicks);
         NBTTag.setCompoundTag("storage",   this.storage.writeTagCompound());
         NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
-        NBTTag.setLong("bspaceid", 	   this.id);
+        NBTTag.setInteger("bspaceid", 	   this.id);
         
     }  	
 
@@ -528,8 +579,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.hasEnder        = NBTTag.getBoolean("ender");
     	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
     	this.isTicking       = NBTTag.getBoolean("ticking");
+    	this.isLinked        = NBTTag.getBoolean("linked");
     	this.nTicks          = NBTTag.getByte("nticks");
-    	this.id              = NBTTag.getLong("bspaceid");
+    	this.id              = NBTTag.getInteger("bspaceid");
     	this.storage.readTagCompound(NBTTag.getCompoundTag("storage"));
     	
     	if (this.worldObj != null){

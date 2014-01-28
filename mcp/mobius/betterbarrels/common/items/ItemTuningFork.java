@@ -5,6 +5,7 @@ import java.util.Random;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -18,7 +19,7 @@ public class ItemTuningFork extends Item {
 	
 	public ItemTuningFork(int id){
 		super(id);
-        this.setMaxDamage(16);
+        this.setMaxDamage(30); // Time it stays tuned, in sec.
         this.setMaxStackSize(1);
         this.setUnlocalizedName("B-Space Tuning Fork (WIP)");        
 	}
@@ -35,6 +36,20 @@ public class ItemTuningFork extends Item {
     	this.itemIcon  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "bspace_fork");
     }		
 	
+    @Override
+    public void onUpdate(ItemStack stack, World world, Entity player, int par4, boolean par5) {
+    	if (world.getTotalWorldTime() % 20 == 0){
+    	
+	    	if (stack.getItemDamage() != 0)
+	    		stack.setItemDamage(stack.getItemDamage() + 1);
+	    	
+	    	if (stack.getItemDamage() == this.getMaxDamage()){
+	    		stack.setTagCompound(new NBTTagCompound());
+	    		stack.setItemDamage(0);
+	    	}
+    	}
+    }
+    
 	/*
     @Override
     public String getItemName(){
