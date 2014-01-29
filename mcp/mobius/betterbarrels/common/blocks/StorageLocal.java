@@ -32,6 +32,11 @@ public class StorageLocal implements IBarrelStorage{
 	
 	public StorageLocal(){ this.onInventoryChanged(); }	
 	public StorageLocal(NBTTagCompound tag){ this.readTagCompound(tag); this.onInventoryChanged(); }
+	public StorageLocal(int nupgrades) {
+		for (int i = 0; i < nupgrades; i++)
+			this.addStorageUpgrade();
+		this.onInventoryChanged();
+	}
 	
 	private ItemStack getStackFromSlot(int slot){ return slot == 0 ? this.inputStack : this.outputStack; }
 	

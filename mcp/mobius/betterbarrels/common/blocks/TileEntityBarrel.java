@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.relauncher.Side;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
@@ -54,7 +56,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public  boolean hasHopper          = false;
 	public  boolean hasEnder           = false;
 	public  boolean isTicking          = false;
-	public  boolean isLinked           = false;
 	public  byte    nStorageUpg        = 0;
 	public  byte    nTicks             = 0;
 	public  int     id                 = -1;
@@ -62,7 +63,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public LogicHopper logicHopper    = LogicHopper.instance();
 	
 	public IBarrelStorage getStorage(){
-		return this.storage;
+		// If I'm enderish, I should request the storage from the Manager. Otherwise, do the usual stuff
+		if (this.hasEnder && !this.worldObj.isRemote)
+			return BSpaceStorageHandler.instance().getStorage(this.id);
+		else
+			return this.storage;
 	}
 	
 	public void setStorage(IBarrelStorage storage){
@@ -193,15 +198,16 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			this.applyUpgradeStructural(stack, player);
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemBarrelHammer))
 			this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
-		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() == 0))
-			this.tuneFork(stack, player, ForgeDirection.getOrientation(side));	
-		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() != 0))
-			this.tuneBarrel(stack, player, ForgeDirection.getOrientation(side));			
+		//else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() == 0))
+		//	this.tuneFork(stack, player, ForgeDirection.getOrientation(side));	
+		//else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() != 0))
+		//	this.tuneBarrel(stack, player, ForgeDirection.getOrientation(side));			
 		else
 			this.manualStackAdd(player);
 	}
 
 	/* THE TUNING FORK */
+	/*
 	private void tuneFork(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		if (!this.hasEnder){
 			BarrelPacketHandler.sendChat(player, "This barrel is not reacting to the fork.");
@@ -261,6 +267,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		
 		//BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
 	}	
+	*/
 	
 	/* UPGRADE ACTIONS */
 
@@ -294,6 +301,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
 				this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
 				this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
+				
+				if (coreType == UpgradeCore.ENDER)
+					this.storage = BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
 				
 				if (this.hasHopper)
 					this.startTicking();
@@ -417,6 +427,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (type == UpgradeCore.ENDER){
 			this.coreUpgrades.add(UpgradeCore.ENDER);
 			this.hasEnder = true;
+			BSpaceStorageHandler.instance().registerEnderBarrel(this.id, this.storage);
 		}		
 		
 		stack.stackSize -= 1;
@@ -529,7 +540,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     public void writeToNBT(NBTTagCompound NBTTag)
     {
 		if (this.id == -1)
-			 this.id = BSpaceStorageHandler.instance().getNextID();
+			 this.id = BSpaceStorageHandler.instance().getNextBarrelID();
 		
 		BSpaceStorageHandler.instance().updateBarrel(this.id, this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord);
 		
@@ -544,7 +555,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setBoolean("hopper",        this.hasHopper);
         NBTTag.setBoolean("ender",         this.hasEnder);
         NBTTag.setBoolean("ticking",       this.isTicking);
-        NBTTag.setBoolean("linked",        this.isLinked);
         NBTTag.setByte("nticks",           this.nTicks);
         NBTTag.setCompoundTag("storage",   this.getStorage().writeTagCompound());
         NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
@@ -573,10 +583,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.hasEnder        = NBTTag.getBoolean("ender");
     	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
     	this.isTicking       = NBTTag.getBoolean("ticking");
-    	this.isLinked        = NBTTag.getBoolean("linked");
     	this.nTicks          = NBTTag.getByte("nticks");
     	this.id              = NBTTag.getInteger("bspaceid");
-    	this.getStorage().readTagCompound(NBTTag.getCompoundTag("storage"));
+    	
+    	if (this.hasEnder && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
+    		this.storage = BSpaceStorageHandler.instance().getStorage(this.id);
+    	else
+    		this.getStorage().readTagCompound(NBTTag.getCompoundTag("storage"));
     	
     	if (this.worldObj != null){
         	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
@@ -617,7 +630,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.getStorage().setStoredItemType(storage.getItem(), storage.getAmount());
 
     	// We get a new id
-    	this.id = BSpaceStorageHandler.instance().getNextID();
+    	this.id = BSpaceStorageHandler.instance().getNextBarrelID();
     	
     	// We update the rendering if possible
     	if (this.worldObj != null){
