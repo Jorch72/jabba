@@ -198,16 +198,15 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			this.applyUpgradeStructural(stack, player);
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemBarrelHammer))
 			this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
-		//else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() == 0))
-		//	this.tuneFork(stack, player, ForgeDirection.getOrientation(side));	
-		//else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() != 0))
-		//	this.tuneBarrel(stack, player, ForgeDirection.getOrientation(side));			
+		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() == 0))
+			this.tuneFork(stack, player, ForgeDirection.getOrientation(side));	
+		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() != 0))
+			this.tuneBarrel(stack, player, ForgeDirection.getOrientation(side));			
 		else
 			this.manualStackAdd(player);
 	}
 
 	/* THE TUNING FORK */
-	/*
 	private void tuneFork(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		if (!this.hasEnder){
 			BarrelPacketHandler.sendChat(player, "This barrel is not reacting to the fork.");
@@ -265,9 +264,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.setItemDamage(0);
 		stack.setTagCompound(new NBTTagCompound());
 		
-		//BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
+		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);		
 	}	
-	*/
 	
 	/* UPGRADE ACTIONS */
 
@@ -671,6 +670,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 		if (this.hasUpgrade(UpgradeCore.REDSTONE) || this.hasUpgrade(UpgradeCore.HOPPER))
 			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
+		
+		if (this.hasUpgrade(UpgradeCore.ENDER))
+			BSpaceStorageHandler.instance().updateAllBarrels(this.id);
 	}    
     
     private int[] convertInts(List<Integer> integers)
