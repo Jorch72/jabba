@@ -213,13 +213,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}
 
-		if (this.getStorage().hasItem()){
-			BarrelPacketHandler.sendChat(player, "Barrel content is preventing it from resonating.");
-			return;
-		}
+		//if (this.getStorage().hasItem()){
+		//	BarrelPacketHandler.sendChat(player, "Barrel content is preventing it from resonating.");
+		//	return;
+		//}
 		
 		// Here we sync the fork to the original barrel frequency if the fork is not already tuned.
 		//stack.setItemDamage(stack.getMaxDamage());
+		BarrelPacketHandler.sendChat(player, "The fork starts resonating.");
 		stack.setItemDamage(1);
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setInteger("tuneID",     this.id);
@@ -301,8 +302,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
 				this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
 				
-				if (coreType == UpgradeCore.ENDER)
+				if (coreType == UpgradeCore.ENDER){
+					if (BSpaceStorageHandler.instance().hasLinks(this.id))
+						BarrelPacketHandler.sendChat(player, "The resonance vanishes...");
 					this.storage = BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
+				}
 				
 				if (this.hasHopper)
 					this.startTicking();
@@ -334,7 +338,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
 				this.dropItemInWorld(player, droppedStack , 0.02);
 				this.levelStructural -= 1;				
-				
 			} else {
 				BarrelPacketHandler.sendChat(player, "Bonk !");				
 			}
@@ -406,10 +409,16 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 	
 		if (type == UpgradeCore.STORAGE){
+			if (BSpaceStorageHandler.instance().hasLinks(this.id)){
+				BarrelPacketHandler.sendChat(player, "The resonance prevents you from applying this upgrade.");
+				return;
+			}			
+			
 			this.coreUpgrades.add(UpgradeCore.STORAGE);
 			this.getStorage().addStorageUpgrade();
 			this.nStorageUpg += 1;
-			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);				
+			
+			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);	
 		}
 
 		if (type == UpgradeCore.REDSTONE){
@@ -435,6 +444,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}	
 	
 	private void applyUpgradeStructural(ItemStack stack, EntityPlayer player){
+		if (BSpaceStorageHandler.instance().hasLinks(this.id)){
+			BarrelPacketHandler.sendChat(player, "The resonance prevents you from applying this upgrade.");
+			return;
+		}
+		
 		if (stack.getItemDamage() == this.levelStructural){
 			stack.stackSize      -= 1;
 			this.levelStructural += 1;
@@ -450,6 +464,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
 
 	}	
+
+	/*
+	private void unlinkBarrel(EntityPlayer player){
+		if (BSpaceStorageHandler.instance().hasLinks(this.id)){
+			BarrelPacketHandler.sendChat(player, "The resonance vanishes...");
+			this.storage = BSpaceStorageHandler.instance().unlinkStorage(this.id);
+			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);			
+		}
+		
+	}
+	*/	
 	
 	/* OTHER ACTIONS */
 	

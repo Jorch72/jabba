@@ -68,6 +68,8 @@ public class BSpaceStorageHandler {
 		IBarrelStorage storage = this.storageMapOriginal.get(id);
 		this.storageMap.remove(id);
 		this.storageMapOriginal.remove(id);
+		this.unlinkStorage(id);
+		
 		this.writeToFile();
 		return storage;
 	}
@@ -75,6 +77,10 @@ public class BSpaceStorageHandler {
 	public IBarrelStorage getStorage(int id){
 		return this.storageMap.get(id);
 	}
+	
+	public IBarrelStorage getStorageOriginal(int id){
+		return this.storageMapOriginal.get(id);
+	}	
 	
 	public TileEntityBarrel getBarrel(int id){
 		if (this.barrels.containsKey(id)){
@@ -95,6 +101,8 @@ public class BSpaceStorageHandler {
 	// Need a way to handle a request for a new inventory
 	
 	public void linkStorages(int source, int target){
+		this.unlinkStorage(target);
+		
 		this.storageMap.put(target, this.storageMap.get(source));
 		
 		if (!links.containsKey(source))
@@ -124,7 +132,8 @@ public class BSpaceStorageHandler {
 		}
 		
 		// Finally, we cleanup the mess by removing barrels without link data anymore
-		for (Integer i : links.keySet()){
+		HashSet<Integer> keys = new HashSet<Integer>(links.keySet());
+		for (Integer i : keys){
 			if (links.get(i).size() == 0)
 				links.remove(i);
 		}
@@ -132,11 +141,30 @@ public class BSpaceStorageHandler {
 		this.writeToFile();			
 	}
 	
+	public IBarrelStorage unlinkStorage(int sourceID){
+		if (!this.links.containsKey(sourceID)) 
+			return this.storageMapOriginal.get(sourceID);
+		
+		HashSet<Integer> copy = new HashSet<Integer>(this.links.get(sourceID));
+		for (Integer targetID : copy) 
+			this.links.get(targetID).remove(sourceID);
+		
+		this.links.remove(sourceID);
+
+		this.writeToFile();	
+		
+		return this.storageMapOriginal.get(sourceID);
+	}
+	
 	private void relinkStorages(){
 		for (Integer source : this.links.keySet())
 			for (Integer target : this.links.get(source)){
 				this.storageMap.put(target, this.storageMap.get(source));
 			}
+	}
+	
+	public boolean hasLinks(int sourceID){
+		return this.links.containsKey(sourceID);
 	}
 	
 	public void updateAllBarrels(int sourceID){
