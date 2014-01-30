@@ -51,18 +51,18 @@ public class BlockBarrel extends BlockContainer{
 	
     @Override    
     public void registerIcons(IconRegister iconRegister){
-    	for (int i=0; i<16; i++)
+    	for (int i=0; i<8; i++)
     	{
     		BlockBarrel.text_side[i]     = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_side_"     + String.valueOf(i));
     		BlockBarrel.text_top[i]      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_top_"      + String.valueOf(i));
     		BlockBarrel.text_label[i]    = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_label_"    + String.valueOf(i));
     		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
-    		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_hopper");
-    		BlockBarrel.text_siders      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_redstone");
-    		BlockBarrel.text_lock        = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_locked");
-    		BlockBarrel.text_linked      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_linked");
-    		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");
     	}
+		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_hopper");
+		BlockBarrel.text_siders      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_redstone");
+		BlockBarrel.text_lock        = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_locked");
+		BlockBarrel.text_linked      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_linked");
+		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");    	
     }
    
     @Override
