@@ -138,7 +138,7 @@ public class BetterBarrels {
 		LanguageRegistry.addName(blockBarrel, "Better Barrel");
 		LanguageRegistry.addName(new ItemStack(itemMover,0,0),    moverName);
 		LanguageRegistry.addName(new ItemStack(itemHammer,0,0),   "Barrel Hammer");
-		LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork (WIP)");
+		LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork");
 		
 		//blockMiniBarrel     = new BlockMiniBarrel(miniBarrelID);
 		//blockBarrelShelf    = new BlockBarrelShelf(barrelShelfID);		
