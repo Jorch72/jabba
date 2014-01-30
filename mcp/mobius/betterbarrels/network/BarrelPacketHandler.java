@@ -86,6 +86,7 @@ public class BarrelPacketHandler implements IPacketHandler {
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				if (barrel != null){
 					barrel.isLinked     = packetCast.isLinked;
+					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);					
 				}
 			}			
 			

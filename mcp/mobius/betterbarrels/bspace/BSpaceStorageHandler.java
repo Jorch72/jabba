@@ -139,8 +139,13 @@ public class BSpaceStorageHandler {
 		// Finally, we cleanup the mess by removing barrels without link data anymore
 		HashSet<Integer> keys = new HashSet<Integer>(links.keySet());
 		for (Integer i : keys){
-			if (links.get(i).size() == 0)
+			if (links.get(i).size() == 0){
 				links.remove(i);
+				
+				TileEntityBarrel barrel = this.getBarrel(i);
+				if (barrel != null)
+					barrel.setLinked(false);				
+			}
 		}
 		
 		this.writeToFile();			

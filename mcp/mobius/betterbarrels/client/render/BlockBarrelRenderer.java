@@ -124,7 +124,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		ItemStack        stack  = barrel.getStorage().getItem();
 		Tessellator tessellator = Tessellator.instance;
 		
-		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock;
+		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
 		Icon iconStack = null;
 		int  levelStructural = barrel.levelStructural;
 		iconSide       = BlockBarrel.text_side[levelStructural];
@@ -134,6 +134,8 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		iconSideHopper = BlockBarrel.text_sidehopper;
 		iconSideRS     = BlockBarrel.text_siders;
 		iconLock       = BlockBarrel.text_lock;
+		iconLinked     = BlockBarrel.text_linked;
+		iconLockLinked = BlockBarrel.text_locklinked;
 		
 		/*
 		if (barrel.storage.hasItem())
@@ -174,6 +176,16 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		double maxXLock = iconLock.getMaxU();
 		double minYLock = iconLock.getMinV();
 		double maxYLock = iconLock.getMaxV();	
+		
+		double minXLinked = iconLinked.getMinU();
+		double maxXLinked = iconLinked.getMaxU();
+		double minYLinked = iconLinked.getMinV();
+		double maxYLinked = iconLinked.getMaxV();		
+
+		double minXLockLinked = iconLockLinked.getMinU();
+		double maxXLockLinked = iconLockLinked.getMaxU();
+		double minYLockLinked = iconLockLinked.getMinV();
+		double maxYLockLinked = iconLockLinked.getMaxV();			
 		
 		double minXStack = iconStack != null ? iconStack.getMinU() : 0;
 		double maxXStack = iconStack != null ? iconStack.getMaxU() : 0;
@@ -231,13 +243,27 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 				minOverlayY[side] = minYSideRS;
 				maxOverlayY[side] = maxYSideRS;					
 			}		
+			else if ( barrel.getStorage().isGhosting() && barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
+				hasOverlay[side]  = true;
+				minOverlayX[side] = maxXLockLinked;
+				maxOverlayX[side] = minXLockLinked;
+				minOverlayY[side] = maxYLockLinked;
+				maxOverlayY[side] = minYLockLinked;					
+			}			
 			else if ( barrel.getStorage().isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
 				hasOverlay[side]  = true;
 				minOverlayX[side] = maxXLock;
 				maxOverlayX[side] = minXLock;
 				minOverlayY[side] = maxYLock;
 				maxOverlayY[side] = minYLock;					
-			}				
+			}
+			else if ( barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)){
+				hasOverlay[side]  = true;
+				minOverlayX[side] = maxXLinked;
+				maxOverlayX[side] = minXLinked;
+				minOverlayY[side] = maxYLinked;
+				maxOverlayY[side] = minYLinked;					
+			}			
 		}
 		
 		double xMin = x, xMax = x + 1;
