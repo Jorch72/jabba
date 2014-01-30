@@ -148,8 +148,6 @@ public class BSpaceStorageHandler {
 		// Finally, we cleanup the mess by removing barrels without link data anymore
 		HashSet<Integer> keys = new HashSet<Integer>(links.keySet());
 		for (Integer i : keys){
-			System.out.printf("%s %s\n", i, links.get(i));
-			
 			if (links.get(i).size() == 0){
 				links.remove(i);
 				

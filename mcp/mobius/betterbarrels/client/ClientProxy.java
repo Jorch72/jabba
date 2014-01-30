@@ -4,7 +4,6 @@ import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
-import mcp.mobius.betterbarrels.BBNeiTooltip;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.bspace.BBEventHandler;
 import mcp.mobius.betterbarrels.client.render.BlockBarrelRenderer;
@@ -39,8 +38,6 @@ public class ClientProxy extends BaseProxy {
 	}
 	
 	public void postInit(){
-		if (Loader.isModLoaded("NotEnoughItems"))
-			BBNeiTooltip.registerHandler();		
 	}	
 }
 

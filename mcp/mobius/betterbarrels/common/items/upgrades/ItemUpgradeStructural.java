@@ -14,13 +14,13 @@ public class ItemUpgradeStructural extends ItemUpgrade{
 
 	public static Icon[] upgradeIcons = new Icon[7];
 	
-    public static String[] upgradeNames = { "Capacity MKI (Wood)",		
-			 						 		"Capacity MKII (Iron)",
-			 						 		"Capacity MKIII (Gold)",
-			 						 		"Capacity MKIV (Diamond)",
-			 						 		"Capacity MKV (Obsidian)",
-			 						 		"Capacity MKVI (End stone)",
-			 						 		"Capacity MKVII (Emerald)" };
+    public static String[] upgradeNames = { "Structural MKI (Wood)",		
+			 						 		"Structural MKII (Iron)",
+			 						 		"Structural MKIII (Gold)",
+			 						 		"Structural MKIV (Diamond)",
+			 						 		"Structural MKV (Obsidian)",
+			 						 		"Structural MKVI (End stone)",
+			 						 		"Structural MKVII (Emerald)" };
 	
     public static int[] textColor = {
     		0x00FFFFFF,
