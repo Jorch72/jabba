@@ -129,6 +129,10 @@ public class BSpaceStorageHandler {
 			links.get(i).clear();
 			links.get(i).addAll(transferSet);
 			links.get(i).remove(i);
+			
+			TileEntityBarrel barrel = this.getBarrel(i);
+			if (barrel != null)
+				barrel.setLinked(true);
 		}
 		
 		// Finally, we cleanup the mess by removing barrels without link data anymore
@@ -151,6 +155,10 @@ public class BSpaceStorageHandler {
 		
 		this.links.remove(sourceID);
 
+		TileEntityBarrel barrel = this.getBarrel(sourceID);
+		if (barrel != null)
+			barrel.setLinked(false);		
+		
 		this.writeToFile();	
 		
 		return this.storageMapOriginal.get(sourceID);

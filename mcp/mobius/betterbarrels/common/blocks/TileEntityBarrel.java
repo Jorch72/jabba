@@ -25,6 +25,7 @@ import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x06FullStorage;
+import mcp.mobius.betterbarrels.network.Packet0x08LinkUpdate;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -56,11 +57,21 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public  boolean hasHopper          = false;
 	public  boolean hasEnder           = false;
 	public  boolean isTicking          = false;
+	public  boolean isLinked           = false;
 	public  byte    nStorageUpg        = 0;
 	public  byte    nTicks             = 0;
 	public  int     id                 = -1;
 	
 	public LogicHopper logicHopper    = LogicHopper.instance();
+	
+	public void setLinked(boolean linked){
+		this.isLinked = linked;
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x08LinkUpdate.create(this), this.worldObj.provider.dimensionId);
+	}
+	
+	public boolean getLinked(){
+		return this.isLinked;
+	}
 	
 	public IBarrelStorage getStorage(){
 		// If I'm enderish, I should request the storage from the Manager. Otherwise, do the usual stuff
@@ -303,8 +314,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
 				
 				if (coreType == UpgradeCore.ENDER){
-					if (BSpaceStorageHandler.instance().hasLinks(this.id))
+					if (BSpaceStorageHandler.instance().hasLinks(this.id)){
 						BarrelPacketHandler.sendChat(player, "The resonance vanishes...");
+					}
 					this.storage = BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
 				}
 				
@@ -579,6 +591,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setBoolean("hopper",        this.hasHopper);
         NBTTag.setBoolean("ender",         this.hasEnder);
         NBTTag.setBoolean("ticking",       this.isTicking);
+        NBTTag.setBoolean("linked",        this.isLinked);
         NBTTag.setByte("nticks",           this.nTicks);
         NBTTag.setCompoundTag("storage",   this.getStorage().writeTagCompound());
         NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
@@ -607,8 +620,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.hasEnder        = NBTTag.getBoolean("ender");
     	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
     	this.isTicking       = NBTTag.getBoolean("ticking");
+    	this.isLinked        = NBTTag.hasKey("linked") ? NBTTag.getBoolean("linked") : false;
     	this.nTicks          = NBTTag.getByte("nticks");
     	this.id              = NBTTag.getInteger("bspaceid");
+    	
     	
     	if (this.hasEnder && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
     		this.storage = BSpaceStorageHandler.instance().getStorage(this.id);
