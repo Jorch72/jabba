@@ -21,6 +21,7 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
@@ -177,7 +178,7 @@ public class BlockBarrel extends BlockContainer{
     	}    	
     	
     	// We drop the stacks
-        if ((barrelEntity != null) && (barrelEntity.getStorage().hasItem()))
+        if ((barrelEntity != null) && (barrelEntity.getStorage().hasItem()) && (!barrelEntity.getLinked()))
         {
         	barrelEntity.updateEntity();
         	int ndroppedstacks = 0;
@@ -191,6 +192,7 @@ public class BlockBarrel extends BlockContainer{
         	}
         }
 
+        BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
         super.breakBlock(world, x, y, z, par5, par6);        
         
     }
