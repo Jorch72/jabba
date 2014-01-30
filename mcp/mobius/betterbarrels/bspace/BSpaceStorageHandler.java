@@ -27,6 +27,7 @@ import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
+import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 
 public class BSpaceStorageHandler {
 	private int version = 1;
@@ -183,8 +184,11 @@ public class BSpaceStorageHandler {
 		
 		for (Integer targetID : this.links.get(sourceID)){
 			TileEntityBarrel target = this.getBarrel(targetID);
-			if (target != null)
+			if (target != null){
+				target.getStorage().setGhosting(source.getStorage().isGhosting());
 				PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(target), target.worldObj.provider.dimensionId);
+				PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(target), target.worldObj.provider.dimensionId);
+			}
 		}
 	}
 	

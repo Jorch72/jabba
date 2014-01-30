@@ -277,6 +277,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.setTagCompound(new NBTTagCompound());
 		
 		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);	
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);		
 	}	
 	
@@ -497,6 +498,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
+	public void setLocked(boolean locked){
+		this.getStorage().setGhosting(locked);
+		this.onInventoryChanged();
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
+	}
+	
 	private void manualStackAdd(EntityPlayer player){
 		ItemStack heldStack = player.inventory.getCurrentItem();
 		this.getStorage().addStack(heldStack);
@@ -711,7 +719,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (this.hasUpgrade(UpgradeCore.REDSTONE) || this.hasUpgrade(UpgradeCore.HOPPER))
 			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
 		
-		if (this.hasUpgrade(UpgradeCore.ENDER))
+		if (this.hasUpgrade(UpgradeCore.ENDER) && !this.worldObj.isRemote)
 			BSpaceStorageHandler.instance().updateAllBarrels(this.id);
 	}    
     
