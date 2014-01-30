@@ -101,32 +101,32 @@ public class BSpaceStorageHandler {
 	
 	// Need a way to handle a request for a new inventory
 	
-	public void linkStorages(int source, int target){
-		this.unlinkStorage(target);
+	public void linkStorages(int sourceID, int targetID){
+		this.unlinkStorage(targetID);
 		
-		this.storageMap.put(target, this.storageMap.get(source));
+		this.storageMap.put(targetID, this.storageMap.get(sourceID));
 		
-		if (!links.containsKey(source))
-			links.put(source, new HashSet<Integer>());
+		if (!links.containsKey(sourceID))
+			links.put(sourceID, new HashSet<Integer>());
 		
 		// We create a new set for this barrel
-		links.put(target, new HashSet<Integer>());
+		links.put(targetID, new HashSet<Integer>());
 
 		// We remove all references of this target in the current link table
 		for (HashSet<Integer> set : links.values())
-			set.remove(target);
+			set.remove(targetID);
 		
 		// We add this target to the source
-		links.get(source).add(target);
+		links.get(sourceID).add(targetID);
 		
 		// We add the source, target and all previous targets to a tempo hashset
 		HashSet<Integer> transferSet = new HashSet<Integer>();
-		transferSet.add(source);
-		transferSet.add(target);
-		transferSet.addAll(links.get(source));
+		transferSet.add(sourceID);
+		transferSet.add(targetID);
+		transferSet.addAll(links.get(sourceID));
 		
 		// We update the hashset of all the elements in the source hashset and remove self referencing.
-		for (Integer i : links.get(source)){
+		for (Integer i : links.get(sourceID)){
 			links.get(i).clear();
 			links.get(i).addAll(transferSet);
 			links.get(i).remove(i);
@@ -136,9 +136,20 @@ public class BSpaceStorageHandler {
 				barrel.setLinked(true);
 		}
 		
+		TileEntityBarrel source = this.getBarrel(sourceID);
+		if (source != null)
+			source.setLinked(true);			
+		
+		this.cleanUpLinks();
+		this.writeToFile();			
+	}
+	
+	private void cleanUpLinks(){
 		// Finally, we cleanup the mess by removing barrels without link data anymore
 		HashSet<Integer> keys = new HashSet<Integer>(links.keySet());
 		for (Integer i : keys){
+			System.out.printf("%s %s\n", i, links.get(i));
+			
 			if (links.get(i).size() == 0){
 				links.remove(i);
 				
@@ -146,9 +157,7 @@ public class BSpaceStorageHandler {
 				if (barrel != null)
 					barrel.setLinked(false);				
 			}
-		}
-		
-		this.writeToFile();			
+		}		
 	}
 	
 	public IBarrelStorage unlinkStorage(int sourceID){
@@ -165,6 +174,7 @@ public class BSpaceStorageHandler {
 		if (barrel != null)
 			barrel.setLinked(false);		
 		
+		this.cleanUpLinks();
 		this.writeToFile();	
 		
 		return this.storageMapOriginal.get(sourceID);
