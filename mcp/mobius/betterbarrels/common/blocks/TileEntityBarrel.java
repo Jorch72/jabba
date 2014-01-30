@@ -88,7 +88,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	/* UPDATE HANDLING */
 	@Override
 	public boolean canUpdate(){
-		return this.isTicking;
+		if (this.worldObj != null && this.worldObj.isRemote)
+			return false;
+		else
+			return this.isTicking;
 	}
 	
 	@Override
