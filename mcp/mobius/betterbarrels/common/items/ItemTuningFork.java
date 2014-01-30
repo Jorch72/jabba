@@ -15,7 +15,7 @@ import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class ItemTuningFork extends Item {
+public class ItemTuningFork extends Item implements IOverlayItem{
 	
 	public ItemTuningFork(int id){
 		super(id);

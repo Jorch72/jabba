@@ -5,6 +5,7 @@ import java.util.HashMap;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
+import mcp.mobius.betterbarrels.common.items.IOverlayItem;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
@@ -42,7 +43,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	        GL11.glDisable(GL11.GL_BLEND);
 	        GL11.glDisable(GL11.GL_LIGHTING);  			
 
-        	boolean isHammer = this.mc.thePlayer.getHeldItem() != null ? this.mc.thePlayer.getHeldItem().getItem() instanceof ItemBarrelHammer ? true : false : false;
+        	boolean isHammer = this.mc.thePlayer.getHeldItem() != null ? this.mc.thePlayer.getHeldItem().getItem() instanceof IOverlayItem ? true : false : false;
         	boolean hasItem  = barrelEntity.getStorage().hasItem();
         	
         	int color = ItemUpgradeStructural.textColor[barrelEntity.levelStructural];

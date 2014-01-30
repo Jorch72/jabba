@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class ItemBarrelHammer extends Item {
+public class ItemBarrelHammer extends Item implements IOverlayItem{
 	
 	public ItemBarrelHammer(int id){
 		super(id);
