@@ -322,8 +322,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
       }
       
       removeCoreUpgrade(UpgradeCore.STORAGE, player);
-      ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[UpgradeCore.STORAGE], 1, UpgradeCore.mapMeta[UpgradeCore.STORAGE]);
-      this.dropItemInWorld(player, droppedStack , 0.02);
       this.getStorage().rmStorageUpgrade();
       this.nStorageUpg -= 1;
 	}
