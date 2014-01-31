@@ -15,9 +15,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
 public class ItemTuningFork extends Item implements IOverlayItem{
+	
+	private static Icon   text_hand = null;	
 	
 	public ItemTuningFork(int id){
 		super(id);
@@ -35,9 +38,15 @@ public class ItemTuningFork extends Item implements IOverlayItem{
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	this.itemIcon  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "bspace_fork");
+    	this.itemIcon  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "bspace_fork_inv");
+    	text_hand      = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "bspace_fork_hand");
     }		
 	
+	@Override	
+    public Icon getIcon(ItemStack stack, int pass){
+		return text_hand;
+    }    
+    
     @Override
     public void onUpdate(ItemStack stack, World world, Entity player, int par4, boolean par5) {
     	if (world.getTotalWorldTime() % 20 == 0){
