@@ -57,7 +57,9 @@ public class ItemBarrelMover extends Item {
     	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityCardboardBox");
     	classExtensionsNames.add("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable");
     	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityConnectable");
-
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.api.lock.ILockable");
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.api.ILockable");    	
+    	
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityBookcase");
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityPotionShelf");
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityWeaponRack");
@@ -339,13 +341,31 @@ public class ItemBarrelMover extends Item {
 		return false;
 	}
 	
-	private void pickupBetterStorageFix(TileEntity container){
+	private boolean pickupBetterStorageFix(TileEntity container){
+		if (classMap.get("net.mcft.copy.betterstorage.api.lock.ILockable") != null &&
+			classMap.get("net.mcft.copy.betterstorage.api.lock.ILockable").isInstance(container)){
+			try{
+				Method getLock = classMap.get("net.mcft.copy.betterstorage.api.lock.ILockable").getDeclaredMethod("getLock", (Class[])null);
+				Object lock = getLock.invoke(container, (Object[])null);
+				if (lock != null) return false;
+			} catch (Exception e) { System.out.printf("%s \n", e); return false;}
+		}
+		
+		if (classMap.get("net.mcft.copy.betterstorage.api.ILockable") != null &&
+				classMap.get("net.mcft.copy.betterstorage.api.ILockable").isInstance(container)){
+				try{
+					Method getLock = classMap.get("net.mcft.copy.betterstorage.api.ILockable").getDeclaredMethod("getLock", (Class[])null);
+					Object lock = getLock.invoke(container, (Object[])null);
+					if (lock != null) return false;
+				} catch (Exception e) { System.out.printf("%s \n", e); return false;}
+			}		
+		
 		if (classMap.get("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable") != null &&
 			classMap.get("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable").isInstance(container)){
 			try{
 				Method disconnect = classMap.get("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable").getDeclaredMethod("disconnect", (Class[])null);
 				disconnect.invoke(container, (Object[])null);
-			} catch (Exception e) { System.out.printf("%s \n", e); }
+			} catch (Exception e) { System.out.printf("%s \n", e); return false;}
 		}
 
 		if (classMap.get("net.mcft.copy.betterstorage.block.tileentity.TileEntityConnectable") != null &&
@@ -353,8 +373,10 @@ public class ItemBarrelMover extends Item {
 			try{
 				Method disconnect = classMap.get("net.mcft.copy.betterstorage.block.tileentity.TileEntityConnectable").getDeclaredMethod("disconnect", (Class[])null);
 				disconnect.invoke(container, (Object[])null);
-			} catch (Exception e) { System.out.printf("%s \n", e); }
-		}		
+			} catch (Exception e) { System.out.printf("%s \n", e); return false;}
+		}
+		
+		return true;
 	}
 	
 	private boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z){
@@ -367,10 +389,8 @@ public class ItemBarrelMover extends Item {
 		if (!isTEMovable(containerTE))
 			return false;
 		
-		this.pickupBetterStorageFix(containerTE);
-		
-		
-		
+		if (!this.pickupBetterStorageFix(containerTE))
+			return false;
 		
 		containerTE.writeToNBT(nbtContainer);
 		
