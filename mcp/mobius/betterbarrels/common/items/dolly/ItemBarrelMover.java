@@ -82,8 +82,8 @@ public class ItemBarrelMover extends Item {
 	public ItemBarrelMover(int id){
 		super(id);
         this.setMaxStackSize(1); 
-        this.setHasSubtypes(true);
-        this.setMaxDamage(0);     
+        //this.setHasSubtypes(true);
+        //this.setMaxDamage(0);     
         this.setUnlocalizedName("dolly.normal.empty");
 	}
 
@@ -97,22 +97,26 @@ public class ItemBarrelMover extends Item {
     
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
-    {   
-		if (stack.getItemDamage() == 0)
-			return "item.dolly.normal.empty";
-		else
-			return "item.dolly.normal.full";
-    }
-    
-    @Override
-    public Icon getIconFromDamage(int dmg)
     {
-        if (dmg == 0)
-        	return ItemBarrelMover.text_empty;
-        else
-        	return ItemBarrelMover.text_filled;
-    }    
-    
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
+			return "item.dolly.normal.full";
+		else
+			return "item.dolly.normal.empty";			
+    }
+
+	@Override	
+    public Icon getIcon(ItemStack stack, int pass){
+		return this.getIconIndex(stack);
+    }	
+
+	@Override	
+    public Icon getIconIndex(ItemStack stack){
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
+			return ItemBarrelMover.text_filled;
+		else
+			return ItemBarrelMover.text_empty;  
+    }	
+	
 	@Override
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
     {
@@ -300,7 +304,6 @@ public class ItemBarrelMover extends Item {
 		if (TEClassName.contains("net.minecraft.tileentity.TileEntityChest"))	
 			world.setBlockMetadataWithNotify(targX, targY, targZ, blockMeta, 1 + 2);
 
-		stack.setItemDamage(0);		
 		stack.getTagCompound().removeTag("Container");
 
 		world.markBlockForUpdate(targX, targY, targZ);		
@@ -406,9 +409,6 @@ public class ItemBarrelMover extends Item {
 		try{
 			world.setBlock(x, y, z, 0, 0, 1 + 2);
 		} catch (Exception e) {}
-		
-		
-		stack.setItemDamage(1);
 		
 		return true;		
 	}

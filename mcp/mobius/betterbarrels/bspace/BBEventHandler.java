@@ -36,19 +36,14 @@ public class BBEventHandler {
 		}
 
 		if (event.itemStack.getItem() instanceof ItemBarrelMover){
-			if (event.itemStack.getItemDamage() == 0){
-				event.toolTip.add(1, "< Empty >");
+			if (event.itemStack.hasTagCompound() && event.itemStack.getTagCompound().hasKey("Container")){
+				NBTTagCompound tag = event.itemStack.getTagCompound().getCompoundTag("Container");
+				int id = tag.getInteger("ID");
+				int meta = tag.getInteger("Meta");
+				ItemStack stack = new ItemStack(id, 0, meta);
+				event.toolTip.add(1, stack.getDisplayName());				
 			} else {
-				NBTTagCompound tag = event.itemStack.getTagCompound();
-				if (tag.hasKey("Container")){
-					tag = tag.getCompoundTag("Container");
-					int id = tag.getInteger("ID");
-					int meta = tag.getInteger("Meta");
-					ItemStack stack = new ItemStack(id, 0, meta);
-					event.toolTip.add(1, stack.getDisplayName());
-				} else {
-					event.toolTip.add(1, "< Unknown >");
-				}
+				event.toolTip.add(1, "< Empty >");
 			}
 		}
 		
