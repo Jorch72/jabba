@@ -55,7 +55,9 @@ public class ItemBarrelMover extends Item {
     	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityReinforcedChest");
     	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityLocker");
     	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityCardboardBox");
-    	
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable");
+    	classExtensionsNames.add("net.mcft.copy.betterstorage.block.tileentity.TileEntityConnectable");
+
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityBookcase");
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityPotionShelf");
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityWeaponRack");
@@ -337,6 +339,24 @@ public class ItemBarrelMover extends Item {
 		return false;
 	}
 	
+	private void pickupBetterStorageFix(TileEntity container){
+		if (classMap.get("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable") != null &&
+			classMap.get("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable").isInstance(container)){
+			try{
+				Method disconnect = classMap.get("net.mcft.copy.betterstorage.tile.entity.TileEntityConnectable").getDeclaredMethod("disconnect", (Class[])null);
+				disconnect.invoke(container, (Object[])null);
+			} catch (Exception e) { System.out.printf("%s \n", e); }
+		}
+
+		if (classMap.get("net.mcft.copy.betterstorage.block.tileentity.TileEntityConnectable") != null &&
+			classMap.get("net.mcft.copy.betterstorage.block.tileentity.TileEntityConnectable").isInstance(container)){
+			try{
+				Method disconnect = classMap.get("net.mcft.copy.betterstorage.block.tileentity.TileEntityConnectable").getDeclaredMethod("disconnect", (Class[])null);
+				disconnect.invoke(container, (Object[])null);
+			} catch (Exception e) { System.out.printf("%s \n", e); }
+		}		
+	}
+	
 	private boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z){
 		int blockID            = world.getBlockId(x, y, z);
 		int blockMeta          = world.getBlockMetadata(x, y, z);
@@ -346,6 +366,11 @@ public class ItemBarrelMover extends Item {
 		
 		if (!isTEMovable(containerTE))
 			return false;
+		
+		this.pickupBetterStorageFix(containerTE);
+		
+		
+		
 		
 		containerTE.writeToNBT(nbtContainer);
 		
