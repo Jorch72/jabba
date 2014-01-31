@@ -33,9 +33,9 @@ public class ItemBarrelMover extends Item {
 	private static Icon   text_empty = null;
 	private static Icon   text_filled = null;
     
-    private static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
-    private static ArrayList<String> classExtensionsNames = new ArrayList<String>();
-    private static HashMap<String, Class> classMap        = new HashMap<String, Class>();
+	protected static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
+    protected static ArrayList<String> classExtensionsNames = new ArrayList<String>();
+    protected static HashMap<String, Class> classMap        = new HashMap<String, Class>();
     
     static {
     	classExtensionsNames.add("cpw.mods.ironchest.TileEntityIronChest");
@@ -129,7 +129,7 @@ public class ItemBarrelMover extends Item {
         return false;
     }
 	
-	private boolean placeContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side){
+	protected boolean placeContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side){
 		NBTTagCompound nbtStack = stack.getTagCompound();
 		int blockID        = nbtStack.getCompoundTag("Container").getInteger("ID");
 		int blockMeta      = nbtStack.getCompoundTag("Container").getInteger("Meta");
@@ -374,7 +374,7 @@ public class ItemBarrelMover extends Item {
 		return true;
 	}
 	
-	private boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z){
+	protected boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z){
 		int blockID            = world.getBlockId(x, y, z);
 		int blockMeta          = world.getBlockMetadata(x, y, z);
 		TileEntity containerTE = world.getBlockTileEntity(x, y, z);

@@ -17,7 +17,8 @@ item.upgrade.structural.6.name=Structural MKVII (Emerald)
 
 item.dolly.normal.empty.name=Dolly
 item.dolly.normal.full.name=Dolly (Full)
-item.dolly.diamond.name=Diamond dolly
+item.dolly.diamond.empty.name=Diamond dolly
+item.dolly.diamond.full.name=Diamond dolly (Full)
 item.hammer.name=Barrel hammer
 item.fork.name=B-Space tuning fork
 
