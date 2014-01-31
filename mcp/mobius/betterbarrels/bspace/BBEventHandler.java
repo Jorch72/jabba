@@ -1,8 +1,11 @@
 package mcp.mobius.betterbarrels.bspace;
 
+import mcp.mobius.betterbarrels.common.items.dolly.ItemBarrelMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -31,5 +34,23 @@ public class BBEventHandler {
 			
 			event.toolTip.add(1, "Slots : " + nslots);
 		}
+
+		if (event.itemStack.getItem() instanceof ItemBarrelMover){
+			if (event.itemStack.getItemDamage() == 0){
+				event.toolTip.add(1, "< Empty >");
+			} else {
+				NBTTagCompound tag = event.itemStack.getTagCompound();
+				if (tag.hasKey("Container")){
+					tag = tag.getCompoundTag("Container");
+					int id = tag.getInteger("ID");
+					int meta = tag.getInteger("Meta");
+					ItemStack stack = new ItemStack(id, 0, meta);
+					event.toolTip.add(1, stack.getDisplayName());
+				} else {
+					event.toolTip.add(1, "< Unknown >");
+				}
+			}
+		}
+		
 	}
 }

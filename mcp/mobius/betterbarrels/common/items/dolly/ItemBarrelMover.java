@@ -84,7 +84,7 @@ public class ItemBarrelMover extends Item {
         this.setMaxStackSize(1); 
         this.setHasSubtypes(true);
         this.setMaxDamage(0);     
-        this.setUnlocalizedName("dolly.normal");
+        this.setUnlocalizedName("dolly.normal.empty");
 	}
 
     @Override    
@@ -94,6 +94,15 @@ public class ItemBarrelMover extends Item {
     	ItemBarrelMover.text_empty  = this.itemIcon;
     	ItemBarrelMover.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_filled");
     }    
+    
+	@Override	
+    public String getUnlocalizedName(ItemStack stack)
+    {   
+		if (stack.getItemDamage() == 0)
+			return "item.dolly.normal.empty";
+		else
+			return "item.dolly.normal.full";
+    }
     
     @Override
     public Icon getIconFromDamage(int dmg)
@@ -293,8 +302,6 @@ public class ItemBarrelMover extends Item {
 
 		stack.setItemDamage(0);		
 		stack.getTagCompound().removeTag("Container");
-		try{ stack.getTagCompound().getCompoundTag("display").removeTag("Name");
-		} catch (Exception e){}
 
 		world.markBlockForUpdate(targX, targY, targZ);		
 		
@@ -402,8 +409,6 @@ public class ItemBarrelMover extends Item {
 		
 		
 		stack.setItemDamage(1);
-		//stack.setItemName(mod_BetterBarrels.moverName + " (" + moverName + ")");
-		stack.setItemName("Dolly (Full)");
 		
 		return true;		
 	}
