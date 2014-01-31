@@ -2,6 +2,8 @@ package mcp.mobius.betterbarrels.common.items;
 
 import java.util.Random;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -21,7 +23,7 @@ public class ItemTuningFork extends Item implements IOverlayItem{
 		super(id);
         this.setMaxDamage(30); // Time it stays tuned, in sec.
         this.setMaxStackSize(1);
-        this.setUnlocalizedName("B-Space Tuning Fork");        
+        this.setUnlocalizedName("B-Space Tuning Fork");  
 	}
 	
 	@Override
@@ -49,6 +51,15 @@ public class ItemTuningFork extends Item implements IOverlayItem{
 	    	}
     	}
     }
+    
+    /*
+    @SideOnly(Side.CLIENT)
+    public boolean requiresMultipleRenderPasses()
+    {
+        return true;
+    }    
+    */
+    
     
 	/*
     @Override
