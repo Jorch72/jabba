@@ -293,7 +293,7 @@ public class ItemBarrelMover extends Item {
 		TileEntity entity = world.getBlockTileEntity(targX, targY, targZ);
 		
 		/* IC2 orientation fix part2 */
-		if (classMap.get("ic2.api.tile.IWrenchable").isInstance(entity))
+		if (classMap.get("ic2.api.tile.IWrenchable") != null && classMap.get("ic2.api.tile.IWrenchable").isInstance(entity))
 			this.fixIC2Orientation(entity, player, targY);
 		
 		if (TEClassName.contains("net.minecraft.tileentity.TileEntityChest"))	

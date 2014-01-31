@@ -320,8 +320,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				if (coreType == UpgradeCore.ENDER){
 					if (BSpaceStorageHandler.instance().hasLinks(this.id)){
 						BarrelPacketHandler.sendChat(player, "The resonance vanishes...");
+						this.storage = new StorageLocal(this.nStorageUpg);						
 					}
-					this.storage = BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
+					BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
 				}
 				
 				if (this.hasHopper)
