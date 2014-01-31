@@ -15,11 +15,17 @@ item.upgrade.structural.4.name=Structural MKV (Obsidian)
 item.upgrade.structural.5.name=Structural MKVI (End stone)
 item.upgrade.structural.6.name=Structural MKVII (Emerald)
 
+item.hammer.normal.name=Barrel Hammer
+item.hammer.bspace.name=Barrel Hammer(Resonating)
+item.hammer.redstone.name=Barrel Hammer(Redstone)
+item.hammer.hopper.name=Barrel Hammer(Hopping)
+item.hammer.storage.name=Barrel Hammer(Storage)
+item.hammer.structural.name=Barrel Hammer(Structural)
+
 item.dolly.normal.empty.name=Dolly
 item.dolly.normal.full.name=Dolly (Full)
 item.dolly.diamond.empty.name=Diamond dolly
 item.dolly.diamond.full.name=Diamond dolly (Full)
-item.hammer.name=Barrel hammer
 item.fork.name=B-Space tuning fork
 
 tile.blockbarrel.name=Better Barrel

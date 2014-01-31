@@ -13,6 +13,7 @@ import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
+import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer.HammerMode;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
@@ -299,65 +300,145 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 	}
 	
+	private void removeCoreUpgrade(Integer type, EntityPlayer player) {
+      for (Integer i : this.coreUpgrades) {
+         if (i == type) {
+            this.coreUpgrades.remove(i);
+            ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[type], 1, UpgradeCore.mapMeta[type]);
+            this.dropItemInWorld(player, droppedStack , 0.02);
+            break;
+         }
+      }
+	}
+
+	private void removeUpgradeStorage(EntityPlayer player) {
+	   if (this.getStorage().getItem() != null) {
+	      int newMaxStoredItems = (this.getStorage().getMaxStacks() - 64) * this.getStorage().getItem().getMaxStackSize();
+
+	      if (this.getStorage().getAmount() > newMaxStoredItems) {
+	         BarrelPacketHandler.sendChat(player, "Please remove some stacks first.");
+	         return;
+	      }
+      }
+      
+      removeCoreUpgrade(UpgradeCore.STORAGE, player);
+      ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[UpgradeCore.STORAGE], 1, UpgradeCore.mapMeta[UpgradeCore.STORAGE]);
+      this.dropItemInWorld(player, droppedStack , 0.02);
+      this.getStorage().rmStorageUpgrade();
+      this.nStorageUpg -= 1;
+	}
+
+	private void removeUpgradeEnder(EntityPlayer player) {
+      if (BSpaceStorageHandler.instance().hasLinks(this.id)){
+         BarrelPacketHandler.sendChat(player, "The resonance vanishes...");
+         this.storage = new StorageLocal(this.nStorageUpg);                
+      }
+      BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
+	}
+	
+	private void removeUpgradeFacades(EntityPlayer player) {
+      for (ForgeDirection s : ForgeDirection.VALID_DIRECTIONS){
+         int sideType = this.sideUpgrades[s.ordinal()];
+         if ((UpgradeSide.mapReq[sideType] != UpgradeCore.NONE) && (!this.hasUpgrade(UpgradeSide.mapReq[sideType])))
+            this.dropSideUpgrade(player, s);
+      }
+	}
+	
 	private void removeUpgrade(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		int type = this.sideUpgrades[side.ordinal()]; 
 		
 		if (type != UpgradeSide.NONE && type != UpgradeSide.FRONT){
 			this.dropSideUpgrade(player, side);
 		} else {
-			int indexLastUpdate = this.getLastNoneStorageUpgradeIndex();
-			if (indexLastUpdate != -1){
+		   switch(HammerMode.getMode(stack)) {
+		      default:
+		      case NORMAL:
+		         int indexLastUpdate = this.getLastNoneStorageUpgradeIndex();
+		         if (indexLastUpdate != -1){
 
-				int coreType = this.coreUpgrades.get(indexLastUpdate);
-				this.coreUpgrades.remove(indexLastUpdate);
-				ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[coreType], 1, UpgradeCore.mapMeta[coreType]);
-				this.dropItemInWorld(player, droppedStack , 0.02);
-				
-				this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
-				this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
-				this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
-				
-				if (coreType == UpgradeCore.ENDER){
-					if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-						BarrelPacketHandler.sendChat(player, "The resonance vanishes...");
-						this.storage = new StorageLocal(this.nStorageUpg);						
-					}
-					BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
-				}
-				
-				if (this.hasHopper)
-					this.startTicking();
-				else
-					this.stopTicking();
-				
-				for (ForgeDirection s : ForgeDirection.VALID_DIRECTIONS){
-					int sideType = this.sideUpgrades[s.ordinal()];
-					if ((UpgradeSide.mapReq[sideType] != UpgradeCore.NONE) && (!this.hasUpgrade(UpgradeSide.mapReq[sideType])))
-						this.dropSideUpgrade(player, s);
-				}
+		            int coreType = this.coreUpgrades.get(indexLastUpdate);
+		            this.coreUpgrades.remove(indexLastUpdate);
+		            ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[coreType], 1, UpgradeCore.mapMeta[coreType]);
+		            this.dropItemInWorld(player, droppedStack , 0.02);
+		            
+		            this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
+		            this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
+		            this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
+		            
+		            if (coreType == UpgradeCore.ENDER) {
+		               removeUpgradeEnder(player);
+		            }
+		            
+		            if (this.hasHopper)
+		               this.startTicking();
+		            else
+		               this.stopTicking();
+		            
+		            removeUpgradeFacades(player);
+		         } else if (this.coreUpgrades.size() > 0) {
+		            removeUpgradeStorage(player);
+		         } else if (this.levelStructural > 0){
+		            ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
+		            this.dropItemInWorld(player, droppedStack , 0.02);
+		            this.levelStructural -= 1;          
+		         } else {
+		            BarrelPacketHandler.sendChat(player, "Bonk !");          
+		         }
+		         break;
+		      case REDSTONE:
+               if (this.hasUpgrade(UpgradeCore.REDSTONE)) {
+                  removeCoreUpgrade(UpgradeCore.REDSTONE, player);
+                  this.hasRedstone = false;
+                  removeUpgradeFacades(player);
+               } else {
+                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+               }
+		         break;
+		      case BSPACE:
+               if (this.hasUpgrade(UpgradeCore.ENDER)) {
+                  removeCoreUpgrade(UpgradeCore.ENDER, player);
+                  this.hasEnder = false;
+                  removeUpgradeEnder(player);
+               } else {
+                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+               }
+		         break;
+		      case HOPPER:
+               if (this.hasUpgrade(UpgradeCore.HOPPER)) {
+                  this.stopTicking();
+                  removeCoreUpgrade(UpgradeCore.HOPPER, player);
+                  this.hasHopper = false;
+                  removeUpgradeFacades(player);
+               } else {
+                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+               }
+		         break;
+		      case STORAGE:
+               if (this.hasUpgrade(UpgradeCore.STORAGE)) {
+                  removeUpgradeStorage(player);
+               } else {
+                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+               }
+		         break;
+		      case STRUCTURAL:
+		         if (this.levelStructural > 0){
+		            int newLevel = this.levelStructural - 1;
+		            int newTotalSlots = 0;
+		            for (int i = 0; i < newLevel; i++)
+		               newTotalSlots += MathHelper.floor_double(Math.pow(2, i));
 
-			} else if (this.coreUpgrades.size() > 0) {
-				int newMaxStoredItems = (this.getStorage().getMaxStacks() - 64) * this.getStorage().getItem().getMaxStackSize();
-				if (this.getStorage().getAmount() > newMaxStoredItems)
-					
-					BarrelPacketHandler.sendChat(player, "Please remove some stacks first.");
-				
-				else{
-					this.coreUpgrades.remove(0);
-					ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[UpgradeCore.STORAGE], 1, UpgradeCore.mapMeta[UpgradeCore.STORAGE]);
-					this.dropItemInWorld(player, droppedStack , 0.02);
-					this.getStorage().rmStorageUpgrade();
-					this.nStorageUpg -= 1;
-				}
-				
-			} else if (this.levelStructural > 0){
-				
-    			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
-				this.dropItemInWorld(player, droppedStack , 0.02);
-				this.levelStructural -= 1;				
-			} else {
-				BarrelPacketHandler.sendChat(player, "Bonk !");				
-			}
+		            if (newTotalSlots < this.getUsedSlots()) {
+		               BarrelPacketHandler.sendChat(player, "Please remove some upgrades first.");
+		            } else {
+   		            ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
+   		            this.dropItemInWorld(player, droppedStack , 0.02);
+   		            this.levelStructural = newLevel;
+		            }
+               } else {
+                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+		         }
+		         break;
+		   }
 		}
 		
 		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
