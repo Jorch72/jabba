@@ -24,6 +24,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.Icon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -328,6 +329,8 @@ public class ItemBarrelMover extends Item {
 	}
 	
 	private boolean isTEMovable(TileEntity te){
+		if (te instanceof TileEntityMobSpawner)
+			return this.canPickSpawners();
 		if (te instanceof TileEntityBarrel)
 			return true;
 		if (te instanceof TileEntityChest)
@@ -377,6 +380,10 @@ public class ItemBarrelMover extends Item {
 		return true;
 	}
 	
+	protected boolean canPickSpawners(){
+		return false;
+	}
+	
 	protected boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z){
 		int blockID            = world.getBlockId(x, y, z);
 		int blockMeta          = world.getBlockMetadata(x, y, z);
@@ -392,10 +399,11 @@ public class ItemBarrelMover extends Item {
 		
 		containerTE.writeToNBT(nbtContainer);
 		
-		nbtTarget.setInteger("ID",   blockID);
-		nbtTarget.setInteger("Meta", blockMeta);
-		nbtTarget.setString("TEClass", containerTE.getClass().getName());
-		nbtTarget.setCompoundTag("NBT", nbtContainer);
+		nbtTarget.setInteger("ID",        blockID);
+		nbtTarget.setInteger("Meta",      blockMeta);
+		nbtTarget.setString("TEClass",    containerTE.getClass().getName());
+		nbtTarget.setBoolean("isSpawner", containerTE instanceof TileEntityMobSpawner);
+		nbtTarget.setCompoundTag("NBT",   nbtContainer);
 		
 		if(!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());

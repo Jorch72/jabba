@@ -51,6 +51,11 @@ public class RecipeHandler {
 		     Character.valueOf('X'), "ingotIron", 
 			 Character.valueOf('P'), "plankWood"}));
 		
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemMoverDiamond,1,0), new Object[] 
+				{"   ", " P ", "XXX",
+		     Character.valueOf('X'), "gemDiamond", 
+			 Character.valueOf('P'), BetterBarrels.itemMover}));		
+		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide, 4, 0), new Object[]
 				{" P ","PXP", " P ", 
 			 Character.valueOf('P'), Item.paper, 
