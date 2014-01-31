@@ -41,7 +41,7 @@ public class BlockBarrel extends BlockContainer{
         super(par1, Material.wood);
         this.setHardness(2.0F);
         this.setResistance(5.0F);
-        this.setUnlocalizedName("jabba.blockbarrel");
+        this.setUnlocalizedName("blockbarrel");
 		this.setCreativeTab(CreativeTabs.tabBlock);
     }
 

@@ -1,4 +1,4 @@
-package mcp.mobius.betterbarrels.common.items;
+package mcp.mobius.betterbarrels.common.items.dolly;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -84,20 +84,8 @@ public class ItemBarrelMover extends Item {
         this.setMaxStackSize(1); 
         this.setHasSubtypes(true);
         this.setMaxDamage(0);     
-        this.setUnlocalizedName("Dolly");
+        this.setUnlocalizedName("dolly.normal");
 	}
-
-    @Override	
-    public String getItemDisplayName(ItemStack par1ItemStack)
-    {    	return "Dolly";    }
-
-    @Override    
-    public String getUnlocalizedName()
-    {    	return "Dolly";    }
-
-    @Override    
-    public String getUnlocalizedName(ItemStack par1ItemStack)
-    {    	return "Dolly";    }
 
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
@@ -415,7 +403,7 @@ public class ItemBarrelMover extends Item {
 		
 		stack.setItemDamage(1);
 		//stack.setItemName(mod_BetterBarrels.moverName + " (" + moverName + ")");
-		stack.setItemName(BetterBarrels.moverName + " (Full)");
+		stack.setItemName("Dolly (Full)");
 		
 		return true;		
 	}

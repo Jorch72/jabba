@@ -14,9 +14,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemUpgradeSide extends ItemUpgrade {
 	public static Icon[] upgradeIcons = new Icon[3];
 	
-    public static String[] upgradeNames = { "Sticker",
-    										"Hopper facade",
-    										"Redstone facade"
+    public static String[] upgradeNames = { "upgrade.side.sticker",
+    										"upgrade.side.hopper",
+    										"upgrade.side.redstone"
     									};	
 	
 	public ItemUpgradeSide(int id){
@@ -24,22 +24,19 @@ public class ItemUpgradeSide extends ItemUpgrade {
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(16);
-        this.setUnlocalizedName("Generic core upgrade");    		
+        this.setUnlocalizedName("upgrade.side.generic");    		
 	}
 	
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
     {   
-		if (stack.getItemDamage() >= ItemUpgradeSide.upgradeNames.length)
-			return "Core Upgrade [ERROR]";
-		
-		return ItemUpgradeSide.upgradeNames[stack.getItemDamage()];
-    }	    
-    
+		return "item." + ItemUpgradeSide.upgradeNames[stack.getItemDamage()];
+    }	
+	
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	for(int i=0 ; i < ItemUpgradeSide.upgradeNames.length; i++)
+    	for(int i=0 ; i < ItemUpgradeSide.upgradeIcons.length; i++)
     		ItemUpgradeSide.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "sideupg_" + String.valueOf(i));
     }	
 	

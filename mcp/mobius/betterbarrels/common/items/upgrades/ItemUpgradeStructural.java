@@ -14,14 +14,6 @@ public class ItemUpgradeStructural extends ItemUpgrade{
 
 	public static Icon[] upgradeIcons = new Icon[7];
 	
-    public static String[] upgradeNames = { "Structural MKI (Wood)",		
-			 						 		"Structural MKII (Iron)",
-			 						 		"Structural MKIII (Gold)",
-			 						 		"Structural MKIV (Diamond)",
-			 						 		"Structural MKV (Obsidian)",
-			 						 		"Structural MKVI (End stone)",
-			 						 		"Structural MKVII (Emerald)" };
-	
     public static int[] textColor = {
     		0x00FFFFFF,
     		0x00FFFFFF,
@@ -38,32 +30,19 @@ public class ItemUpgradeStructural extends ItemUpgrade{
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(16);
-        this.setUnlocalizedName("Generic structural upgrade");        
+        this.setUnlocalizedName("item.upgrade.structural.generic");        
     }
-
-    /*
-	@Override	
-    public String getLocalizedName(ItemStack par1ItemStack)
-    {    	return "Upgrade Test";    }
-
-	@Override	
-    public String getUnlocalizedName()
-    {    	return "Upgrade Test";    }
-    */
 
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
     {   
-		if (stack.getItemDamage() >= ItemUpgradeStructural.upgradeNames.length)
-			return "Capacity Upgrade [ERROR]";
-		
-		return ItemUpgradeStructural.upgradeNames[stack.getItemDamage()];
+		return "item.upgrade.structural." + String.valueOf(stack.getItemDamage());
     }	    
     
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	for(int i=0 ; i < ItemUpgradeStructural.upgradeNames.length; i++)
+    	for(int i=0 ; i < ItemUpgradeStructural.upgradeIcons.length; i++)
     		ItemUpgradeStructural.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "capaupg_mk" + String.valueOf(i+1));
     }	
 	

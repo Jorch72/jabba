@@ -14,8 +14,9 @@ import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
-import mcp.mobius.betterbarrels.common.items.ItemBarrelMover;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
+import mcp.mobius.betterbarrels.common.items.dolly.ItemBarrelMover;
+import mcp.mobius.betterbarrels.common.items.dolly.ItemDiamondMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
@@ -63,6 +64,7 @@ public class BetterBarrels {
 	private static int itemUpgradeCoreID = -1;	
 	private static int itemUpgradeSideID = -1;
 	private static int itemMoverID = -1;
+	private static int itemMoverDiamondID = -1;
 	private static int itemTuningForkID = -1;	
 	private static int itemLockingPlanksID = -1;
 	private static int itemHammerID = -1;
@@ -79,18 +81,13 @@ public class BetterBarrels {
 	public static Item itemUpgradeCore   = null;
 	public static Item itemUpgradeSide   = null;
 	public static Item itemMover         = null;
+	public static Item itemMoverDiamond  = null;
 	public static Item itemTuningFork    = null;
 	public static Item itemLockingPlanks = null;
 	public static Item itemHammer = null;
 	
 	public static int blockBarrelRendererID = -1;
-	
-	public static int RENDER_SHELF = -1;
-	
-	public static String moverName = "Dolly";
-	
-	//public static BSpaceStorageHandler storageHandler = new BSpaceStorageHandler();
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		config = new Configuration(event.getSuggestedConfigurationFile());
@@ -107,11 +104,12 @@ public class BetterBarrels {
 			itemTuningForkID    = config.get("item",   "TuningFork",      3504).getInt();
 			itemLockingPlanksID = config.get("item",   "LockingPlanks",   3506).getInt();	
 			itemUpgradeCoreID   = config.get("item",   "UpgradeCore",     3507).getInt();
-			itemHammerID        = config.get("item",   "Hammer",          3508).getInt();			
+			itemHammerID        = config.get("item",   "Hammer",          3508).getInt();
+			itemMoverDiamondID  = config.get("item",   "DiamondMover",    3509).getInt();				
 			
-			fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
-			highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
-			showUpgradeSymbols = config.get(Configuration.CATEGORY_GENERAL, "showUpgradeSymbols", false).getBoolean(false);
+			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
+			//highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
+			//showUpgradeSymbols = config.get(Configuration.CATEGORY_GENERAL, "showUpgradeSymbols", false).getBoolean(false);
 			
 		} catch (Exception e) {
 			FMLLog.log(Level.SEVERE, e, "BlockBarrel has a problem loading it's configuration");
@@ -132,36 +130,9 @@ public class BetterBarrels {
 		itemUpgradeCore       = new ItemUpgradeCore(itemUpgradeCoreID);
 		itemUpgradeSide       = new ItemUpgradeSide(itemUpgradeSideID);
 		itemMover             = new ItemBarrelMover(itemMoverID);
+		itemMoverDiamond      = new ItemDiamondMover(itemMoverDiamondID);
 		itemHammer            = new ItemBarrelHammer(itemHammerID);
 		itemTuningFork        = new ItemTuningFork(itemTuningForkID);
-		
-		LanguageRegistry.addName(blockBarrel, "Better Barrel");
-		LanguageRegistry.addName(new ItemStack(itemMover,0,0),    moverName);
-		LanguageRegistry.addName(new ItemStack(itemHammer,0,0),   "Barrel Hammer");
-		LanguageRegistry.addName(itemTuningFork,   "B-Space Tuning Fork");
-		
-		//blockMiniBarrel     = new BlockMiniBarrel(miniBarrelID);
-		//blockBarrelShelf    = new BlockBarrelShelf(barrelShelfID);		
-
-				
-		//LanguageRegistry.addName(blockMiniBarrel, "Mini Barrel (WIP)");
-		//LanguageRegistry.addName(blockBarrelShelf, "Barrel shelf (WIP)");
-		
-				
-		for(int i=0; i<ItemUpgradeStructural.upgradeNames.length; i++){
-			ItemStack upgrade = new ItemStack(itemUpgradeStructural, 1, i);
-			LanguageRegistry.addName(upgrade, ItemUpgradeStructural.upgradeNames[i]);
-		}
-
-		for(int i=0; i<ItemUpgradeCore.upgradeNames.length; i++){
-			ItemStack upgrade = new ItemStack(itemUpgradeCore, 1, i);
-			LanguageRegistry.addName(upgrade, ItemUpgradeCore.upgradeNames[i]);
-		}		
-		
-		for(int i=0; i<ItemUpgradeSide.upgradeNames.length; i++){
-			ItemStack upgrade = new ItemStack(itemUpgradeSide, 1, i);
-			LanguageRegistry.addName(upgrade, ItemUpgradeSide.upgradeNames[i]);
-		}			
 		
 		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
@@ -174,7 +145,6 @@ public class BetterBarrels {
 		RecipeHandler.instance().registerRecipes();
 		proxy.registerRenderers();
 
-        //TickRegistry.registerTickHandler(new BarrelServerTickHandler(), Side.SERVER);
         FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
 	}
  

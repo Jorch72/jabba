@@ -10,7 +10,8 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
 	
 	public ItemBarrelHammer(int id){
 		super(id);
-        this.setMaxStackSize(1); 		
+        this.setMaxStackSize(1); 	
+        this.setUnlocalizedName("hammer");
 	}
 	
 	@Override

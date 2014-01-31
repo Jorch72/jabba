@@ -14,19 +14,11 @@ import net.minecraft.util.Icon;
 public class ItemUpgradeCore extends ItemUpgrade {
 	public static Icon[] upgradeIcons = new Icon[4];
 	
-	/*
     public static String[] upgradeNames = { "upgrade.core.storage",
     										"upgrade.core.ender",
     										"upgrade.core.redstone",
     										"upgrade.core.hopper"
     									};	
-    */
-    
-    public static String[] upgradeNames = { "Storage upgrade",
-											"BSpace upgrade",
-											"Redstone upgrade",
-											"Hopper upgrade"
-										};		
 	
 	public ItemUpgradeCore(int id){
 		super(id);
@@ -39,16 +31,14 @@ public class ItemUpgradeCore extends ItemUpgrade {
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
     {   
-		if (stack.getItemDamage() >= ItemUpgradeCore.upgradeNames.length)
-			return "Core Upgrade [ERROR]";
-		
-		return ItemUpgradeCore.upgradeNames[stack.getItemDamage()];
-    }	    
+		return "item." + ItemUpgradeCore.upgradeNames[stack.getItemDamage()];
+    }
+    
     
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	for(int i=0 ; i < ItemUpgradeCore.upgradeNames.length; i++)
+    	for(int i=0 ; i < ItemUpgradeCore.upgradeIcons.length; i++)
     		ItemUpgradeCore.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "coreupg_" + String.valueOf(i));
     }	
 	
