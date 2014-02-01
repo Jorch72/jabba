@@ -69,10 +69,11 @@ public class BetterBarrels {
 	private static int itemLockingPlanksID = -1;
 	private static int itemHammerID = -1;
 	
-	public static boolean fullBarrelTexture  = true;
-	public static boolean highRezTexture     = true;
-	public static boolean showUpgradeSymbols = true;
-	
+	public static boolean  fullBarrelTexture  = true;
+	public static boolean  highRezTexture     = true;
+	public static boolean  showUpgradeSymbols = true;
+	public static boolean  diamondDollyActive = true;	
+	public static String[] materialList       = new String[]{"Ore.plankWood", "Ore.ingotIron", "Ore.ingotGold", "Ore.gemDiamond", "Block.obsidian", "Block.whiteStone", "Ore.gemEmerald"};
 	
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
@@ -106,6 +107,10 @@ public class BetterBarrels {
 			itemUpgradeCoreID   = config.get("item",   "UpgradeCore",     3507).getInt();
 			itemHammerID        = config.get("item",   "Hammer",          3508).getInt();
 			itemMoverDiamondID  = config.get("item",   "DiamondMover",    3509).getInt();				
+			
+			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
+			materialList        = config.get(Configuration.CATEGORY_GENERAL, "materialList", materialList).getStringList();
+			
 			
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			//highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
