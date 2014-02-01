@@ -31,8 +31,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class ItemBarrelMover extends Item {
-	private static Icon   text_empty = null;
-	private static Icon   text_filled = null;
+	protected Icon   text_empty = null;
+	protected Icon   text_filled = null;
     
 	protected static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
     protected static ArrayList<String> classExtensionsNames = new ArrayList<String>();
@@ -92,8 +92,8 @@ public class ItemBarrelMover extends Item {
     public void registerIcons(IconRegister par1IconRegister)
     {
     	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_empty");
-    	ItemBarrelMover.text_empty  = this.itemIcon;
-    	ItemBarrelMover.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_filled");
+    	this.text_empty  = this.itemIcon;
+    	this.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_filled");
     }    
     
 	@Override	
@@ -113,9 +113,9 @@ public class ItemBarrelMover extends Item {
 	@Override	
     public Icon getIconIndex(ItemStack stack){
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
-			return ItemBarrelMover.text_filled;
+			return this.text_filled;
 		else
-			return ItemBarrelMover.text_empty;  
+			return this.text_empty;  
     }	
 	
 	@Override
