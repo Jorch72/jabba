@@ -20,7 +20,9 @@ public class RecipeHandler {
 		OreDictionary.registerOre("gemDiamond", Item.diamond);
 		OreDictionary.registerOre("gemEmerald", Item.emerald);
 		OreDictionary.registerOre("chestWood",  Block.chest);
-		OreDictionary.registerOre("stickWood",  Item.stick);		
+		OreDictionary.registerOre("stickWood",  Item.stick);
+		OreDictionary.registerOre("obsidian",   Block.obsidian);
+		OreDictionary.registerOre("whiteStone", Block.whiteStone);
 	}
 	
 	public void registerRecipes(){
@@ -75,7 +77,9 @@ public class RecipeHandler {
 	private void addStructuralUpgrade(int level, String variableComponent){
 		String type     = variableComponent.split("\\.")[0];
 		String compoStr = variableComponent.split("\\.")[1];
+		this.addStructuralUpgrade_(level, compoStr);
 		
+		/*
 		if (type.equals("Ore"))
 			this.addStructuralUpgrade_(level, compoStr);
 
@@ -95,7 +99,8 @@ public class RecipeHandler {
 			} catch (Exception e) {
 				BetterBarrels.log.severe("Error while trying to register recipe with material " + variableComponent);
 			}
-		}		
+		}
+		*/		
 		
 	}
 	

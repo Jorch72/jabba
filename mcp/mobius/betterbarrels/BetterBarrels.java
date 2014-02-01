@@ -36,7 +36,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.0", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.0a", dependencies="after:Waila;after:NotEnoughItems")
 @NetworkMod(channels = {"JABBA"}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 
 public class BetterBarrels {
@@ -73,7 +73,7 @@ public class BetterBarrels {
 	public static boolean  highRezTexture     = true;
 	public static boolean  showUpgradeSymbols = true;
 	public static boolean  diamondDollyActive = true;	
-	public static String[] materialList       = new String[]{"Ore.plankWood", "Ore.ingotIron", "Ore.ingotGold", "Ore.gemDiamond", "Block.obsidian", "Block.whiteStone", "Ore.gemEmerald"};
+	public static String[] materialList       = new String[]{"Ore.plankWood", "Ore.ingotIron", "Ore.ingotGold", "Ore.gemDiamond", "Ore.obsidian", "Ore.whiteStone", "Ore.gemEmerald"};
 	
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
