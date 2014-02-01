@@ -75,6 +75,9 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 						if (barrelEntity.levelStructural > 0){
 							this.renderIconOnBlock(0, forgeSide, orientation, barrelPos, 2F, 0.0F, 0, -0.01F);
 							this.renderTextOnBlock("x"+String.valueOf(barrelEntity.levelStructural), forgeSide, orientation, barrelPos, 2.0F, 37.0F, 0 + 15.0F, color, TileEntityBaseRenderer.ALIGNLEFT);
+							if (barrelEntity.getFreeSlots() > 0) {
+							   this.renderTextOnBlock(String.valueOf(barrelEntity.getFreeSlots()), forgeSide, orientation, barrelPos, 2.0F, 254F, 127.0F, color, TileEntityBaseRenderer.ALIGNRIGHT);
+							}
 						}						
 						
 						if (barrelEntity.nStorageUpg > 0){
