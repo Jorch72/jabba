@@ -414,25 +414,34 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		         break;
 		      case STORAGE:
                if (this.hasUpgrade(UpgradeCore.STORAGE)) {
-                  removeUpgradeStorage(player);
+            	  if (BSpaceStorageHandler.instance().hasLinks(this.id)){
+            		  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+            		  break;
+            	  }
+            	  removeUpgradeStorage(player);
                } else {
                   BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
                }
 		         break;
 		      case STRUCTURAL:
 		         if (this.levelStructural > 0){
-		            int newLevel = this.levelStructural - 1;
-		            int newTotalSlots = 0;
-		            for (int i = 0; i < newLevel; i++)
-		               newTotalSlots += MathHelper.floor_double(Math.pow(2, i));
-
-		            if (newTotalSlots < this.getUsedSlots()) {
-	                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REMOVE);
-		            } else {
-   		            ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
-   		            this.dropItemInWorld(player, droppedStack , 0.02);
-   		            this.levelStructural = newLevel;
-		            }
+		        	 if (BSpaceStorageHandler.instance().hasLinks(this.id)){
+		        		 BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+		        		 break;
+		        	 }
+		        	 
+					int newLevel = this.levelStructural - 1;
+					int newTotalSlots = 0;
+					for (int i = 0; i < newLevel; i++)
+					   newTotalSlots += MathHelper.floor_double(Math.pow(2, i));
+					
+					if (newTotalSlots < this.getUsedSlots()) {
+						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REMOVE);
+					} else {
+						ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
+						this.dropItemInWorld(player, droppedStack , 0.02);
+						this.levelStructural = newLevel;
+					}
                } else {
                   BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
 		         }
