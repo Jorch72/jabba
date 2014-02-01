@@ -26,7 +26,7 @@ public class RecipeHandler {
 	public void registerRecipes(){
 		
 		//for (int i = 0; i < BetterBarrels.materialList.length; i++)
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < Math.min(7, BetterBarrels.materialList.length); i++)
 			this.addStructuralUpgrade(i, BetterBarrels.materialList[i]);
 		
 		this.addCoreUpgrade(0, BetterBarrels.blockBarrel);
