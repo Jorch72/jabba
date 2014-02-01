@@ -24,13 +24,10 @@ public class RecipeHandler {
 	}
 	
 	public void registerRecipes(){
-		this.addStructuralUpgrade(0, "plankWood");
-		this.addStructuralUpgrade(1, "ingotIron");
-		this.addStructuralUpgrade(2, "ingotGold");
-		this.addStructuralUpgrade(3, "gemDiamond");
-		this.addStructuralUpgrade(4, Block.obsidian);
-		this.addStructuralUpgrade(5, Block.whiteStone);
-		this.addStructuralUpgrade(6, "gemEmerald");		
+		
+		//for (int i = 0; i < BetterBarrels.materialList.length; i++)
+		for (int i = 0; i < 7; i++)
+			this.addStructuralUpgrade(i, BetterBarrels.materialList[i]);
 		
 		this.addCoreUpgrade(0, BetterBarrels.blockBarrel);
 		this.addCoreUpgrade(1, Block.enderChest);
@@ -51,10 +48,12 @@ public class RecipeHandler {
 		     Character.valueOf('X'), "ingotIron", 
 			 Character.valueOf('P'), "plankWood"}));
 		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemMoverDiamond,1,0), new Object[] 
-				{"   ", " P ", "XXX",
-		     Character.valueOf('X'), "gemDiamond", 
-			 Character.valueOf('P'), BetterBarrels.itemMover}));		
+		if (BetterBarrels.diamondDollyActive){
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemMoverDiamond,1,0), new Object[] 
+					{"   ", " P ", "XXX",
+			     Character.valueOf('X'), "gemDiamond", 
+				 Character.valueOf('P'), BetterBarrels.itemMover}));
+		}
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide, 4, 0), new Object[]
 				{" P ","PXP", " P ", 
@@ -73,21 +72,48 @@ public class RecipeHandler {
 				}));		
 	}
 	
-	private void addStructuralUpgrade(int level, Item variableComponent){
+	private void addStructuralUpgrade(int level, String variableComponent){
+		String type     = variableComponent.split("\\.")[0];
+		String compoStr = variableComponent.split("\\.")[1];
+		
+		if (type.equals("Ore"))
+			this.addStructuralUpgrade_(level, compoStr);
+
+		if (type.equals("Block")){
+			try {
+				Block compo = (Block)Class.forName("net.minecraft.block.Block").getField(compoStr).get(null);
+				this.addStructuralUpgrade_(level, compo);
+			} catch (Exception e) {
+				BetterBarrels.log.severe("Error while trying to register recipe with material " + variableComponent);
+			}
+		}
+
+		if (type.equals("Item")){
+			try {
+				Item compo = (Item)Class.forName("net.minecraft.item.Item").getField(compoStr).get(null);
+				this.addStructuralUpgrade_(level, compo);
+			} catch (Exception e) {
+				BetterBarrels.log.severe("Error while trying to register recipe with material " + variableComponent);
+			}
+		}		
+		
+	}
+	
+	private void addStructuralUpgrade_(int level, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
 				'P', Block.fence, 
 				'B', variableComponent});		
 	}
 
-	private void addStructuralUpgrade(int level, Block variableComponent){
+	private void addStructuralUpgrade_(int level, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
 				'P', Block.fence, 
 				'B', new ItemStack(variableComponent,0)});		
 	}	
 	
-	private void addStructuralUpgrade(int level, String variableComponent){
+	private void addStructuralUpgrade_(int level, String variableComponent){
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
 				Character.valueOf('P'), Block.fence, 
