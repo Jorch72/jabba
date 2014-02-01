@@ -5,17 +5,17 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.util.ChatMessageComponent;
 import cpw.mods.fml.common.network.IPacketHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class BarrelPacketHandler implements IPacketHandler {
@@ -89,6 +89,16 @@ public class BarrelPacketHandler implements IPacketHandler {
 					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);					
 				}
 			}			
+         else if (header == 0x09){
+            Packet0x09LocalizedChat packetCast = new Packet0x09LocalizedChat(packet);
+            ChatMessageComponent packetMessage = new ChatMessageComponent();
+            if (packetCast.count == 0) {
+               packetMessage.addKey(LocalizedChat.values()[packetCast.messageID].localizationKey);            
+            } else {
+               packetMessage.addFormatted(LocalizedChat.values()[packetCast.messageID].localizationKey, (Object[])(packetCast.extraNumbers));
+            }
+            Minecraft.getMinecraft().thePlayer.sendChatToPlayer(packetMessage);
+         }        
 			
 		}				
 	}
@@ -116,9 +126,7 @@ public class BarrelPacketHandler implements IPacketHandler {
         }
     }		
 	
-    public static void sendChat(EntityPlayer player, String msg){
-		((EntityPlayerMP)player).playerNetServerHandler.sendPacketToPlayer(new Packet3Chat(
-				ChatMessageComponent.createFromText(msg), false));    	
-    }
-    
+    public static void sendLocalizedChat(EntityPlayer player, LocalizedChat message, Integer ... extraNumbers) {
+       PacketDispatcher.sendPacketToPlayer(Packet0x09LocalizedChat.create(message, extraNumbers), (Player)player);
+     }
 }

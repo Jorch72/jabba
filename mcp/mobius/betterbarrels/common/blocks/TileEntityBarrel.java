@@ -10,6 +10,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
+import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
@@ -224,7 +225,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	/* THE TUNING FORK */
 	private void tuneFork(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		if (!this.hasEnder){
-			BarrelPacketHandler.sendChat(player, "This barrel is not reacting to the fork.");
+			BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_NOREACT);
 			return;
 		}
 
@@ -235,7 +236,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		
 		// Here we sync the fork to the original barrel frequency if the fork is not already tuned.
 		//stack.setItemDamage(stack.getMaxDamage());
-		BarrelPacketHandler.sendChat(player, "The fork starts resonating.");
+		BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_FORK_RESONATING);
 		stack.setItemDamage(1);
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setInteger("tuneID",     this.id);
@@ -246,12 +247,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	private void tuneBarrel(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		if (!this.hasEnder){
-			BarrelPacketHandler.sendChat(player, "This barrel is not reacting to the fork.");
+	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_NOREACT);
 			return;
 		}
 
 		if (this.getStorage().hasItem()){
-			BarrelPacketHandler.sendChat(player, "Barrel content is preventing it from resonating.");
+	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_CONTENT);
 			return;
 		}
 		
@@ -260,7 +261,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		int  barrelID   = stack.getTagCompound().getInteger("tuneID");
 		
 		if (this.levelStructural != structural || this.nStorageUpg != storage){
-			BarrelPacketHandler.sendChat(player, "Structure too different to find a common frequency.");
+	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSAPCE_STRUCTURE);
 			return;			
 		}
 
@@ -270,13 +271,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}		
 
 		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null){
-			BarrelPacketHandler.sendChat(player, "The fork has lost the original source.");
+	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_FORK_LOST);
 			stack.setItemDamage(0);
 			stack.setTagCompound(new NBTTagCompound());			
 			return;			
 		}
 		
-		BarrelPacketHandler.sendChat(player, "Barrels are resonating together.");	
+      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_RESONATING);
 		stack.setItemDamage(0);
 		stack.setTagCompound(new NBTTagCompound());
 		
@@ -316,7 +317,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	      int newMaxStoredItems = (this.getStorage().getMaxStacks() - 64) * this.getStorage().getItem().getMaxStackSize();
 
 	      if (this.getStorage().getAmount() > newMaxStoredItems) {
-	         BarrelPacketHandler.sendChat(player, "Please remove some stacks first.");
+	         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.STACK_REMOVE);
 	         return;
 	      }
       }
@@ -328,7 +329,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 	private void removeUpgradeEnder(EntityPlayer player) {
       if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-         BarrelPacketHandler.sendChat(player, "The resonance vanishes...");
+         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_REMOVE);
          this.storage = new StorageLocal(this.nStorageUpg);                
       }
       BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
@@ -380,7 +381,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		            this.dropItemInWorld(player, droppedStack , 0.02);
 		            this.levelStructural -= 1;          
 		         } else {
-		            BarrelPacketHandler.sendChat(player, "Bonk !");          
+                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
 		         }
 		         break;
 		      case REDSTONE:
@@ -389,7 +390,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
                   this.hasRedstone = false;
                   removeUpgradeFacades(player);
                } else {
-                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
                }
 		         break;
 		      case BSPACE:
@@ -398,7 +399,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
                   this.hasEnder = false;
                   removeUpgradeEnder(player);
                } else {
-                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
                }
 		         break;
 		      case HOPPER:
@@ -408,14 +409,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
                   this.hasHopper = false;
                   removeUpgradeFacades(player);
                } else {
-                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
                }
 		         break;
 		      case STORAGE:
                if (this.hasUpgrade(UpgradeCore.STORAGE)) {
                   removeUpgradeStorage(player);
                } else {
-                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
                }
 		         break;
 		      case STRUCTURAL:
@@ -426,14 +427,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		               newTotalSlots += MathHelper.floor_double(Math.pow(2, i));
 
 		            if (newTotalSlots < this.getUsedSlots()) {
-		               BarrelPacketHandler.sendChat(player, "Please remove some upgrades first.");
+	                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REMOVE);
 		            } else {
    		            ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
    		            this.dropItemInWorld(player, droppedStack , 0.02);
    		            this.levelStructural = newLevel;
 		            }
                } else {
-                  BarrelPacketHandler.sendChat(player, "Bonk !");          
+                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
 		         }
 		         break;
 		   }
@@ -469,7 +470,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
 			}
 			else{
-				BarrelPacketHandler.sendChat(player, "This facade requires a redstone core update.");
+            BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.FACADE_REDSTONE);
 				return;
 			}
 		}		
@@ -480,7 +481,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
 			}
 			else{
-				BarrelPacketHandler.sendChat(player, "This facade requires a hopper core update.");
+            BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.FACADE_HOPPER);
 				return;
 			}
 		}			
@@ -495,18 +496,18 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		int type      = UpgradeCore.mapRevMeta[stack.getItemDamage()];
 
 		if (!(type == UpgradeCore.STORAGE) && this.hasUpgrade(type)){
-			BarrelPacketHandler.sendChat(player, "Core upgrade already installed.");
+         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.COREUPGRADE_EXISTS);
 			return;			
 		}		
 		
 		if (slotsused > this.getFreeSlots()){
-			BarrelPacketHandler.sendChat(player, "Not enough upgrade slots for this upgrade. You need at least " + String.valueOf(slotsused) + " to apply this.");			
+         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_INSUFFICIENT, slotsused);
 			return;
 		}
 	
 		if (type == UpgradeCore.STORAGE){
 			if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-				BarrelPacketHandler.sendChat(player, "The resonance prevents you from applying this upgrade.");
+            BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
 				return;
 			}			
 			
@@ -541,7 +542,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	private void applyUpgradeStructural(ItemStack stack, EntityPlayer player){
 		if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-			BarrelPacketHandler.sendChat(player, "The resonance prevents you from applying this upgrade.");
+         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
 			return;
 		}
 		
@@ -549,11 +550,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			stack.stackSize      -= 1;
 			this.levelStructural += 1;
 		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() == (this.levelStructural - 1))) {
-			BarrelPacketHandler.sendChat(player, "Upgrade already applied.");			
+         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_EXISTS);
 		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() < this.levelStructural)) {
-			BarrelPacketHandler.sendChat(player, "You cannot downgrade a barrel.");			
+         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.DOWNGRADE);
 		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() > this.levelStructural)) {
-			BarrelPacketHandler.sendChat(player, "You need at least an upgrade Mark " + stack.getItemDamage() + " to apply this.");
+		   BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REQUIRED, stack.getItemDamage());
 		}
 
 		this.onInventoryChanged();		

@@ -1,6 +1,7 @@
 package mcp.mobius.betterbarrels.common.items;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,25 +12,23 @@ import net.minecraft.world.World;
 
 public class ItemBarrelHammer extends Item implements IOverlayItem{
    public static enum HammerMode {
-      NORMAL("Your hammer returns to normal."),
-      BSPACE("You feel your hammer begin to resonate."),
-      REDSTONE("Your hammer begins emitting a red glow."),
-      HOPPER("You begin to have trouble holding onto your hammer."),
-      STORAGE("Your hammer begins to grow."),
-      STRUCTURAL("Your hammer becomes a precision tool to destruct.");
+      NORMAL(LocalizedChat.HAMMER_NORMAL),
+      BSPACE(LocalizedChat.HAMMER_BSPACE),
+      REDSTONE(LocalizedChat.HAMMER_REDSTONE),
+      HOPPER(LocalizedChat.HAMMER_HOPPER),
+      STORAGE(LocalizedChat.HAMMER_STORAGE),
+      STRUCTURAL(LocalizedChat.HAMMER_STRUCTURAL);
       
-      public final String message;
+      public final LocalizedChat message;
       public Icon icon;
 
-      public static final HammerMode[] MODES = { NORMAL, BSPACE, REDSTONE, HOPPER, STORAGE, STRUCTURAL };
-
-      private HammerMode(final String message) {
+      private HammerMode(final LocalizedChat message) {
          this.message = message;
       }
 
       public static ItemStack setNextMode(ItemStack item) {
          int next_mode = item.getItemDamage() + 1;
-         if (next_mode >= HammerMode.MODES.length) {
+         if (next_mode >= HammerMode.values().length) {
             next_mode = 0;
          }
          item.setItemDamage(next_mode);
@@ -38,10 +37,10 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
 
       public static HammerMode getMode(final ItemStack item) {
          int mode = item.getItemDamage();
-         if (mode >= HammerMode.MODES.length) {
+         if (mode >= HammerMode.values().length) {
             mode = 0;
          }
-         return HammerMode.MODES[mode];
+         return HammerMode.values()[mode];
       }
    }
    
@@ -64,7 +63,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-       for (HammerMode mode: HammerMode.MODES) {
+       for (HammerMode mode: HammerMode.values()) {
           mode.icon = par1IconRegister.registerIcon(BetterBarrels.modid + ":hammer_" + mode.name().toLowerCase());
        }
     }    
@@ -72,10 +71,10 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
     @Override
     public Icon getIconFromDamage(int dmg)
     {
-       if (dmg >= HammerMode.MODES.length) {
+       if (dmg >= HammerMode.values().length) {
           dmg = 0;
        }
-      return HammerMode.MODES[dmg].icon;
+      return HammerMode.values()[dmg].icon;
     }    
 
     @Override
@@ -90,7 +89,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
           par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem] = HammerMode.setNextMode(par1ItemStack);
    
           if (!par2World.isRemote) {
-             BarrelPacketHandler.sendChat(par3EntityPlayer, HammerMode.getMode(par1ItemStack).message);
+             BarrelPacketHandler.sendLocalizedChat(par3EntityPlayer, HammerMode.getMode(par1ItemStack).message);
           }
        }
        
