@@ -46,6 +46,5 @@ public class BBEventHandler {
 				event.toolTip.add(1, "< Empty >");
 			}
 		}
-		
 	}
 }

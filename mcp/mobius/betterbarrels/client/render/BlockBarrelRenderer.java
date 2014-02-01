@@ -292,10 +292,10 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMax, yMin, zMax, maxX[0], minY[0]);
 			
 			if (hasOverlay[0]){
-				tessellator.addVertexWithUV(xMin, yMin, zMax, minOverlayX[0], minOverlayY[0]);
-				tessellator.addVertexWithUV(xMin, yMin, zMin, minOverlayX[0], maxOverlayY[0]);
-				tessellator.addVertexWithUV(xMax, yMin, zMin, maxOverlayX[0], maxOverlayY[0]);
-				tessellator.addVertexWithUV(xMax, yMin, zMax, maxOverlayX[0], minOverlayY[0]);				
+				tessellator.addVertexWithUV(xMin, yMin, zMax, maxOverlayX[0], maxOverlayY[0]);
+				tessellator.addVertexWithUV(xMin, yMin, zMin, maxOverlayX[0], minOverlayY[0]);
+				tessellator.addVertexWithUV(xMax, yMin, zMin, minOverlayX[0], minOverlayY[0]);
+				tessellator.addVertexWithUV(xMax, yMin, zMax, minOverlayX[0], maxOverlayY[0]);				
 			}
 			
 		}
@@ -309,10 +309,10 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 			tessellator.addVertexWithUV(xMax, yMax, zMin, maxX[1], minY[1]);
 			
 			if (hasOverlay[1]){
-				tessellator.addVertexWithUV(xMin, yMax, zMin, minOverlayX[1], minOverlayY[1]);
-				tessellator.addVertexWithUV(xMin, yMax, zMax, minOverlayX[1], maxOverlayY[1]);
-				tessellator.addVertexWithUV(xMax, yMax, zMax, maxOverlayX[1], maxOverlayY[1]);
-				tessellator.addVertexWithUV(xMax, yMax, zMin, maxOverlayX[1], minOverlayY[1]);				
+				tessellator.addVertexWithUV(xMin, yMax, zMin, maxOverlayX[1], maxOverlayY[1]);
+				tessellator.addVertexWithUV(xMin, yMax, zMax, maxOverlayX[1], minOverlayY[1]);
+				tessellator.addVertexWithUV(xMax, yMax, zMax, minOverlayX[1], minOverlayY[1]);
+				tessellator.addVertexWithUV(xMax, yMax, zMin, minOverlayX[1], maxOverlayY[1]);				
 			}			
 		}
 		
