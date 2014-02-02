@@ -83,7 +83,7 @@ public class LogicHopper {
     	    		stack.stackSize -= 1;
     	    		return true;
     	    		
-    	    	} else if (targetStack.isItemEqual(stack)) {
+    	    	} else if (targetStack.isItemEqual(stack) && targetStack.stackSize < targetStack.getMaxStackSize()) {
     	    		targetStack.stackSize += 1;
     	    		stack.stackSize -= 1;
     	    		return true;
@@ -103,7 +103,7 @@ public class LogicHopper {
     	    		stack.stackSize -= 1;
     	    		return true;
     	    		
-    	    	} else if (targetStack.isItemEqual(stack) && targetStack.stackSize != targetStack.getMaxStackSize()) {
+    	    	} else if (targetStack.isItemEqual(stack) && targetStack.stackSize < targetStack.getMaxStackSize()) {
     	    		targetStack.stackSize += 1;
     	    		stack.stackSize -= 1;
     	    		return true;
