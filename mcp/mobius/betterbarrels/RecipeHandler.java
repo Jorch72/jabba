@@ -115,7 +115,7 @@ public class RecipeHandler {
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
 				'P', Block.fence, 
-				'B', new ItemStack(variableComponent,0)});		
+				'B', new ItemStack(variableComponent,1)});		
 	}	
 	
 	private void addStructuralUpgrade_(int level, String variableComponent){
@@ -136,7 +136,7 @@ public class RecipeHandler {
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
 				{" P ", " B ", " P ",
 				'P', Block.pistonBase, 
-				'B', new ItemStack(variableComponent,0)});		
+				'B', new ItemStack(variableComponent,1)});		
 	}	
 	
 	private void addCoreUpgrade(int meta, String variableComponent){
@@ -157,7 +157,7 @@ public class RecipeHandler {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide,4,meta), new Object[] 
 				{" P ", "PBP", " P ",
 				Character.valueOf('P'), "plankWood",
-				Character.valueOf('B'), new ItemStack(variableComponent,0)}));		
+				Character.valueOf('B'), new ItemStack(variableComponent,1)}));		
 	}	
 	
 	private void addSideUpgrade(int meta, String variableComponent){
