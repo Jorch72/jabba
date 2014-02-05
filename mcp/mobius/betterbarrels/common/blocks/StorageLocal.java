@@ -1,15 +1,20 @@
 package mcp.mobius.betterbarrels.common.blocks;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
+import mcp.mobius.betterbarrels.common.blocks.logic.ItemImmut;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
+import mcp.mobius.betterbarrels.common.blocks.logic.OreDictPair;
 
 public class StorageLocal implements IBarrelStorage{
 
@@ -29,6 +34,8 @@ public class StorageLocal implements IBarrelStorage{
 	private boolean keepLastItem = false;	//Ghosting mod. If true, we don't reset the item type when the barrel is empty
 	
 	private Set<Coordinates> linkedStorages = new HashSet<Coordinates>();
+	
+    private static HashMap<OreDictPair, Boolean> oreDictCache = new HashMap<OreDictPair, Boolean>(); 	
 	
 	public StorageLocal(){ this.onInventoryChanged(); }	
 	public StorageLocal(NBTTagCompound tag){ this.readTagCompound(tag); this.onInventoryChanged(); }
@@ -78,24 +85,35 @@ public class StorageLocal implements IBarrelStorage{
     	}
 	}    
     
+
+    
     @Override
 	public boolean sameItem(ItemStack stack){
     	if (!this.hasItem() && this.isGhosting()) return false;
     	if (!this.hasItem()) return true;
     	if (stack == null)   return false;
 
-    	int oreIDBarrel = OreDictionary.getOreID(this.getItem());
-    	int oreIDStack  = OreDictionary.getOreID(stack);
-		boolean stackIsMetal =  OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
-								OreDictionary.getOreName(oreIDBarrel).startsWith("ore")   ||
-								OreDictionary.getOreName(oreIDBarrel).startsWith("dust")  ||
-								OreDictionary.getOreName(oreIDBarrel).startsWith("block") ||
-								OreDictionary.getOreName(oreIDBarrel).startsWith("nugget") ;
-		
-		boolean oreDictEquals = (oreIDStack != -1) && (oreIDBarrel != -1) && (oreIDBarrel == oreIDStack);
-		boolean rawEquals     = this.getItem().isItemEqual(stack) && ItemStack.areItemStackTagsEqual(this.getItem(), stack); 
-		
-		return rawEquals || (stackIsMetal && oreDictEquals);
+		if (this.getItem().isItemEqual(stack) && ItemStack.areItemStackTagsEqual(this.getItem(), stack))
+			return true;     	
+    	
+    	OreDictPair orePair  = new OreDictPair(
+    			new ItemImmut(this.getItem().itemID,   this.getItem().getItemDamage()),
+    			new ItemImmut(stack.itemID, stack.getItemDamage())
+    	);
+    	
+    	if (!oreDictCache.containsKey(orePair)){
+	    	int oreIDBarrel = OreDictionary.getOreID(this.getItem());
+	    	int oreIDStack  = OreDictionary.getOreID(stack);
+			boolean stackIsMetal =  OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
+									OreDictionary.getOreName(oreIDBarrel).startsWith("ore")   ||
+									OreDictionary.getOreName(oreIDBarrel).startsWith("dust")  ||
+									OreDictionary.getOreName(oreIDBarrel).startsWith("block") ||
+									OreDictionary.getOreName(oreIDBarrel).startsWith("nugget") ;
+			
+			oreDictCache.put(orePair, (oreIDStack != -1) && (oreIDBarrel != -1) && (oreIDBarrel == oreIDStack) && (stackIsMetal));
+			//System.out.printf("Added ore pair for %d:%d | %d:%d = %s\n", this.getItem().itemID, this.getItem().getItemDamage(), stack.itemID, stack.getItemDamage(), oreDictCache.get(orePair));
+    	}
+		return oreDictCache.get(orePair);
 	}    
     
 	/* NBT MANIPULATION */
