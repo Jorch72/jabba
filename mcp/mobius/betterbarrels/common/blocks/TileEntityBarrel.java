@@ -270,7 +270,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}		
 
-		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null){
+		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null || !BSpaceStorageHandler.instance().getBarrel(barrelID).hasEnder){
 	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_FORK_LOST);
 			stack.setItemDamage(0);
 			stack.setTagCompound(new NBTTagCompound());			
