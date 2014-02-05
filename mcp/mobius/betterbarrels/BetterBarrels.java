@@ -45,6 +45,7 @@ public class BetterBarrels {
 	
 	public static Logger log = Logger.getLogger("BetterBarrels");	
 	
+	
     // The instance of your mod that Forge uses.
 	@Instance("ProfMobius_BetterBarrels")
 	public static BetterBarrels instance;
@@ -125,7 +126,9 @@ public class BetterBarrels {
 		}
 		
 		RecipeHandler.instance().registerOres();
-		proxy.registerEventHandler();				
+		proxy.registerEventHandler();	
+		
+		//log.setLevel(Level.FINEST);
 	}
 	
 	@EventHandler
