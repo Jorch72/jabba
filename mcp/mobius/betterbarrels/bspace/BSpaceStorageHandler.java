@@ -11,8 +11,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -22,6 +26,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.DimensionManager;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
 import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
@@ -285,6 +290,8 @@ public class BSpaceStorageHandler {
     private NBTTagCompound saveTag;
     
 	public void writeToFile(){
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) return;
+		
         try
         {
         	this.writeToNBT(saveTag);
@@ -302,6 +309,12 @@ public class BSpaceStorageHandler {
         }
         catch(Exception e)
         {
+        	/*
+			for (StackTraceElement elem : e.getStackTrace()){
+				BetterBarrels.log.log(Level.WARNING, String.format("%s.%s:%s",elem.getClassName(), elem.getMethodName(), elem.getLineNumber()));
+			}
+			BetterBarrels.log.log(Level.WARNING, String.format("Catched unhandled exception : %s",e));
+			*/        	
             throw new RuntimeException(e);
         }
 	}
@@ -338,6 +351,12 @@ public class BSpaceStorageHandler {
         }
         catch(Exception e)
         {
+        	/*
+			for (StackTraceElement elem : e.getStackTrace()){
+				BetterBarrels.log.log(Level.WARNING, String.format("%s.%s:%s",elem.getClassName(), elem.getMethodName(), elem.getLineNumber()));
+			}
+			BetterBarrels.log.log(Level.WARNING, String.format("Catched unhandled exception : %s",e));
+			*/            	
             throw new RuntimeException(e);
         }
         
