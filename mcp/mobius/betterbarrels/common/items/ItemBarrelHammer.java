@@ -1,9 +1,16 @@
 package mcp.mobius.betterbarrels.common.items;
 
+import java.util.List;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
+import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -49,6 +56,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
         this.setUnlocalizedName("hammer");
+        this.setCreativeTab(JabbaCreativeTab.tab);
    }
    
    @Override
@@ -95,4 +103,12 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
        
        return par1ItemStack;
    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void getSubItems(int itemID, CreativeTabs tabs, List list) {
+       for(HammerMode mode: HammerMode.values()) {
+          list.add(new ItemStack(itemID, 1, mode.ordinal()));
+       }
+    }
 }

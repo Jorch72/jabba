@@ -6,6 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
+import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +28,7 @@ public class ItemTuningFork extends Item implements IOverlayItem{
         this.setMaxDamage(30); // Time it stays tuned, in sec.
         this.setMaxStackSize(1);
         this.setUnlocalizedName("fork");  
+        this.setCreativeTab(JabbaCreativeTab.tab);
 	}
 	
 	@Override

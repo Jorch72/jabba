@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
@@ -86,6 +87,7 @@ public class ItemBarrelMover extends Item {
         //this.setHasSubtypes(true);
         //this.setMaxDamage(0);     
         this.setUnlocalizedName("dolly.normal.empty");
+        this.setCreativeTab(JabbaCreativeTab.tab);
 	}
 
     @Override    

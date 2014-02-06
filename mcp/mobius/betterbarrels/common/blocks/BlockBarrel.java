@@ -22,6 +22,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
+import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
@@ -42,7 +43,7 @@ public class BlockBarrel extends BlockContainer{
         this.setHardness(2.0F);
         this.setResistance(5.0F);
         this.setUnlocalizedName("blockbarrel");
-		this.setCreativeTab(CreativeTabs.tabBlock);
+		this.setCreativeTab(JabbaCreativeTab.tab);
     }
 
 	@Override

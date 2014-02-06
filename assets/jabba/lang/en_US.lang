@@ -54,3 +54,5 @@ text.jabba.hammer_redstone=Your hammer begins emitting a red glow.
 text.jabba.hammer_hopper=You begin to have trouble holding onto your hammer.
 text.jabba.hammer_storage=Your hammer begins to grow.
 text.jabba.hammer_structural=Your hammer becomes a precision tool to destruct.
+
+itemGroup.jabba=Better Barrels(JABBA)
