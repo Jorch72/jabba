@@ -1,6 +1,7 @@
 package mcp.mobius.betterbarrels.common.items.dolly;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,7 @@ public class ItemDiamondMover extends ItemBarrelMover {
 		super(id);
 		this.setUnlocalizedName("dolly.diamond.empty");
         this.setMaxDamage(6); 
+        this.setCreativeTab(JabbaCreativeTab.tab);
 	}
 	
 	protected boolean canPickSpawners(){
