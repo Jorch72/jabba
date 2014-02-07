@@ -63,4 +63,13 @@ text.jabba.hammer_hopper=You begin to have trouble holding onto your hammer.
 text.jabba.hammer_storage=Your hammer begins to grow.
 text.jabba.hammer_structural=Your hammer becomes a precision tool to destruct.
 
-itemGroup.jabba=Better Barrels(JABBA)
+itemGroup.jabba=Better Barrels
+
+text.jabba.waila.structural=Structural level : %s
+text.jabba.waila.upgrades=Upgrade slots : %s / %s
+text.jabba.waila.items=%s / %s items
+text.jabba.waila.stacks=%s stacks max
+text.jabba.waila.empty=<Empty>
+text.jabba.waila.key.content=Barrel content
+text.jabba.waila.key.quantity=Items quantity
+text.jabba.waila.key.stacks=Max stacks
