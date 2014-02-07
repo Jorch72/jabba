@@ -12,10 +12,11 @@ public enum UpgradeCore {
    HOPPER(Type.HOPPER, 1),
    STORAGE3(Type.STORAGE, 3),
    STORAGE9(Type.STORAGE, 9),
-   STORAGE27(Type.STORAGE, 27);
+   STORAGE27(Type.STORAGE, 27),
+   VOID(Type.VOID, 2);
 
    public static enum Type {
-      STORAGE, ENDER, REDSTONE, HOPPER
+      STORAGE, ENDER, REDSTONE, HOPPER, VOID
    }
 
    public final Type type;
