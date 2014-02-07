@@ -147,8 +147,8 @@ public class BlockBarrel extends BlockContainer{
     	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	
     	// We drop the structural upgrades
-    	if ((barrelEntity != null) && (barrelEntity.levelStructural > 0)){
-    		int currentUpgrade = barrelEntity.levelStructural;
+    	if ((barrelEntity != null) && (barrelEntity.coreUpgrades.levelStructural > 0)){
+    		int currentUpgrade = barrelEntity.coreUpgrades.levelStructural;
     		while (currentUpgrade > 0){
     			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
     			this.dropStack(world, droppedStack, x, y, z);
@@ -158,12 +158,9 @@ public class BlockBarrel extends BlockContainer{
     	
     	// We drop the core upgrades
     	if (barrelEntity != null){
-    		for (Integer i : barrelEntity.coreUpgrades){
-    			Item upgrade = UpgradeCore.mapItem[i];
-    			if (upgrade != null){
-    				ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeCore.mapMeta[i]);
-    				this.dropStack(world, droppedStack, x, y, z);
-    			}
+    		for (UpgradeCore core : barrelEntity.coreUpgrades.upgradeList){
+				ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeCore, 1, core.ordinal());
+ 				this.dropStack(world, droppedStack, x, y, z);
     		}
     	}     	
     	

@@ -126,7 +126,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		
 		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
 		Icon iconStack = null;
-		int  levelStructural = barrel.levelStructural;
+		int  levelStructural = barrel.coreUpgrades.levelStructural;
 		iconSide       = BlockBarrel.text_side[levelStructural];
 		iconTop        = BlockBarrel.text_top[levelStructural];
 		iconLabel      = BlockBarrel.text_label[levelStructural];

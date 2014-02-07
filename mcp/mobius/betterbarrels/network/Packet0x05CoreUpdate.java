@@ -18,7 +18,7 @@ public class Packet0x05CoreUpdate {
 	public boolean hasRedstone = false;
 	public boolean hasHopper   = false;
 	public boolean hasEnder    = false;
-	public ArrayList<Integer> upgrades = new ArrayList<Integer>();
+	public ArrayList<UpgradeCore> upgrades = new ArrayList<UpgradeCore>();
 
 	public Packet0x05CoreUpdate(Packet250CustomPayload packet){
 		DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
@@ -31,14 +31,14 @@ public class Packet0x05CoreUpdate {
 			int size         = inputStream.readInt();
 
 			for (int i = 0; i < size; i++)
-				this.upgrades.add(inputStream.readInt());
+				this.upgrades.add(UpgradeCore.values()[inputStream.readInt()]);
 			
 		} catch (IOException e){}
 		
-		for (Integer i : this.upgrades){
-			if (i == UpgradeCore.STORAGE)
-				this.nStorageUpg += 1;
-			else if (i == UpgradeCore.ENDER)
+		for (UpgradeCore i : this.upgrades){
+			if (i.type == UpgradeCore.Type.STORAGE) {
+				this.nStorageUpg += i.slotsUsed;
+			} else if (i == UpgradeCore.ENDER)
 				this.hasEnder = true;
 			else if (i == UpgradeCore.HOPPER)
 				this.hasHopper = true;
@@ -58,9 +58,9 @@ public class Packet0x05CoreUpdate {
 			outputStream.writeInt(barrel.xCoord);
 			outputStream.writeInt(barrel.yCoord);
 			outputStream.writeInt(barrel.zCoord);
-			outputStream.writeInt(barrel.coreUpgrades.size());
-			for (Integer i : barrel.coreUpgrades)
-				outputStream.writeInt(i.intValue());
+			outputStream.writeInt(barrel.coreUpgrades.upgradeList.size());
+			for (UpgradeCore i : barrel.coreUpgrades.upgradeList)
+				outputStream.writeInt(i.ordinal());
 			
 		}catch(IOException e){}
 		

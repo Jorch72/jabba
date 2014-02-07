@@ -40,10 +40,10 @@ public class UpgradeSide {
 	};
 	
 	public static int[] mapReq = {
-		UpgradeCore.NONE,
-		UpgradeCore.NONE,
-		UpgradeCore.NONE,
-		UpgradeCore.HOPPER,
-		UpgradeCore.REDSTONE
+		-1,
+		-1,
+		-1,
+		UpgradeCore.Type.HOPPER.ordinal(),
+		UpgradeCore.Type.REDSTONE.ordinal()
 	};
 }

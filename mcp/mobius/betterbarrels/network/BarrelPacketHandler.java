@@ -6,6 +6,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import mcp.mobius.betterbarrels.common.LocalizedChat;
+import mcp.mobius.betterbarrels.common.blocks.BarrelCoreUpgrades;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,7 +55,7 @@ public class BarrelPacketHandler implements IPacketHandler {
 				Packet0x04StructuralUpdate packetCast = new Packet0x04StructuralUpdate(packet);
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				if (barrel != null){
-					barrel.levelStructural = packetCast.level;
+					barrel.coreUpgrades.levelStructural = packetCast.level;
 					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);
 				}
 			}	
@@ -62,11 +63,11 @@ public class BarrelPacketHandler implements IPacketHandler {
 				Packet0x05CoreUpdate packetCast = new Packet0x05CoreUpdate(packet);
 				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
 				if (barrel != null){
-					barrel.coreUpgrades = packetCast.upgrades;
-					barrel.hasRedstone  = packetCast.hasRedstone;
-					barrel.hasHopper    = packetCast.hasHopper;
-					barrel.hasEnder     = packetCast.hasEnder;
-					barrel.nStorageUpg  = packetCast.nStorageUpg;
+					barrel.coreUpgrades.upgradeList = packetCast.upgrades;
+					barrel.coreUpgrades.hasRedstone  = packetCast.hasRedstone;
+					barrel.coreUpgrades.hasHopper    = packetCast.hasHopper;
+					barrel.coreUpgrades.hasEnder     = packetCast.hasEnder;
+					barrel.coreUpgrades.nStorageUpg  = packetCast.nStorageUpg;
 				}
 			}	
 			else if (header == 0x06){

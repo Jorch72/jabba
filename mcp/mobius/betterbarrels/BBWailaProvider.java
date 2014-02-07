@@ -23,8 +23,8 @@ public class BBWailaProvider implements IWailaDataProvider {
 		TileEntityBarrel tebarrel = (TileEntityBarrel)accessor.getTileEntity();
 		ItemStack barrelStack = tebarrel.getStorage().getItem();
 		
-		currenttip.add(String.format("Structural level : %d", tebarrel.levelStructural));
-		currenttip.add(String.format("Upgrade slots : %d / %d", tebarrel.getFreeSlots(), tebarrel.getMaxUpgradeSlots()));		
+		currenttip.add(String.format("Structural level : %d", tebarrel.coreUpgrades.levelStructural));
+		currenttip.add(String.format("Upgrade slots : %d / %d", tebarrel.coreUpgrades.getFreeSlots(), tebarrel.coreUpgrades.getMaxUpgradeSlots()));		
 		
 		if (barrelStack != null){
 			if(config.getConfig("bb.itemtype"))
