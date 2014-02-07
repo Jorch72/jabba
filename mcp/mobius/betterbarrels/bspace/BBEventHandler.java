@@ -24,7 +24,7 @@ public class BBEventHandler {
 	@ForgeSubscribe
 	public void onItemTooltip(ItemTooltipEvent event){
 		if (event.itemStack.getItem() instanceof ItemUpgradeCore){
-			event.toolTip.add(1, "Slots : " + UpgradeCore.mapMetaSlots[event.itemStack.getItemDamage()]);
+			event.toolTip.add(1, "Slots : " + UpgradeCore.values()[event.itemStack.getItemDamage()].slotsUsed);
 		}
 		
 		if (event.itemStack.getItem() instanceof ItemUpgradeStructural){

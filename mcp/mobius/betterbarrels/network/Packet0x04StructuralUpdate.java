@@ -38,7 +38,7 @@ public class Packet0x04StructuralUpdate {
 			outputStream.writeInt(barrel.xCoord);
 			outputStream.writeInt(barrel.yCoord);
 			outputStream.writeInt(barrel.zCoord);
-			outputStream.writeInt(barrel.levelStructural);
+			outputStream.writeInt(barrel.coreUpgrades.levelStructural);
 			
 		}catch(IOException e){}
 		

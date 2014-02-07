@@ -46,7 +46,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         	boolean isHammer = this.mc.thePlayer.getHeldItem() != null ? this.mc.thePlayer.getHeldItem().getItem() instanceof IOverlayItem ? true : false : false;
         	boolean hasItem  = barrelEntity.getStorage().hasItem();
         	
-        	int color = ItemUpgradeStructural.textColor[barrelEntity.levelStructural];
+        	int color = ItemUpgradeStructural.textColor[barrelEntity.coreUpgrades.levelStructural];
         	
 	        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){					
 				if (hasItem &&  this.isItemDisplaySide(barrelEntity, forgeSide)){
@@ -72,30 +72,30 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 					else if (this.isItemDisplaySide(barrelEntity, forgeSide)){
 						int offsetY = 256 - 32;
 						
-						if (barrelEntity.levelStructural > 0){
+						if (barrelEntity.coreUpgrades.levelStructural > 0){
 							this.renderIconOnBlock(0, forgeSide, orientation, barrelPos, 2F, 0.0F, 0, -0.01F);
-							this.renderTextOnBlock("x"+String.valueOf(barrelEntity.levelStructural), forgeSide, orientation, barrelPos, 2.0F, 37.0F, 0 + 15.0F, color, TileEntityBaseRenderer.ALIGNLEFT);
-							if (barrelEntity.getFreeSlots() > 0) {
-							   this.renderTextOnBlock(String.valueOf(barrelEntity.getFreeSlots()), forgeSide, orientation, barrelPos, 2.0F, 254F, 127.0F, color, TileEntityBaseRenderer.ALIGNRIGHT);
+							this.renderTextOnBlock("x"+String.valueOf(barrelEntity.coreUpgrades.levelStructural), forgeSide, orientation, barrelPos, 2.0F, 37.0F, 0 + 15.0F, color, TileEntityBaseRenderer.ALIGNLEFT);
+							if (barrelEntity.coreUpgrades.getFreeSlots() > 0) {
+							   this.renderTextOnBlock(String.valueOf(barrelEntity.coreUpgrades.getFreeSlots()), forgeSide, orientation, barrelPos, 2.0F, 254F, 127.0F, color, TileEntityBaseRenderer.ALIGNRIGHT);
 							}
 						}						
 						
-						if (barrelEntity.nStorageUpg > 0){
+						if (barrelEntity.coreUpgrades.nStorageUpg > 0){
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreStorage, forgeSide, orientation, barrelPos, 2.0F, 256.0F - 32F, 0);
-							this.renderTextOnBlock(String.valueOf(barrelEntity.nStorageUpg) + "x", forgeSide, orientation, barrelPos, 2.0F, 256.0F - 32F , 15.0F, color, TileEntityBaseRenderer.ALIGNRIGHT);
+							this.renderTextOnBlock(String.valueOf(barrelEntity.coreUpgrades.nStorageUpg) + "x", forgeSide, orientation, barrelPos, 2.0F, 256.0F - 32F , 15.0F, color, TileEntityBaseRenderer.ALIGNRIGHT);
 						}
 							
-						if (barrelEntity.hasRedstone){
+						if (barrelEntity.coreUpgrades.hasRedstone){
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreRedstone, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
 							offsetY -= 35;
 						}
 						
-						if (barrelEntity.hasHopper){
+						if (barrelEntity.coreUpgrades.hasHopper){
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreHopper, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
 							offsetY -= 35;
 						}
 						
-						if (barrelEntity.hasEnder){
+						if (barrelEntity.coreUpgrades.hasEnder){
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
 							offsetY -= 35;
 						}	

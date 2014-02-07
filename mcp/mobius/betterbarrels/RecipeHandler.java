@@ -1,11 +1,13 @@
 package mcp.mobius.betterbarrels;
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class RecipeHandler {
 
@@ -72,6 +74,21 @@ public class RecipeHandler {
 			Character.valueOf('P'), "ingotIron",
 			Character.valueOf('E'), Item.enderPearl
 				}));		
+
+      addCoreUpgradeUpgrade(UpgradeCore.STORAGE3.ordinal(), UpgradeCore.STORAGE.ordinal());
+      addCoreUpgradeUpgrade(UpgradeCore.STORAGE9.ordinal(), UpgradeCore.STORAGE3.ordinal());
+      addCoreUpgradeUpgrade(UpgradeCore.STORAGE27.ordinal(), UpgradeCore.STORAGE9.ordinal());
+	}
+
+	private void addCoreUpgradeUpgrade(int resultMeta, int sourceMeta) {
+      GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta),
+                                                    new Object[]{new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
+                                                                 new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
+                                                                 new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta)}
+      ));
+      GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 3, sourceMeta),
+                                                    new Object[]{new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta)}
+      ));
 	}
 	
 	private void addStructuralUpgrade(int level, String variableComponent){

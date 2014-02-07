@@ -9,6 +9,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
@@ -45,26 +46,26 @@ import net.minecraftforge.common.ForgeDirection;
 
 
 public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDeepStorageUnit {
-	private static int version = 3;
+	private static int version = 4;
 	
     private long clickTime = -20; //Click timer for double click handling
 	
-    private IBarrelStorage storage     = new StorageLocal();
+    IBarrelStorage storage     = new StorageLocal();
 	public  ForgeDirection orientation = ForgeDirection.UNKNOWN;
-	public  int levelStructural        = 0;
 	public  int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
 	public  int[] sideMetadata         = {0, 0, 0, 0, 0, 0};
-	public  ArrayList<Integer> coreUpgrades = new ArrayList<Integer>();
-	public  boolean hasRedstone        = false;
-	public  boolean hasHopper          = false;
-	public  boolean hasEnder           = false;
 	public  boolean isTicking          = false;
 	public  boolean isLinked           = false;
-	public  byte    nStorageUpg        = 0;
 	public  byte    nTicks             = 0;
 	public  int     id                 = -1;
 	
+	public BarrelCoreUpgrades coreUpgrades;
+
 	public LogicHopper logicHopper    = LogicHopper.instance();
+	
+	public TileEntityBarrel() {
+	   coreUpgrades = new BarrelCoreUpgrades(this);
+	}
 	
 	public void setLinked(boolean linked){
 		this.isLinked = linked;
@@ -77,7 +78,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	public IBarrelStorage getStorage(){
 		// If I'm enderish, I should request the storage from the Manager. Otherwise, do the usual stuff
-		if (this.hasEnder && !this.worldObj.isRemote)
+		if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote)
 			return BSpaceStorageHandler.instance().getStorage(this.id);
 		else
 			return this.storage;
@@ -108,49 +109,16 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 	}
 	
-	private void startTicking(){
+	void startTicking(){
 		this.isTicking = true;
 		if (!this.worldObj.loadedTileEntityList.contains(this))
 			this.worldObj.addTileEntity(this);
 	}
 	
-	private void stopTicking(){
+	void stopTicking(){
 		this.isTicking = false;
 		if (this.worldObj.loadedTileEntityList.contains(this))
 			this.worldObj.loadedTileEntityList.remove(this);
-	}
-	
-	/* SLOT HANDLING */
-	
-	public int getMaxUpgradeSlots(){
-		int nslots = 0;
-		for (int i = 0; i < this.levelStructural; i++)
-			nslots += MathHelper.floor_double(Math.pow(2, i));
-		return  nslots;
-	}
-	
-	public int getUsedSlots(){
-		int nslots = 0;
-		for (Integer i : this.coreUpgrades)
-			nslots += UpgradeCore.mapSlots[i];
-		return nslots;
-	}
-	
-	public int getFreeSlots(){
-		return getMaxUpgradeSlots() - getUsedSlots();
-	}	
-	
-	public boolean hasUpgrade(int upgrade){
-		for (Integer i : this.coreUpgrades)
-			if (i == upgrade) return true;
-		return false;
-	}
-	
-	public int getLastNoneStorageUpgradeIndex(){
-		for (int i = coreUpgrades.size() - 1; i >= 0; i--)
-			if ((this.coreUpgrades.get(i) != UpgradeCore.STORAGE) && (this.coreUpgrades.get(i) != UpgradeCore.NONE))
-				return i;
-		return -1;
 	}
 	
 	/* REDSTONE HANDLING */
@@ -158,7 +126,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		int[] sideSwitch = {1,0,3,2,5,4};
 		side = sideSwitch[side];
 
-		if (!this.hasRedstone) 
+		if (!this.coreUpgrades.hasRedstone) 
 			return 0;
 		else
 			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_FULL && this.getStorage().getAmount() == this.getStorage().getMaxStoredCount())
@@ -189,7 +157,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			droppedStack = this.getStorage().getStack();
 
 		if ((droppedStack != null) && (droppedStack.stackSize > 0))
-			this.dropItemInWorld(player, droppedStack, 0.02);
+			Utils.dropItemInWorld(this, player, droppedStack, 0.02);
 		
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);		
@@ -209,9 +177,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeSide)
         	this.applySideUpgrade(stack, player, ForgeDirection.getOrientation(side));
         else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeCore)
-        	this.applyCoreUpgrade(stack, player);		
+           coreUpgrades.applyUpgrade(stack, player);		
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemUpgradeStructural))
-			this.applyUpgradeStructural(stack, player);
+		   coreUpgrades.applyStructural(stack, player);
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemBarrelHammer))
 			this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
 		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() == 0))
@@ -224,7 +192,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 	/* THE TUNING FORK */
 	private void tuneFork(ItemStack stack, EntityPlayer player, ForgeDirection side){
-		if (!this.hasEnder){
+		if (!this.coreUpgrades.hasEnder){
 			BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_NOREACT);
 			return;
 		}
@@ -240,13 +208,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.setItemDamage(1);
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setInteger("tuneID",     this.id);
-		stack.getTagCompound().setInteger("structural", this.levelStructural);
-		stack.getTagCompound().setByte("storage",       this.nStorageUpg);
+		stack.getTagCompound().setInteger("structural", coreUpgrades.levelStructural);
+		stack.getTagCompound().setByte("storage",       coreUpgrades.nStorageUpg);
 		
 	}
 	
 	private void tuneBarrel(ItemStack stack, EntityPlayer player, ForgeDirection side){
-		if (!this.hasEnder){
+		if (!this.coreUpgrades.hasEnder){
 	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_NOREACT);
 			return;
 		}
@@ -260,7 +228,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		byte storage    = stack.getTagCompound().getByte("storage");
 		int  barrelID   = stack.getTagCompound().getInteger("tuneID");
 		
-		if (this.levelStructural != structural || this.nStorageUpg != storage){
+		if (coreUpgrades.levelStructural != structural || coreUpgrades.nStorageUpg != storage){
 	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSAPCE_STRUCTURE);
 			return;			
 		}
@@ -270,7 +238,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			return;
 		}		
 
-		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null || !BSpaceStorageHandler.instance().getBarrel(barrelID).hasEnder){
+		if (BSpaceStorageHandler.instance().getBarrel(barrelID) == null || !BSpaceStorageHandler.instance().getBarrel(barrelID).coreUpgrades.hasEnder){
 	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_FORK_LOST);
 			stack.setItemDamage(0);
 			stack.setTagCompound(new NBTTagCompound());			
@@ -301,44 +269,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 	}
 	
-	private void removeCoreUpgrade(Integer type, EntityPlayer player) {
-      for (Integer i : this.coreUpgrades) {
-         if (i == type) {
-            this.coreUpgrades.remove(i);
-            ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[type], 1, UpgradeCore.mapMeta[type]);
-            this.dropItemInWorld(player, droppedStack , 0.02);
-            break;
-         }
-      }
-	}
-
-	private void removeUpgradeStorage(EntityPlayer player) {
-	   if (this.getStorage().getItem() != null) {
-	      int newMaxStoredItems = (this.getStorage().getMaxStacks() - 64) * this.getStorage().getItem().getMaxStackSize();
-
-	      if (this.getStorage().getAmount() > newMaxStoredItems) {
-	         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.STACK_REMOVE);
-	         return;
-	      }
-      }
-      
-      removeCoreUpgrade(UpgradeCore.STORAGE, player);
-      this.getStorage().rmStorageUpgrade();
-      this.nStorageUpg -= 1;
-	}
-
-	private void removeUpgradeEnder(EntityPlayer player) {
-      if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_REMOVE);
-         this.storage = new StorageLocal(this.nStorageUpg);                
-      }
-      BSpaceStorageHandler.instance().unregisterEnderBarrel(this.id);
-	}
-	
-	private void removeUpgradeFacades(EntityPlayer player) {
+	void removeUpgradeFacades(EntityPlayer player) {
       for (ForgeDirection s : ForgeDirection.VALID_DIRECTIONS){
          int sideType = this.sideUpgrades[s.ordinal()];
-         if ((UpgradeSide.mapReq[sideType] != UpgradeCore.NONE) && (!this.hasUpgrade(UpgradeSide.mapReq[sideType])))
+         if ((UpgradeSide.mapReq[sideType] != -1) && (!coreUpgrades.hasUpgrade(UpgradeCore.values()[UpgradeSide.mapReq[sideType]])))
             this.dropSideUpgrade(player, s);
       }
 	}
@@ -349,104 +283,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (type != UpgradeSide.NONE && type != UpgradeSide.FRONT){
 			this.dropSideUpgrade(player, side);
 		} else {
-		   switch(HammerMode.getMode(stack)) {
-		      default:
-		      case NORMAL:
-		         int indexLastUpdate = this.getLastNoneStorageUpgradeIndex();
-		         if (indexLastUpdate != -1){
-
-		            int coreType = this.coreUpgrades.get(indexLastUpdate);
-		            this.coreUpgrades.remove(indexLastUpdate);
-		            ItemStack droppedStack = new ItemStack(UpgradeCore.mapItem[coreType], 1, UpgradeCore.mapMeta[coreType]);
-		            this.dropItemInWorld(player, droppedStack , 0.02);
-		            
-		            this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
-		            this.hasHopper   = this.hasUpgrade(UpgradeCore.HOPPER);
-		            this.hasEnder    = this.hasUpgrade(UpgradeCore.ENDER);
-		            
-		            if (coreType == UpgradeCore.ENDER) {
-		               removeUpgradeEnder(player);
-		            }
-		            
-		            if (this.hasHopper)
-		               this.startTicking();
-		            else
-		               this.stopTicking();
-		            
-		            removeUpgradeFacades(player);
-		         } else if (this.coreUpgrades.size() > 0) {
-		            removeUpgradeStorage(player);
-		         } else if (this.levelStructural > 0){
-		            ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
-		            this.dropItemInWorld(player, droppedStack , 0.02);
-		            this.levelStructural -= 1;          
-		         } else {
-                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-		         }
-		         break;
-		      case REDSTONE:
-               if (this.hasUpgrade(UpgradeCore.REDSTONE)) {
-                  removeCoreUpgrade(UpgradeCore.REDSTONE, player);
-                  this.hasRedstone = false;
-                  removeUpgradeFacades(player);
-               } else {
-                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-               }
-		         break;
-		      case BSPACE:
-               if (this.hasUpgrade(UpgradeCore.ENDER)) {
-                  removeCoreUpgrade(UpgradeCore.ENDER, player);
-                  this.hasEnder = false;
-                  removeUpgradeEnder(player);
-               } else {
-                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-               }
-		         break;
-		      case HOPPER:
-               if (this.hasUpgrade(UpgradeCore.HOPPER)) {
-                  this.stopTicking();
-                  removeCoreUpgrade(UpgradeCore.HOPPER, player);
-                  this.hasHopper = false;
-                  removeUpgradeFacades(player);
-               } else {
-                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-               }
-		         break;
-		      case STORAGE:
-               if (this.hasUpgrade(UpgradeCore.STORAGE)) {
-            	  if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-            		  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-            		  break;
-            	  }
-            	  removeUpgradeStorage(player);
-               } else {
-                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-               }
-		         break;
-		      case STRUCTURAL:
-		         if (this.levelStructural > 0){
-		        	 if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-		        		 BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-		        		 break;
-		        	 }
-		        	 
-					int newLevel = this.levelStructural - 1;
-					int newTotalSlots = 0;
-					for (int i = 0; i < newLevel; i++)
-					   newTotalSlots += MathHelper.floor_double(Math.pow(2, i));
-					
-					if (newTotalSlots < this.getUsedSlots()) {
-						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REMOVE);
-					} else {
-						ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, this.levelStructural-1);
-						this.dropItemInWorld(player, droppedStack , 0.02);
-						this.levelStructural = newLevel;
-					}
-               } else {
-                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-		         }
-		         break;
-		   }
+		   coreUpgrades.removeUpgrade(stack, player, side);
 		}
 		
 		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
@@ -459,7 +296,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	private void dropSideUpgrade(EntityPlayer player, ForgeDirection side){
 		int type = this.sideUpgrades[side.ordinal()]; 		
 		ItemStack droppedStack = new ItemStack(UpgradeSide.mapItem[type], 1, UpgradeSide.mapMeta[type]);
-		this.dropItemInWorld(player, droppedStack , 0.02);
+		Utils.dropItemInWorld(this, player, droppedStack , 0.02);
 		this.sideUpgrades[side.ordinal()] = UpgradeSide.NONE;
 		this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
 	}
@@ -474,7 +311,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 
 		else if (type == UpgradeSide.REDSTONE){
-			if (this.hasUpgrade(UpgradeCore.REDSTONE)){
+			if (coreUpgrades.hasRedstone){
 				this.sideUpgrades[side.ordinal()] = UpgradeSide.REDSTONE;
 				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
 			}
@@ -485,7 +322,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}		
 		
 		else if (type == UpgradeSide.HOPPER){
-			if (this.hasUpgrade(UpgradeCore.HOPPER)){
+			if (coreUpgrades.hasHopper){
 				this.sideUpgrades[side.ordinal()] = UpgradeSide.HOPPER;
 				this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
 			}
@@ -500,77 +337,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
-	private void applyCoreUpgrade(ItemStack stack, EntityPlayer player){
-		int slotsused = UpgradeCore.mapMetaSlots[stack.getItemDamage()]; 
-		int type      = UpgradeCore.mapRevMeta[stack.getItemDamage()];
-
-		if (!(type == UpgradeCore.STORAGE) && this.hasUpgrade(type)){
-         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.COREUPGRADE_EXISTS);
-			return;			
-		}		
-		
-		if (slotsused > this.getFreeSlots()){
-         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_INSUFFICIENT, slotsused);
-			return;
-		}
-	
-		if (type == UpgradeCore.STORAGE){
-			if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-            BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-				return;
-			}			
-			
-			this.coreUpgrades.add(UpgradeCore.STORAGE);
-			this.getStorage().addStorageUpgrade();
-			this.nStorageUpg += 1;
-			
-			PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);	
-		}
-
-		if (type == UpgradeCore.REDSTONE){
-			this.coreUpgrades.add(UpgradeCore.REDSTONE);
-			this.hasRedstone = true;
-		}		
-
-		if (type == UpgradeCore.HOPPER){
-			this.coreUpgrades.add(UpgradeCore.HOPPER);
-			this.hasHopper = true;
-			this.startTicking();
-		}
-		
-		if (type == UpgradeCore.ENDER){
-			this.coreUpgrades.add(UpgradeCore.ENDER);
-			this.hasEnder = true;
-			BSpaceStorageHandler.instance().registerEnderBarrel(this.id, this.storage);
-		}		
-		
-		stack.stackSize -= 1;
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);	
-	}	
-	
-	private void applyUpgradeStructural(ItemStack stack, EntityPlayer player){
-		if (BSpaceStorageHandler.instance().hasLinks(this.id)){
-         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-			return;
-		}
-		
-		if (stack.getItemDamage() == this.levelStructural){
-			stack.stackSize      -= 1;
-			this.levelStructural += 1;
-		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() == (this.levelStructural - 1))) {
-         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_EXISTS);
-		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() < this.levelStructural)) {
-         BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.DOWNGRADE);
-		} else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() > this.levelStructural)) {
-		   BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REQUIRED, stack.getItemDamage());
-		}
-
-		this.onInventoryChanged();		
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
-
-	}	
-
 	/*
 	private void unlinkBarrel(EntityPlayer player){
 		if (BSpaceStorageHandler.instance().hasLinks(this.id)){
@@ -623,54 +389,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
-	private void dropItemInWorld(EntityPlayer player, ItemStack stack, double speedfactor){
-		
-        int hitOrientation = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
-        double stackCoordX = 0.0D, stackCoordY = 0.0D, stackCoordZ = 0.0D;
-        
-        switch (hitOrientation){
-        	case 0:
-        		stackCoordX = this.xCoord + 0.5D;
-        		stackCoordY = this.yCoord + 0.5D;
-        		stackCoordZ = this.zCoord - 0.25D;
-        		break;
-        	case 1:
-        		stackCoordX = this.xCoord + 1.25D;
-        		stackCoordY = this.yCoord + 0.5D;
-        		stackCoordZ = this.zCoord + 0.5D;	        		
-        		break;
-        	case 2:
-        		stackCoordX = this.xCoord + 0.5D;
-        		stackCoordY = this.yCoord + 0.5D;
-        		stackCoordZ = this.zCoord + 1.25D;	        		
-        		break;
-        	case 3:
-        		stackCoordX = this.xCoord - 0.25D;
-        		stackCoordY = this.yCoord + 0.5D;
-        		stackCoordZ = this.zCoord + 0.5D;        		
-        		break;        		
-        }
-       
-		EntityItem droppedEntity = new EntityItem(this.worldObj, stackCoordX, stackCoordY, stackCoordZ, stack);
-
-        if (player != null)
-        {
-            Vec3 motion = Vec3.createVectorHelper(player.posX - stackCoordX, player.posY - stackCoordY, player.posZ - stackCoordZ);
-            motion.normalize();
-            droppedEntity.motionX = motion.xCoord;
-            droppedEntity.motionY = motion.yCoord;
-            droppedEntity.motionZ = motion.zCoord;
-            double offset = 0.25D;
-            droppedEntity.moveEntity(motion.xCoord * offset, motion.yCoord * offset, motion.zCoord * offset);
-        }
-
-        droppedEntity.motionX *= speedfactor;
-        droppedEntity.motionY *= speedfactor;
-        droppedEntity.motionZ *= speedfactor;        
-        
-        this.worldObj.spawnEntityInWorld(droppedEntity);		
-	}	
-	
 	/* SAVING AND LOADING OF DATA */
 	
 	@Override
@@ -685,17 +403,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setInteger("version",       TileEntityBarrel.version);        
         NBTTag.setInteger("orientation",   this.orientation.ordinal());
         NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
+        this.coreUpgrades.writeToNBT(NBTTag);
         NBTTag.setIntArray("sideMeta",     this.sideMetadata);
-        NBTTag.setIntArray("coreUpgrades", this.convertInts(this.coreUpgrades));
-        NBTTag.setInteger("structural",    this.levelStructural);
-        NBTTag.setBoolean("redstone",      this.hasRedstone);
-        NBTTag.setBoolean("hopper",        this.hasHopper);
-        NBTTag.setBoolean("ender",         this.hasEnder);
         NBTTag.setBoolean("ticking",       this.isTicking);
         NBTTag.setBoolean("linked",        this.isLinked);
         NBTTag.setByte("nticks",           this.nTicks);
         NBTTag.setCompoundTag("storage",   this.getStorage().writeTagCompound());
-        NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
         NBTTag.setInteger("bspaceid", 	   this.id);
         
     }  	
@@ -705,28 +418,25 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     {
     	super.readFromNBT(NBTTag);
     	
-    	// Handling of backward compatibility
-    	if(NBTTag.getInteger("version") == 2){
-    		this.readFromNBT_v2(NBTTag);
-    		return;
-    	}
+      // Handling of backward compatibility
+    	int saveVersion = NBTTag.getInteger("version");
+      if(saveVersion == 2) {
+         this.readFromNBT_v2(NBTTag);
+         return;
+      }
     	    	
     	this.orientation     = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
     	this.sideUpgrades    = NBTTag.getIntArray("sideUpgrades");
     	this.sideMetadata    = NBTTag.getIntArray("sideMeta");
-    	this.coreUpgrades    = this.convertArrayList(NBTTag.getIntArray("coreUpgrades"));
-    	this.levelStructural = NBTTag.getInteger("structural");
-    	this.hasRedstone     = NBTTag.getBoolean("redstone");
-    	this.hasHopper       = NBTTag.getBoolean("hopper");
-    	this.hasEnder        = NBTTag.getBoolean("ender");
-    	this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
+    	this.coreUpgrades    = new BarrelCoreUpgrades(this);
+    	this.coreUpgrades.readFromNBT(NBTTag, saveVersion);
     	this.isTicking       = NBTTag.getBoolean("ticking");
     	this.isLinked        = NBTTag.hasKey("linked") ? NBTTag.getBoolean("linked") : false;
     	this.nTicks          = NBTTag.getByte("nticks");
     	this.id              = NBTTag.getInteger("bspaceid");
     	
     	
-    	if (this.hasEnder && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
+    	if (this.coreUpgrades.hasEnder && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
     		this.storage = BSpaceStorageHandler.instance().getStorage(this.id);
     	else
     		this.getStorage().readTagCompound(NBTTag.getCompoundTag("storage"));
@@ -757,12 +467,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	this.sideUpgrades[this.orientation.ordinal()] = UpgradeSide.FRONT;
     	
     	// We fix the structural and core upgrades
-    	this.levelStructural = upgradeCapacity;
-    	int freeSlots = this.getFreeSlots();
+    	coreUpgrades.levelStructural = upgradeCapacity;
+    	int freeSlots = coreUpgrades.getFreeSlots();
     	for (int i = 0; i < freeSlots; i++){
-			this.coreUpgrades.add(UpgradeCore.STORAGE);
+			this.coreUpgrades.upgradeList.add(UpgradeCore.STORAGE);
 			this.getStorage().addStorageUpgrade();
-			this.nStorageUpg += 1;
+			coreUpgrades.nStorageUpg += 1;
     	}
 
     	// Fix for the content
@@ -804,38 +514,16 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     }	
 	
     /* OTHER */
-    
-	@Override
-	public void onInventoryChanged(){
-		super.onInventoryChanged();
 
-		if (this.hasUpgrade(UpgradeCore.REDSTONE) || this.hasUpgrade(UpgradeCore.HOPPER))
-			this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
-		
-		if (this.hasUpgrade(UpgradeCore.ENDER) && !this.worldObj.isRemote)
-			BSpaceStorageHandler.instance().updateAllBarrels(this.id);
-	}    
-    
-    private int[] convertInts(List<Integer> integers)
-    {
-        int[] ret = new int[integers.size()];
-        Iterator<Integer> iterator = integers.iterator();
-        for (int i = 0; i < ret.length; i++)
-        {
-            ret[i] = iterator.next().intValue();
-        }
-        return ret;
-    }
-    
-    private ArrayList<Integer> convertArrayList(int[] list)
-    {
-    	ArrayList<Integer> ret = new ArrayList<Integer>();
-    	for (int i = 0; i < list.length; i++)
-    		ret.add(list[i]);
-    	return ret;
+    @Override
+    public void onInventoryChanged() {
+       super.onInventoryChanged();
 
+       if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
+
+       if (coreUpgrades.hasEnder && !this.worldObj.isRemote) BSpaceStorageHandler.instance().updateAllBarrels(this.id);
     }
-    
+
     /*/////////////////////////////////////*/
     /* IInventory Interface Implementation */
     /*/////////////////////////////////////*/
