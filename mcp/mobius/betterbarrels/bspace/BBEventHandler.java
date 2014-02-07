@@ -7,6 +7,7 @@ import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -24,7 +25,7 @@ public class BBEventHandler {
 	@ForgeSubscribe
 	public void onItemTooltip(ItemTooltipEvent event){
 		if (event.itemStack.getItem() instanceof ItemUpgradeCore){
-			event.toolTip.add(1, "Slots : " + UpgradeCore.values()[event.itemStack.getItemDamage()].slotsUsed);
+			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots") + UpgradeCore.values()[event.itemStack.getItemDamage()].slotsUsed);
 		}
 		
 		if (event.itemStack.getItem() instanceof ItemUpgradeStructural){
@@ -32,7 +33,7 @@ public class BBEventHandler {
 			for (int i = 0; i < event.itemStack.getItemDamage() + 1; i++)
 				nslots += MathHelper.floor_double(Math.pow(2, i));			
 			
-			event.toolTip.add(1, "Slots : " + nslots);
+			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots") + nslots);
 		}
 
 		if (event.itemStack.getItem() instanceof ItemBarrelMover){
@@ -43,7 +44,7 @@ public class BBEventHandler {
 				ItemStack stack = new ItemStack(id, 0, meta);
 				event.toolTip.add(1, stack.getDisplayName());				
 			} else {
-				event.toolTip.add(1, "< Empty >");
+				event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.empty"));
 			}
 		}
 	}	
