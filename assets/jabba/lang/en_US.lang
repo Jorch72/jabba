@@ -31,7 +31,7 @@ item.hammer.redstone.name=Barrel Hammer(Redstone)
 item.hammer.hopper.name=Barrel Hammer(Hopping)
 item.hammer.storage.name=Barrel Hammer(Storage)
 item.hammer.structural.name=Barrel Hammer(Structural)
-item.hammer.structural.name=Barrel Hammer(Void)
+item.hammer.void.name=Barrel Hammer(Void)
 
 item.dolly.normal.empty.name=Dolly
 item.dolly.normal.full.name=Dolly (Full)

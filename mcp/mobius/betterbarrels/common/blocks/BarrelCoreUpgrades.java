@@ -148,6 +148,7 @@ public class BarrelCoreUpgrades {
                this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
                this.hasHopper = this.hasUpgrade(UpgradeCore.HOPPER);
                this.hasEnder = this.hasUpgrade(UpgradeCore.ENDER);
+               this.hasVoid = this.hasUpgrade(UpgradeCore.VOID);
 
                if (core.type == UpgradeCore.Type.ENDER) {
                   removeEnder(player);
