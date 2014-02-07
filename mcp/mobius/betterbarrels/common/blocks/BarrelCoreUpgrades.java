@@ -28,10 +28,11 @@ public class BarrelCoreUpgrades {
    public ArrayList<UpgradeCore> upgradeList = new ArrayList<UpgradeCore>();
 
    public int levelStructural = 0;
-   public byte nStorageUpg = 0;
-   public  boolean hasRedstone        = false;
-   public  boolean hasHopper          = false;
-   public  boolean hasEnder           = false;
+   public byte nStorageUpg    = 0;
+   public boolean hasRedstone = false;
+   public boolean hasHopper   = false;
+   public boolean hasEnder    = false;
+   public boolean hasVoid     = false;
 
    public BarrelCoreUpgrades(TileEntityBarrel barrel) {
       this.barrel = barrel;
@@ -228,6 +229,14 @@ public class BarrelCoreUpgrades {
                BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
             }
             break;
+         case VOID:
+            if (this.hasUpgrade(UpgradeCore.VOID)) {
+               removeAndDropUpgrade(UpgradeCore.VOID, player);
+               this.hasVoid = false;
+            } else {
+               BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+            }
+            break;
       }
    }
 
@@ -263,16 +272,21 @@ public class BarrelCoreUpgrades {
          this.hasRedstone = true;
       }
 
-      if (core == UpgradeCore.HOPPER) {
+      else if (core == UpgradeCore.HOPPER) {
          this.upgradeList.add(UpgradeCore.HOPPER);
          this.hasHopper = true;
          barrel.startTicking();
       }
 
-      if (core == UpgradeCore.ENDER) {
+      else if (core == UpgradeCore.ENDER) {
          this.upgradeList.add(UpgradeCore.ENDER);
          this.hasEnder = true;
          BSpaceStorageHandler.instance().registerEnderBarrel(barrel.id, barrel.storage);
+      }
+
+      else if (core == UpgradeCore.VOID) {
+         this.upgradeList.add(UpgradeCore.VOID);
+         this.hasVoid = true;
       }
 
       stack.stackSize -= 1;
@@ -315,6 +329,7 @@ public class BarrelCoreUpgrades {
       NBTTag.setBoolean("redstone",      this.hasRedstone);
       NBTTag.setBoolean("hopper",        this.hasHopper);
       NBTTag.setBoolean("ender",         this.hasEnder);
+      NBTTag.setBoolean("void",          this.hasVoid);
       NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
    }
 
@@ -328,6 +343,7 @@ public class BarrelCoreUpgrades {
       this.hasRedstone     = NBTTag.getBoolean("redstone");
       this.hasHopper       = NBTTag.getBoolean("hopper");
       this.hasEnder        = NBTTag.getBoolean("ender");
+      this.hasVoid         = NBTTag.getBoolean("void");
       this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
    }
 }

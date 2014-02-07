@@ -17,7 +17,8 @@ public class Packet0x05CoreUpdate {
 	public byte  nStorageUpg = 0;
 	public boolean hasRedstone = false;
 	public boolean hasHopper   = false;
-	public boolean hasEnder    = false;
+   public boolean hasEnder    = false;
+   public boolean hasVoid     = false;
 	public ArrayList<UpgradeCore> upgrades = new ArrayList<UpgradeCore>();
 
 	public Packet0x05CoreUpdate(Packet250CustomPayload packet){
@@ -42,8 +43,10 @@ public class Packet0x05CoreUpdate {
 				this.hasEnder = true;
 			else if (i == UpgradeCore.HOPPER)
 				this.hasHopper = true;
-			else if (i == UpgradeCore.REDSTONE)
-				this.hasRedstone = true;
+         else if (i == UpgradeCore.REDSTONE)
+            this.hasRedstone = true;
+         else if (i == UpgradeCore.VOID)
+            this.hasVoid = true;
 		}
 	}
 	

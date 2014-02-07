@@ -24,7 +24,8 @@ public enum LocalizedChat {
    HAMMER_REDSTONE("text.jabba.hammer_redstone"),
    HAMMER_HOPPER("text.jabba.hammer_hopper"),
    HAMMER_STORAGE("text.jabba.hammer_storage"),
-   HAMMER_STRUCTURAL("text.jabba.hammer_structural");
+   HAMMER_STRUCTURAL("text.jabba.hammer_structural"),
+   HAMMER_VOID("text.jabba.hammer_void");
 
    public final String localizationKey;
 

@@ -1,13 +1,11 @@
 package mcp.mobius.betterbarrels.client.render;
 
-import java.util.HashMap;
-
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import mcp.mobius.betterbarrels.common.items.IOverlayItem;
-import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
+import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -22,7 +20,8 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
     protected static ItemStack coreStorage  = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 0);
     protected static ItemStack coreEnder    = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 1);
     protected static ItemStack coreRedstone = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 2);
-    protected static ItemStack coreHopper   = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 3);	
+    protected static ItemStack coreHopper   = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 3);  
+    protected static ItemStack coreVoid     = new ItemStack(BetterBarrels.itemUpgradeCore, 0, UpgradeCore.VOID.ordinal());  
 	
 	public static TileEntityBarrelRenderer instance(){
 		if (_instance == null)
@@ -95,10 +94,15 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 							offsetY -= 35;
 						}
 						
-						if (barrelEntity.coreUpgrades.hasEnder){
-							this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
-							offsetY -= 35;
-						}	
+                  if (barrelEntity.coreUpgrades.hasEnder){
+                     this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+                     offsetY -= 35;
+                  }  
+
+                  if (barrelEntity.coreUpgrades.hasVoid){
+                     this.renderStackOnBlock(TileEntityBarrelRenderer.coreVoid, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+                     offsetY -= 35;
+                  }  
 		        	}
 		        }
 			}

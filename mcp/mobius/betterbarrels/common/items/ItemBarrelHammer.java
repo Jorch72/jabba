@@ -24,7 +24,8 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
       REDSTONE(LocalizedChat.HAMMER_REDSTONE),
       HOPPER(LocalizedChat.HAMMER_HOPPER),
       STORAGE(LocalizedChat.HAMMER_STORAGE),
-      STRUCTURAL(LocalizedChat.HAMMER_STRUCTURAL);
+      STRUCTURAL(LocalizedChat.HAMMER_STRUCTURAL),
+      VOID(LocalizedChat.HAMMER_VOID);
       
       public final LocalizedChat message;
       public Icon icon;
