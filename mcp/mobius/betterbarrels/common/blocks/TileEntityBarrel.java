@@ -87,7 +87,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public void setStorage(IBarrelStorage storage){
 		this.storage = storage;
 	}
-	
+
+	public void setVoid(boolean delete) {
+      this.coreUpgrades.hasVoid = delete;
+      this.storage.setVoid(delete);
+	}
+
 	/* UPDATE HANDLING */
 	@Override
 	public boolean canUpdate(){
@@ -368,7 +373,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		ItemStack heldStack = player.inventory.getCurrentItem();
 		this.getStorage().addStack(heldStack);
 		
-		if (this.worldObj.getWorldTime() - this.clickTime < 10L){
+		if (this.worldObj.getTotalWorldTime() - this.clickTime < 10L){
 			InventoryPlayer playerInv = player.inventory;
             for (int invSlot = 0; invSlot < playerInv.getSizeInventory(); ++invSlot)
             {
@@ -383,7 +388,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 
 		BetterBarrels.proxy.updatePlayerInventory(player);
-		this.clickTime = this.worldObj.getWorldTime();	
+		this.clickTime = this.worldObj.getTotalWorldTime();	
 		
 		this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);

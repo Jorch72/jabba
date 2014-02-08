@@ -148,7 +148,7 @@ public class BarrelCoreUpgrades {
                this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
                this.hasHopper = this.hasUpgrade(UpgradeCore.HOPPER);
                this.hasEnder = this.hasUpgrade(UpgradeCore.ENDER);
-               this.hasVoid = this.hasUpgrade(UpgradeCore.VOID);
+               barrel.setVoid(this.hasUpgrade(UpgradeCore.VOID));
 
                if (core.type == UpgradeCore.Type.ENDER) {
                   removeEnder(player);
@@ -287,7 +287,7 @@ public class BarrelCoreUpgrades {
 
       else if (core == UpgradeCore.VOID) {
          this.upgradeList.add(UpgradeCore.VOID);
-         this.hasVoid = true;
+         barrel.setVoid(true);
       }
 
       stack.stackSize -= 1;
@@ -344,7 +344,7 @@ public class BarrelCoreUpgrades {
       this.hasRedstone     = NBTTag.getBoolean("redstone");
       this.hasHopper       = NBTTag.getBoolean("hopper");
       this.hasEnder        = NBTTag.getBoolean("ender");
-      this.hasVoid         = NBTTag.getBoolean("void");
       this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
+      barrel.setVoid(NBTTag.getBoolean("void"));
    }
 }

@@ -67,8 +67,8 @@ public class BarrelPacketHandler implements IPacketHandler {
 					barrel.coreUpgrades.hasRedstone  = packetCast.hasRedstone;
 					barrel.coreUpgrades.hasHopper    = packetCast.hasHopper;
                barrel.coreUpgrades.hasEnder     = packetCast.hasEnder;
-               barrel.coreUpgrades.hasVoid      = packetCast.hasVoid;
 					barrel.coreUpgrades.nStorageUpg  = packetCast.nStorageUpg;
+					barrel.setVoid(packetCast.hasVoid);
 				}
 			}	
 			else if (header == 0x06){

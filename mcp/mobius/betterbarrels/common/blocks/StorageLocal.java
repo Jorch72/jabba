@@ -32,6 +32,7 @@ public class StorageLocal implements IBarrelStorage{
 	private int maxstacks     = 64;				//Maximum amount of stacks in the barrel (post upgrade)
 	private int upgCapacity   = 0;				//Current capacity upgrade level
 	private boolean keepLastItem = false;	//Ghosting mod. If true, we don't reset the item type when the barrel is empty
+	private boolean deleteExcess = false;  // Void mod, when true, extra added items are deleted
 	
 	private Set<Coordinates> linkedStorages = new HashSet<Coordinates>();
 	
@@ -49,7 +50,7 @@ public class StorageLocal implements IBarrelStorage{
 	
 	private int getFreeSpace(){ 
 		if (this.hasItem())
-			return (this.itemTemplate.getMaxStackSize() * this.getMaxStacks()) - this.totalAmount;
+		   return (this.itemTemplate.getMaxStackSize() * this.getMaxStacks()) - (deleteExcess ? 0 : this.totalAmount);
 		else
 			return 64;
 	}
@@ -166,6 +167,12 @@ public class StorageLocal implements IBarrelStorage{
 			stack.stackSize  -= deposit;
 			this.totalAmount += deposit;
 		}
+		if (this.deleteExcess) {
+         if (deposit == 0)
+            deposit = stack.stackSize;
+		   if (stack.stackSize > 0)
+		      stack.stackSize = 0;
+		}
 		this.onInventoryChanged();
 		return deposit;    	
     }
@@ -199,12 +206,17 @@ public class StorageLocal implements IBarrelStorage{
     /* STATUS MANIPULATION */	
 	@Override
 	public boolean switchGhosting() { this.keepLastItem = !this.keepLastItem; this.onInventoryChanged(); return this.keepLastItem; }
-	@Override
-	public boolean isGhosting() { return this.keepLastItem; }
-	@Override
-	public void setGhosting(boolean locked) { this.keepLastItem = locked; }	
+   @Override
+   public boolean isGhosting() { return this.keepLastItem; }
+   @Override
+   public void setGhosting(boolean locked) { this.keepLastItem = locked; } 
 
-	/* AMOUNT HANDLING */
+   @Override
+   public boolean isVoid() { return this.deleteExcess; }
+   @Override
+   public void setVoid(boolean delete) { this.deleteExcess = delete; } 
+
+   /* AMOUNT HANDLING */
 	@Override
 	public int   getAmount() { return this.totalAmount; }	
 	
