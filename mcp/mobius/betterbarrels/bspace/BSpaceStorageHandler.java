@@ -60,8 +60,11 @@ public class BSpaceStorageHandler {
 	}
 	
 	public void updateBarrel(int id, int dim, int x, int y, int z){
-		this.barrels.put(id, new Coordinates(dim,x,y,z));
-		this.writeToFile();
+		Coordinates coord = new Coordinates(dim,x,y,z); 
+		if (!coord.equals(this.barrels.get(id))){
+			this.barrels.put(id, coord);
+			this.writeToFile();
+		}
 	}	
 
 	public void registerEnderBarrel(int id, IBarrelStorage storage){

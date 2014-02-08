@@ -27,6 +27,7 @@ public final class Coordinates{
 	}
 	
 	public boolean equals(Object o)  {
+		if (o == null) return false;
 		Coordinates c = (Coordinates)o;
 		return (this.dim == c.dim) && (this.x == c.x) && (this.y == c.y) && (this.z == c.z);
 	};
