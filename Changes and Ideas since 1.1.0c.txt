@@ -18,3 +18,4 @@ Done:
 - Recipes for the new core upgrades:
     For storage they are shapeless 3 of the previous tier, reversible
     For void core it is two pistons and obsidian
+- Changed the double right click method to use getTotalWorldTime instead of getWorldTime.  This allows for it to function on servers where the gamerule doDaylightCycle is false
