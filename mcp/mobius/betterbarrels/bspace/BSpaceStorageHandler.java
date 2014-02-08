@@ -22,6 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
@@ -312,13 +313,10 @@ public class BSpaceStorageHandler {
         }
         catch(Exception e)
         {
-        	/*
-			for (StackTraceElement elem : e.getStackTrace()){
-				BetterBarrels.log.log(Level.WARNING, String.format("%s.%s:%s",elem.getClassName(), elem.getMethodName(), elem.getLineNumber()));
-			}
-			BetterBarrels.log.log(Level.WARNING, String.format("Catched unhandled exception : %s",e));
-			*/        	
-            throw new RuntimeException(e);
+        	if (!saveDir.exists() && MinecraftServer.getServer().isHardcore())
+        		System.out.printf("JABBA state directory missing. Skipping saving state. If you are in hardcore mode, this is a perfectly normal situation, otherwise, please report to my bugtracker.\n");
+        	else
+        		throw new RuntimeException(e);
         }
 	}
 	
@@ -354,12 +352,6 @@ public class BSpaceStorageHandler {
         }
         catch(Exception e)
         {
-        	/*
-			for (StackTraceElement elem : e.getStackTrace()){
-				BetterBarrels.log.log(Level.WARNING, String.format("%s.%s:%s",elem.getClassName(), elem.getMethodName(), elem.getLineNumber()));
-			}
-			BetterBarrels.log.log(Level.WARNING, String.format("Catched unhandled exception : %s",e));
-			*/            	
             throw new RuntimeException(e);
         }
         
