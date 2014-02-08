@@ -5,14 +5,14 @@ import java.util.List;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 
 public class ItemUpgradeStructural extends ItemUpgrade{
 
-	public static Icon[] upgradeIcons = new Icon[7];
+	public static IIcon[] upgradeIcons = new Icon[7];
 	
     public static int[] textColor = {
     		0x00FFFFFF,
@@ -40,14 +40,14 @@ public class ItemUpgradeStructural extends ItemUpgrade{
     }	    
     
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	for(int i=0 ; i < ItemUpgradeStructural.upgradeIcons.length; i++)
     		ItemUpgradeStructural.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "capaupg_mk" + String.valueOf(i+1));
     }	
 	
     @Override
-    public Icon getIconFromDamage(int i){
+    public IIcon getIconFromDamage(int i){
         return ItemUpgradeStructural.upgradeIcons[i];
     }
     

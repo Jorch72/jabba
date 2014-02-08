@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -13,7 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -27,15 +27,15 @@ import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 
 public class BlockBarrel extends BlockContainer{
 
-	public static Icon[] text_side     = new Icon[16];
-	public static Icon[] text_top      = new Icon[16];
-	public static Icon[] text_label    = new Icon[16];
-	public static Icon[] text_labeltop = new Icon[16];
-	public static Icon   text_sidehopper = null;
-	public static Icon   text_siders     = null;
-	public static Icon   text_lock       = null;
-	public static Icon   text_linked     = null;
-	public static Icon   text_locklinked = null;
+	public static IIcon[] text_side     = new IIcon[16];
+	public static IIcon[] text_top      = new IIcon[16];
+	public static IIcon[] text_label    = new IIcon[16];
+	public static IIcon[] text_labeltop = new IIcon[16];
+	public static IIcon   text_sidehopper = null;
+	public static IIcon   text_siders     = null;
+	public static IIcon   text_lock       = null;
+	public static IIcon   text_linked     = null;
+	public static IIcon   text_locklinked = null;
 	
     public BlockBarrel(int par1){
         super(par1, Material.wood);
@@ -51,7 +51,7 @@ public class BlockBarrel extends BlockContainer{
 	}
 	
     @Override    
-    public void registerIcons(IconRegister iconRegister){
+    public void registerIcons(IIconRegister iconRegister){
     	for (int i=0; i<8; i++)
     	{
     		BlockBarrel.text_side[i]     = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_side_"     + String.valueOf(i));
