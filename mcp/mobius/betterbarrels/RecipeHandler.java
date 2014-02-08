@@ -37,6 +37,7 @@ public class RecipeHandler {
 		this.addCoreUpgrade(1, Block.enderChest);
 		this.addCoreUpgrade(2, Block.blockRedstone);
 		this.addCoreUpgrade(3, Block.hopperBlock);
+		this.addCoreUpgrade(UpgradeCore.VOID.ordinal(), Block.obsidian);
 		
 		this.addSideUpgrade(1, Block.hopperBlock);
 		this.addSideUpgrade(2, Item.redstone);
