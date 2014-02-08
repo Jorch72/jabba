@@ -3,11 +3,11 @@ package mcp.mobius.betterbarrels.common.items;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 public class ItemBarrelHammer extends Item implements IOverlayItem{
@@ -20,7 +20,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
       STRUCTURAL(LocalizedChat.HAMMER_STRUCTURAL);
       
       public final LocalizedChat message;
-      public Icon icon;
+      public IIcon icon;
 
       private HammerMode(final LocalizedChat message) {
          this.message = message;
@@ -61,7 +61,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
     }
    
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
        for (HammerMode mode: HammerMode.values()) {
           mode.icon = par1IconRegister.registerIcon(BetterBarrels.modid + ":hammer_" + mode.name().toLowerCase());
@@ -69,7 +69,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
     }    
     
     @Override
-    public Icon getIconFromDamage(int dmg)
+    public IIcon getIconFromDamage(int dmg)
     {
        if (dmg >= HammerMode.values().length) {
           dmg = 0;

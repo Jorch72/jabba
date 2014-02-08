@@ -6,7 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.BaseProxy;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,12 +15,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet3Chat;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 public class ItemTuningFork extends Item implements IOverlayItem{
 	
-	private static Icon   text_hand = null;	
+	private static IIcon   text_hand = null;
 	
 	public ItemTuningFork(int id){
 		super(id);
@@ -36,14 +36,14 @@ public class ItemTuningFork extends Item implements IOverlayItem{
     }
 
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	this.itemIcon  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "bspace_fork_inv");
     	text_hand      = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "bspace_fork_hand");
     }		
 	
 	@Override	
-    public Icon getIcon(ItemStack stack, int pass){
+    public IIcon getIcon(ItemStack stack, int pass){
 		return text_hand;
     }    
     

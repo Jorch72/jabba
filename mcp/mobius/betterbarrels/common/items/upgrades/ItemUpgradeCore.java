@@ -5,14 +5,14 @@ import java.util.List;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 
 
 public class ItemUpgradeCore extends ItemUpgrade {
-	public static Icon[] upgradeIcons = new Icon[4];
+	public static IIcon[] upgradeIcons = new IIcon[4];
 	
     public static String[] upgradeNames = { "upgrade.core.storage",
     										"upgrade.core.ender",
@@ -36,14 +36,14 @@ public class ItemUpgradeCore extends ItemUpgrade {
     
     
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	for(int i=0 ; i < ItemUpgradeCore.upgradeIcons.length; i++)
     		ItemUpgradeCore.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "coreupg_" + String.valueOf(i));
     }	
 	
     @Override
-    public Icon getIconFromDamage(int i){
+    public IIcon getIconFromDamage(int i){
         return ItemUpgradeCore.upgradeIcons[i];
     }	
 	

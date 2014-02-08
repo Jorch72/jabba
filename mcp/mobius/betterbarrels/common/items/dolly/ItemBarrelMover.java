@@ -14,7 +14,7 @@ import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x07ForceRender;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -25,14 +25,14 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class ItemBarrelMover extends Item {
-	protected Icon   text_empty = null;
-	protected Icon   text_filled = null;
+	protected IIcon   text_empty = null;
+	protected IIcon   text_filled = null;
     
 	protected static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
     protected static ArrayList<String> classExtensionsNames = new ArrayList<String>();
@@ -89,7 +89,7 @@ public class ItemBarrelMover extends Item {
 	}
 
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_empty");
     	this.text_empty  = this.itemIcon;
@@ -106,12 +106,12 @@ public class ItemBarrelMover extends Item {
     }
 
 	@Override	
-    public Icon getIcon(ItemStack stack, int pass){
+    public IIcon getIcon(ItemStack stack, int pass){
 		return this.getIconIndex(stack);
     }	
 
 	@Override	
-    public Icon getIconIndex(ItemStack stack){
+    public IIcon getIconIndex(ItemStack stack){
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
 			return this.text_filled;
 		else

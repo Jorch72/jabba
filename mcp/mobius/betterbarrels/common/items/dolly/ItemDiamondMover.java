@@ -1,7 +1,7 @@
 package mcp.mobius.betterbarrels.common.items.dolly;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -28,7 +28,7 @@ public class ItemDiamondMover extends ItemBarrelMover {
     }	
 
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_diamond_empty");
     	this.text_empty  = this.itemIcon;
