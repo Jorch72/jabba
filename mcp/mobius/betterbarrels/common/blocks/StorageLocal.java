@@ -340,14 +340,15 @@ public class StorageLocal implements IBarrelStorage{
 		if (this.inputStack != null){
 			if (!this.hasItem())
 				this.setItem(this.inputStack);
-			
-			if (this.prevInputStack != null){
-				this.totalAmount += this.inputStack.stackSize - this.prevInputStack.stackSize;
-				this.inputStack   = null;
-			} else {
-				this.totalAmount += this.inputStack.stackSize;
-				this.inputStack   = null;						
-			}
+
+			if (!this.deleteExcess || ((this.itemTemplate.getMaxStackSize() * this.getMaxStacks()) - this.totalAmount) > 0) {
+   			if (this.prevInputStack != null){
+   				this.totalAmount += this.inputStack.stackSize - this.prevInputStack.stackSize;
+   			} else {
+   				this.totalAmount += this.inputStack.stackSize;
+   			}
+         }
+         this.inputStack   = null;
 		}
 		
 		if (this.hasItem() && this.getFreeSpace() < this.itemTemplate.getMaxStackSize()){

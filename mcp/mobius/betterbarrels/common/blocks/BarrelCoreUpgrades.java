@@ -233,7 +233,7 @@ public class BarrelCoreUpgrades {
          case VOID:
             if (this.hasUpgrade(UpgradeCore.VOID)) {
                removeAndDropUpgrade(UpgradeCore.VOID, player);
-               this.hasVoid = false;
+               barrel.setVoid(false);
             } else {
                BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
             }
