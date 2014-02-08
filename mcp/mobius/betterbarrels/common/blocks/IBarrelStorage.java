@@ -33,7 +33,10 @@ public interface IBarrelStorage extends ISidedInventory, IDeepStorageUnit{
     public boolean isGhosting();
     public void    setGhosting(boolean locked);
 
-	//public void    upgCapacity(int level);
+    public boolean isVoid();
+    public void    setVoid(boolean delete);
+
+    //public void    upgCapacity(int level);
 	public void    addStorageUpgrade();
 	public void    rmStorageUpgrade();	
 	
