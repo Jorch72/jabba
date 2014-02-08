@@ -69,6 +69,8 @@ public class StorageLocal implements IBarrelStorage{
     			this.renderingTemplate.getTagCompound().removeTag("CustomPotionEffects");    		
     		if (this.renderingTemplate.itemID == Item.potion.itemID)
     			this.renderingTemplate.setItemDamage(0);
+    		if (this.renderingTemplate.itemID == Item.expBottle.itemID)
+    			this.renderingTemplate = new ItemStack(Item.potion, 0, 0);
     	}
     	return this.renderingTemplate;
     }
