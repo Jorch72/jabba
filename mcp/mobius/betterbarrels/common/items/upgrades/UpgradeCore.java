@@ -14,7 +14,7 @@ public enum UpgradeCore {
    STORAGE9(Type.STORAGE, 9),
    STORAGE27(Type.STORAGE, 27),
    VOID(Type.VOID, 2);
-
+   
    public static enum Type {
       STORAGE, ENDER, REDSTONE, HOPPER, VOID
    }
