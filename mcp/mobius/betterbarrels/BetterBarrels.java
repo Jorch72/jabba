@@ -122,38 +122,47 @@ public class BetterBarrels {
 			FMLLog.severe(e.getMessage());	
 			
 		} finally {
-			config.save();
+		   if (config.hasChanged())
+		      config.save();
 		}
 		
 		RecipeHandler.instance().registerOres();
 		proxy.registerEventHandler();	
 		
 		//log.setLevel(Level.FINEST);
+      blockBarrel           = new BlockBarrel(barrelID);
+      itemUpgradeStructural = new ItemUpgradeStructural(itemUpgradeStructuralID);
+      itemUpgradeCore       = new ItemUpgradeCore(itemUpgradeCoreID);
+      itemUpgradeSide       = new ItemUpgradeSide(itemUpgradeSideID);
+      itemMover             = new ItemBarrelMover(itemMoverID);
+      itemMoverDiamond      = new ItemDiamondMover(itemMoverDiamondID);
+      itemHammer            = new ItemBarrelHammer(itemHammerID);
+      itemTuningFork        = new ItemTuningFork(itemTuningForkID);
+      
+      GameRegistry.registerBlock(blockBarrel, "barrel");
+      //GameRegistry.registerBlock(blockMiniBarrel);
+      //GameRegistry.registerBlock(blockBarrelShelf);    
+      //GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
+      //GameRegistry.registerTileEntity(TileEntityBarrelShelf.class, "TileEntityBarrelShelf");
+
+      GameRegistry.registerItem(itemUpgradeStructural, "upgradeStructural");
+      GameRegistry.registerItem(itemUpgradeCore, "upgradeCore");
+      GameRegistry.registerItem(itemUpgradeSide, "upgradeSide");
+      GameRegistry.registerItem(itemMover, "mover");
+      GameRegistry.registerItem(itemMoverDiamond, "moverDiamond");
+      GameRegistry.registerItem(itemHammer, "hammer");
+      GameRegistry.registerItem(itemTuningFork, "tuningFork");
 	}
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		blockBarrel           = new BlockBarrel(barrelID);
-		itemUpgradeStructural = new ItemUpgradeStructural(itemUpgradeStructuralID);
-		itemUpgradeCore       = new ItemUpgradeCore(itemUpgradeCoreID);
-		itemUpgradeSide       = new ItemUpgradeSide(itemUpgradeSideID);
-		itemMover             = new ItemBarrelMover(itemMoverID);
-		itemMoverDiamond      = new ItemDiamondMover(itemMoverDiamondID);
-		itemHammer            = new ItemBarrelHammer(itemHammerID);
-		itemTuningFork        = new ItemTuningFork(itemTuningForkID);
-		
-		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");
+		RecipeHandler.instance().registerRecipes();
+
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
 
-		//GameRegistry.registerBlock(blockMiniBarrel);
-		//GameRegistry.registerBlock(blockBarrelShelf);		
-		//GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
-		//GameRegistry.registerTileEntity(TileEntityBarrelShelf.class, "TileEntityBarrelShelf");
-		
-		RecipeHandler.instance().registerRecipes();
 		proxy.registerRenderers();
 
-        FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
+		FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
 	}
  
 	
