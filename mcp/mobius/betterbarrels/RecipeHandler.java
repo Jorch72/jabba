@@ -27,7 +27,7 @@ public class RecipeHandler {
 		OreDictionary.registerOre("stickWood",  Items.stick);
 		OreDictionary.registerOre("obsidian",   Blocks.obsidian);
 		OreDictionary.registerOre("whiteStone", Blocks.end_stone);
-		OreDictionary.registerOre("transdimBlock", Block.enderChest);
+		OreDictionary.registerOre("transdimBlock", Blocks.ender_chest);
 	}
 	
 	public void registerRecipes(){
