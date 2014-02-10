@@ -104,7 +104,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	@Override
 	public void updateEntity() {
-		this.nTicks += 1;
+	   if (this.worldObj.isRemote) return;
+
+	   this.nTicks += 1;
 		if (this.nTicks % 8 == 0){
 			if (this.logicHopper.run(this)){
 				this.onInventoryChanged();
