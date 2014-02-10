@@ -338,7 +338,7 @@ public class BarrelCoreUpgrades {
       int[] savedUpgrades = NBTTag.getIntArray("coreUpgrades");
       this.upgradeList = new ArrayList<UpgradeCore>();
       for (int i = 0; i < savedUpgrades.length; i++)
-         this.upgradeList.add(UpgradeCore.values()[savedUpgrades[i] + (saveVersion == 3 ? 1: 0)]);
+         this.upgradeList.add(UpgradeCore.values()[savedUpgrades[i] + (saveVersion == 3 ? -1: 0)]);
 
       this.levelStructural = NBTTag.getInteger("structural");
       this.hasRedstone     = NBTTag.getBoolean("redstone");
