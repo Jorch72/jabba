@@ -106,7 +106,7 @@ public class BetterBarrels {
 		itemHammer            = new ItemBarrelHammer();
 		itemTuningFork        = new ItemTuningFork();
 		
-		GameRegistry.registerBlock(blockBarrel, "jabba.blockbarrel");
+		GameRegistry.registerBlock(blockBarrel, "barrel");
 		//GameRegistry.registerBlock(blockMiniBarrel);
 		//GameRegistry.registerBlock(blockBarrelShelf);		
 		//GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
