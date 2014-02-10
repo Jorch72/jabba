@@ -168,10 +168,10 @@ public class StorageLocal implements IBarrelStorage{
 			this.totalAmount += deposit;
 		}
 		if (this.deleteExcess) {
-         if (deposit == 0)
-            deposit = stack.stackSize;
-		   if (stack.stackSize > 0)
-		      stack.stackSize = 0;
+			if (deposit == 0)
+				deposit = stack.stackSize;
+			if (stack.stackSize > 0)
+				stack.stackSize = 0;
 		}
 		this.onInventoryChanged();
 		return deposit;    	
