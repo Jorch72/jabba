@@ -210,7 +210,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.getTagCompound().setInteger("tuneID",     this.id);
 		stack.getTagCompound().setInteger("structural", coreUpgrades.levelStructural);
 		stack.getTagCompound().setByte("storage",       coreUpgrades.nStorageUpg);
-		
+		stack.getTagCompound().setBoolean("void",       coreUpgrades.hasVoid);
 	}
 	
 	private void tuneBarrel(ItemStack stack, EntityPlayer player, ForgeDirection side){
@@ -227,8 +227,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		int  structural = stack.getTagCompound().getInteger("structural");
 		byte storage    = stack.getTagCompound().getByte("storage");
 		int  barrelID   = stack.getTagCompound().getInteger("tuneID");
+		boolean hasVoid = stack.getTagCompound().getBoolean("void");
 		
-		if (coreUpgrades.levelStructural != structural || coreUpgrades.nStorageUpg != storage){
+		if (coreUpgrades.levelStructural != structural || coreUpgrades.nStorageUpg != storage || coreUpgrades.hasVoid != hasVoid){
 	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSAPCE_STRUCTURE);
 			return;			
 		}
