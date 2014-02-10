@@ -25,6 +25,7 @@ public class RecipeHandler {
 		OreDictionary.registerOre("stickWood",  Item.stick);
 		OreDictionary.registerOre("obsidian",   Block.obsidian);
 		OreDictionary.registerOre("whiteStone", Block.whiteStone);
+		OreDictionary.registerOre("transdimBlock", Block.enderChest);
 	}
 	
 	public void registerRecipes(){
@@ -34,7 +35,7 @@ public class RecipeHandler {
 			this.addStructuralUpgrade(i, BetterBarrels.materialList[i]);
 		
 		this.addCoreUpgrade(0, BetterBarrels.blockBarrel);
-		this.addCoreUpgrade(1, Block.enderChest);
+		this.addCoreUpgrade(1, "transdimBlock");
 		this.addCoreUpgrade(2, Block.blockRedstone);
 		this.addCoreUpgrade(3, Block.hopperBlock);
 		this.addCoreUpgrade(UpgradeCore.VOID.ordinal(), Block.obsidian);
