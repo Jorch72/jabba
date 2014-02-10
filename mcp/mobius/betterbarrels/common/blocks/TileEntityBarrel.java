@@ -1,13 +1,7 @@
 package mcp.mobius.betterbarrels.common.blocks;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.relauncher.Side;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
@@ -15,34 +9,33 @@ import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
-import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer.HammerMode;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
-import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x06FullStorage;
-import mcp.mobius.betterbarrels.network.Packet0x08LinkUpdate;
-import net.minecraft.entity.item.EntityItem;
+import mcp.mobius.betterbarrels.network.Message0x00FulleTileEntityNBT;
+import mcp.mobius.betterbarrels.network.Message0x01ContentUpdate;
+import mcp.mobius.betterbarrels.network.Message0x02GhostUpdate;
+import mcp.mobius.betterbarrels.network.Message0x03SideupgradeUpdate;
+import mcp.mobius.betterbarrels.network.Message0x04Structuralupdate;
+import mcp.mobius.betterbarrels.network.Message0x05CoreUpdate;
+import mcp.mobius.betterbarrels.network.Message0x06FullStorage;
+import mcp.mobius.betterbarrels.network.Message0x08LinkUpdate;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
+import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 
 public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDeepStorageUnit {
@@ -69,7 +62,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	public void setLinked(boolean linked){
 		this.isLinked = linked;
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x08LinkUpdate.create(this), this.worldObj.provider.dimensionId);
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x08LinkUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	public boolean getLinked(){
@@ -104,11 +97,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	@Override
 	public void updateEntity() {
+		if (this.worldObj.isRemote) return;
+
 		this.nTicks += 1;
 		if (this.nTicks % 8 == 0){
 			if (this.logicHopper.run(this)){
-				this.onInventoryChanged();
-				PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+				this.markDirty();
+				BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 			}
 			this.nTicks = 0;
 		}
@@ -164,8 +159,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if ((droppedStack != null) && (droppedStack.stackSize > 0))
 			Utils.dropItemInWorld(this, player, droppedStack, 0.02);
 		
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);		
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	public void rightClick(EntityPlayer player, int side){
@@ -255,8 +250,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.setTagCompound(new NBTTagCompound());
 		
 		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);	
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);		
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x02GhostUpdate(this), this.worldObj.provider.dimensionId);
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x06FullStorage(this), this.worldObj.provider.dimensionId);
 	}	
 	
 	/* UPGRADE ACTIONS */
@@ -269,8 +264,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			if (this.sideMetadata[side.ordinal()] > UpgradeSide.RS_PROP)
 				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
 			
-			this.onInventoryChanged();
-			PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);			
+			this.markDirty();
+			BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x03SideupgradeUpdate(this), this.worldObj.provider.dimensionId);
 		}
 	}
 	
@@ -291,11 +286,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		   coreUpgrades.removeUpgrade(stack, player, side);
 		}
 		
-		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(this), this.worldObj.provider.dimensionId);
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(this), this.worldObj.provider.dimensionId);
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);		
+		this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlock(this.xCoord, this.yCoord, this.zCoord));
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x03SideupgradeUpdate(this), this.worldObj.provider.dimensionId);
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x04Structuralupdate(this), this.worldObj.provider.dimensionId);
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x05CoreUpdate(this), this.worldObj.provider.dimensionId);
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x06FullStorage(this), this.worldObj.provider.dimensionId);
 	}
 	
 	private void dropSideUpgrade(EntityPlayer player, ForgeDirection side){
@@ -338,8 +333,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}			
 		
 		stack.stackSize -= 1;
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x03SideupgradeUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	/*
@@ -357,16 +352,16 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	private void switchLocked(){
 		this.getStorage().switchGhosting();
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x02GhostUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	public void setLocked(boolean locked){
 		this.getStorage().setGhosting(locked);
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x02GhostUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	private void manualStackAdd(EntityPlayer player){
@@ -390,8 +385,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		BetterBarrels.proxy.updatePlayerInventory(player);
 		this.clickTime = this.worldObj.getTotalWorldTime();	
 		
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	/* SAVING AND LOADING OF DATA */
@@ -413,7 +408,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         NBTTag.setBoolean("ticking",       this.isTicking);
         NBTTag.setBoolean("linked",        this.isLinked);
         NBTTag.setByte("nticks",           this.nTicks);
-        NBTTag.setCompoundTag("storage",   this.getStorage().writeTagCompound());
+        NBTTag.setTag("storage",   this.getStorage().writeTagCompound());
         NBTTag.setInteger("bspaceid", 	   this.id);
         
     }  	
@@ -447,7 +442,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     		this.getStorage().readTagCompound(NBTTag.getCompoundTag("storage"));
     	
     	if (this.worldObj != null){
-        	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
+        	this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
         	if (this.isTicking)
         		this.startTicking();
     	}
@@ -489,7 +484,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	
     	// We update the rendering if possible
     	if (this.worldObj != null){
-        	this.worldObj.markBlockForRenderUpdate(this.xCoord, this.yCoord, this.zCoord);
+        	this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
     	}    	
     	
     	//this.worldObj.setBlockMetadataWithNotify(this.xCoord, this.yCoord, this.zCoord, 1, 1 & 2);
@@ -506,25 +501,18 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	/* END OF V2 COMPATIBILITY METHODS */		
 	
     @Override
-    public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt) {
-        this.readFromNBT(pkt.data);
-    }    
-
-    @Override
-    public Packet132TileEntityData getDescriptionPacket()
+    public Packet getDescriptionPacket()
     {
-        NBTTagCompound var1 = new NBTTagCompound();
-        this.writeToNBT(var1);
-        return new Packet132TileEntityData(this.xCoord, this.yCoord, this.zCoord, 0, var1);
+    	return BarrelPacketHandler.INSTANCE.channels.get(Side.SERVER).generatePacketFrom(new Message0x00FulleTileEntityNBT(this));
     }	
 	
     /* OTHER */
 
     @Override
-    public void onInventoryChanged() {
-       super.onInventoryChanged();
+    public void markDirty() {
+       super.markDirty();
 
-       if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
+       if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlock(this.xCoord, this.yCoord, this.zCoord));
 
        if (coreUpgrades.hasEnder && !this.worldObj.isRemote) BSpaceStorageHandler.instance().updateAllBarrels(this.id);
     }
@@ -538,46 +526,46 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
 	public ItemStack getStackInSlot(int islot) {
 		ItemStack stack = this.getStorage().getStackInSlot(islot);
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 		return stack; 
 	}
 	@Override
 	public ItemStack decrStackSize(int islot, int quantity) {
-		TileEntity ent = this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
+		TileEntity ent = this.worldObj.getTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
 		ItemStack stack;
 		if (ent instanceof TileEntityHopper)
 			stack = this.getStorage().decrStackSize_Hopper(islot, quantity);
 		else
 			stack = this.getStorage().decrStackSize(islot, quantity);
 		
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 		return stack;
 	}
 	@Override
 	public void setInventorySlotContents(int islot, ItemStack stack) { 
 		this.getStorage().setInventorySlotContents(islot, stack);
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	@Override
 	public ItemStack getStackInSlotOnClosing(int var1) {return null;}	
 	@Override
-	public String getInvName() {return "mcp.mobius.betterbarrel";}
+	public String getInventoryName() {return "mcp.mobius.betterbarrel";}
 	@Override
 	public int getInventoryStackLimit() {return 64;}
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer var1) {return this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;}
+	public boolean isUseableByPlayer(EntityPlayer var1) {return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;}
 	@Override
-	public void openChest() {}
+	public void openInventory() {}
 	@Override
-	public void closeChest() {}
+	public void closeInventory() {}
 
 	
 	
 	@Override
-	public boolean isInvNameLocalized() {return false;}
+	public boolean hasCustomInventoryName() {return false;}
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.getStorage().isItemValidForSlot(i, itemstack);}
 
@@ -589,15 +577,15 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
 	public void setStoredItemCount(int amount) {
 		this.getStorage().setStoredItemCount(amount);
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 	}
 
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
 		this.getStorage().setStoredItemType(type, amount);
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.markDirty();
+		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 	}
 
 	@Override

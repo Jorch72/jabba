@@ -1,6 +1,5 @@
 package mcp.mobius.betterbarrels.common.blocks.logic;
 
-import net.minecraft.util.MathHelper;
 
 public final class ItemImmut {
 	public final int id, meta;

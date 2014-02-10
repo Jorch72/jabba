@@ -2,15 +2,15 @@ package mcp.mobius.betterbarrels.common.items.dolly;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class ItemDiamondMover extends ItemBarrelMover {
 	
-	public ItemDiamondMover(int id){
-		super(id);
+	public ItemDiamondMover(){
+		super();
 		this.setUnlocalizedName("dolly.diamond.empty");
         this.setMaxDamage(6); 
         this.setCreativeTab(JabbaCreativeTab.tab);
@@ -30,7 +30,7 @@ public class ItemDiamondMover extends ItemBarrelMover {
     }	
 
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_diamond_empty");
     	this.text_empty  = this.itemIcon;

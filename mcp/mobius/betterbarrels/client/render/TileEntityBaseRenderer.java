@@ -1,7 +1,5 @@
 package mcp.mobius.betterbarrels.client.render;
 
-import org.lwjgl.opengl.GL11;
-
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,7 +13,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import org.lwjgl.opengl.GL11;
 
 public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 	
@@ -41,7 +41,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 	protected static byte ALIGNRIGHT = 0x02;
 	
 	protected void setLight(TileEntity tileEntity, ForgeDirection side){
-        int ambientLight = tileEntity.worldObj.getLightBrightnessForSkyBlocks(tileEntity.xCoord + side.offsetX, tileEntity.yCoord + side.offsetY, tileEntity.zCoord + side.offsetZ, 0);
+        int ambientLight = tileEntity.getWorldObj().getLightBrightnessForSkyBlocks(tileEntity.xCoord + side.offsetX, tileEntity.yCoord + side.offsetY, tileEntity.zCoord + side.offsetZ, 0);
         int var6 = ambientLight % 65536;
         int var7 = ambientLight / 65536;
         float var8 = 1.0F;
@@ -57,7 +57,7 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 
     	if (renderString == null || renderString.equals("")){return;}
         	
-    	int stringWidth = this.getFontRenderer().getStringWidth(renderString);
+    	int stringWidth = this.func_147498_b().getStringWidth(renderString);
 
     	GL11.glPushMatrix();
 
@@ -69,13 +69,13 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 
         switch (align){
         case 0:
-        	this.getFontRenderer().drawString(renderString, 0, 0, color);
+        	this.func_147498_b().drawString(renderString, 0, 0, color);
         	break;
         case 1:
-        	this.getFontRenderer().drawString(renderString, -stringWidth / 2, 0, color);
+        	this.func_147498_b().drawString(renderString, -stringWidth / 2, 0, color);
         	break;
         case 2:
-        	this.getFontRenderer().drawString(renderString, -stringWidth, 0, color);
+        	this.func_147498_b().drawString(renderString, -stringWidth, 0, color);
         	break;        	
         }
         

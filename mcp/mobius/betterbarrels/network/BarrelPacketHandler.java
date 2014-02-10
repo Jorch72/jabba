@@ -1,134 +1,164 @@
 package mcp.mobius.betterbarrels.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutput;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+
 import java.io.IOException;
+import java.util.EnumMap;
 
 import mcp.mobius.betterbarrels.common.LocalizedChat;
-import mcp.mobius.betterbarrels.common.blocks.BarrelCoreUpgrades;
-import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.util.ChatMessageComponent;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.FMLEmbeddedChannel;
+import cpw.mods.fml.common.network.FMLIndexedMessageToMessageCodec;
+import cpw.mods.fml.common.network.FMLOutboundHandler;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.relauncher.Side;
 
-public class BarrelPacketHandler implements IPacketHandler {
+public enum BarrelPacketHandler {
+	INSTANCE;
 
-	@Override
-	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
+	public EnumMap<Side, FMLEmbeddedChannel> channels;	
 
-		if (packet.channel.equals("JABBA")) {
-			byte header = this.getHeader(packet);
+	private BarrelPacketHandler() {
+		this.channels = NetworkRegistry.INSTANCE.newChannel("JABBA", new BarrelCodec());
+		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			addClientHandlers();
+			//addServerHandlers();
+		} else {
+			//addServerHandlers();
+		}
 
-			if (header == 0x01){
-				Packet0x01ContentUpdate packetCast = new Packet0x01ContentUpdate(packet);
-				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
-				if (barrel != null)
-					barrel.getStorage().setStoredItemType(packetCast.stack, packetCast.amount);
-				//Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);				
-			}
-			else if (header == 0x02){
-				Packet0x02GhostUpdate packetCast = new Packet0x02GhostUpdate(packet);
-				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
-				if (barrel != null){
-					barrel.getStorage().setGhosting(packetCast.locked);
-					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);
-				}
-			}
-			else if (header == 0x03){
-				Packet0x03SideUpgradeUpdate packetCast = new Packet0x03SideUpgradeUpdate(packet);
-				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
-				if (barrel != null){
-					barrel.sideUpgrades = packetCast.sideUpgrades;
-					barrel.sideMetadata = packetCast.sideMetadata;
-					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);
-				}
-			}
-			else if (header == 0x04){
-				Packet0x04StructuralUpdate packetCast = new Packet0x04StructuralUpdate(packet);
-				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
-				if (barrel != null){
-					barrel.coreUpgrades.levelStructural = packetCast.level;
-					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);
-				}
-			}	
-			else if (header == 0x05){
-				Packet0x05CoreUpdate packetCast = new Packet0x05CoreUpdate(packet);
-				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
-				if (barrel != null){
-					barrel.coreUpgrades.upgradeList  = packetCast.upgrades;
-					barrel.coreUpgrades.hasRedstone  = packetCast.hasRedstone;
-					barrel.coreUpgrades.hasHopper    = packetCast.hasHopper;
-               barrel.coreUpgrades.hasEnder     = packetCast.hasEnder;
-					barrel.coreUpgrades.nStorageUpg  = packetCast.nStorageUpg;
-					barrel.setVoid(packetCast.hasVoid);
-				}
-			}	
-			else if (header == 0x06){
-				Packet0x06FullStorage packetCast = new Packet0x06FullStorage(packet);
-				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
-				if (barrel != null){
-					barrel.setStorage(packetCast.storage);
-				}
-			}	
-			else if (header == 0x07){
-				Packet0x07ForceRender packetCast = new Packet0x07ForceRender(packet);
-				Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);
-			}			
-			
-			else if (header == 0x08){
-				Packet0x08LinkUpdate packetCast = new Packet0x08LinkUpdate(packet);
-				TileEntityBarrel barrel = (TileEntityBarrel)Minecraft.getMinecraft().theWorld.getBlockTileEntity(packetCast.x, packetCast.y, packetCast.z);
-				if (barrel != null){
-					barrel.isLinked     = packetCast.isLinked;
-					Minecraft.getMinecraft().theWorld.markBlockForRenderUpdate(packetCast.x, packetCast.y, packetCast.z);					
-				}
-			}			
-         else if (header == 0x09){
-            Packet0x09LocalizedChat packetCast = new Packet0x09LocalizedChat(packet);
-            ChatMessageComponent packetMessage = new ChatMessageComponent();
-            if (packetCast.count == 0) {
-               packetMessage.addKey(LocalizedChat.values()[packetCast.messageID].localizationKey);            
-            } else {
-               packetMessage.addFormatted(LocalizedChat.values()[packetCast.messageID].localizationKey, (Object[])(packetCast.extraNumbers));
-            }
-            Minecraft.getMinecraft().thePlayer.sendChatToPlayer(packetMessage);
-         }        
-			
-		}				
 	}
 
-	public byte getHeader(Packet250CustomPayload packet){
-		DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
-		try{
-			return inputStream.readByte();
-		} catch (IOException e){
-			return -1;
-		}
-	}	
+	private void addClientHandlers() {
+		FMLEmbeddedChannel channel = this.channels.get(Side.CLIENT);
+		String codec = channel.findChannelHandlerNameForType(BarrelCodec.class);
 
-    public static void writeNBTTagCompound(NBTTagCompound par0NBTTagCompound, DataOutput par1DataOutput) throws IOException
-    {
-        if (par0NBTTagCompound == null)
-        {
-            par1DataOutput.writeShort(-1);
-        }
-        else
-        {
-            byte[] abyte = CompressedStreamTools.compress(par0NBTTagCompound);
-            par1DataOutput.writeShort((short)abyte.length);
-            par1DataOutput.write(abyte);
-        }
-    }		
-	
-    public static void sendLocalizedChat(EntityPlayer player, LocalizedChat message, Integer ... extraNumbers) {
-       PacketDispatcher.sendPacketToPlayer(Packet0x09LocalizedChat.create(message, extraNumbers), (Player)player);
-     }
+		channel.pipeline().addAfter(codec,        "ClientHandler", new Message0x00FulleTileEntityNBT());
+		channel.pipeline().addAfter("ClientHandler", "ContentUpdate",  new Message0x01ContentUpdate());
+		channel.pipeline().addAfter("ContentUpdate", "GhostUpdate",  new Message0x02GhostUpdate());
+		channel.pipeline().addAfter("GhostUpdate", "Sideupgradeupdate",  new Message0x03SideupgradeUpdate());
+		channel.pipeline().addAfter("Sideupgradeupdate", "Structuralupdate",  new Message0x04Structuralupdate());
+		channel.pipeline().addAfter("Structuralupdate", "CoreUpdate",  new Message0x05CoreUpdate());
+		channel.pipeline().addAfter("CoreUpdate", "FullStorage",  new Message0x06FullStorage());
+		channel.pipeline().addAfter("FullStorage", "ForceRender",  new Message0x07ForceRender());
+		channel.pipeline().addAfter("ForceRender", "LinkUpdate",  new Message0x08LinkUpdate());
+		channel.pipeline().addAfter("LinkUpdate", "LocalizedChat",  new Message0x09LocalizedChat());
+	}
+
+	/*private void addServerHandlers() {
+		FMLEmbeddedChannel channel = this.channels.get(Side.SERVER);
+		String codec = channel.findChannelHandlerNameForType(BarrelCodec.class);
+
+		channel.pipeline().addAfter(codec, "TERequest", new Message0x01TERequest());    	
+	}*/   
+
+	private class BarrelCodec extends FMLIndexedMessageToMessageCodec<IBarrelMessage> {
+		public BarrelCodec() {
+			addDiscriminator(0, Message0x00FulleTileEntityNBT.class);
+			addDiscriminator(1, Message0x01ContentUpdate.class);
+			addDiscriminator(2, Message0x02GhostUpdate.class);
+			addDiscriminator(3, Message0x03SideupgradeUpdate.class);
+			addDiscriminator(4, Message0x04Structuralupdate.class);
+			addDiscriminator(5, Message0x05CoreUpdate.class);
+			addDiscriminator(6, Message0x06FullStorage.class);
+			addDiscriminator(7, Message0x07ForceRender.class);
+			addDiscriminator(8, Message0x08LinkUpdate.class);
+			addDiscriminator(9, Message0x09LocalizedChat.class);
+		}
+
+		@Override
+		public void encodeInto(ChannelHandlerContext ctx, IBarrelMessage msg, ByteBuf target) throws Exception {
+			msg.encodeInto(ctx, msg, target);
+		}
+
+		@Override
+		public void decodeInto(ChannelHandlerContext ctx, ByteBuf dat, IBarrelMessage msg) {
+			msg.decodeInto(ctx, dat, msg);
+		}
+	}
+
+	public void sendTo(IBarrelMessage message, EntityPlayerMP player) {
+		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
+		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(player);
+		channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);    	
+	}
+
+	public void sendToDimension(IBarrelMessage message, int dimensionId) {
+		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.DIMENSION);
+		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(dimensionId);
+		channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+	}
+
+	/*public void sendToServer(IBarrelMessage message) {
+		channels.get(Side.CLIENT).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
+		channels.get(Side.CLIENT).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+	}*/   
+
+	public static void sendLocalizedChat(EntityPlayer player, LocalizedChat message, Integer ... extraNumbers) {
+		if (player instanceof EntityPlayerMP) {
+			BarrelPacketHandler.INSTANCE.sendTo(new Message0x09LocalizedChat(message, extraNumbers), (EntityPlayerMP)player);
+		} else {
+		}
+	}
+
+	 public void writeNBTTagCompoundToBuffer(ByteBuf target, NBTTagCompound tag) throws IOException {
+		 if (tag == null) {
+			 target.writeShort(-1);
+		 } else {
+			 byte[] abyte = CompressedStreamTools.compress(tag);
+			 target.writeShort((short)abyte.length);
+			 target.writeBytes(abyte);
+		 }
+	 }
+
+	 public NBTTagCompound readNBTTagCompoundFromBuffer(ByteBuf dat) throws IOException {
+		 short short1 = dat.readShort();
+
+		 if (short1 < 0) {
+			 return null;
+		 } else {
+			 byte[] abyte = new byte[short1];
+			 dat.readBytes(abyte);
+			 return CompressedStreamTools.decompress(abyte);
+		 }
+	 }
+
+	 public void writeItemStackToBuffer(ByteBuf target, ItemStack stack) throws IOException {
+		 if (stack == null) {
+			 target.writeShort(-1);
+		 } else {
+			 target.writeShort(Item.getIdFromItem(stack.getItem()));
+			 target.writeByte(stack.stackSize);
+			 target.writeShort(stack.getItemDamage());
+			 NBTTagCompound nbttagcompound = null;
+
+			 if (stack.getItem().isDamageable() || stack.getItem().getShareTag()) {
+				 nbttagcompound = stack.stackTagCompound;
+			 }
+
+			 this.writeNBTTagCompoundToBuffer(target, nbttagcompound);
+		 }
+	 }
+
+	 public ItemStack readItemStackFromBuffer(ByteBuf dat) throws IOException {
+		 ItemStack itemstack = null;
+		 short short1 = dat.readShort();
+
+		 if (short1 >= 0) {
+			 byte b0 = dat.readByte();
+			 short short2 = dat.readShort();
+			 itemstack = new ItemStack(Item.getItemById(short1), b0, short2);
+			 itemstack.stackTagCompound = this.readNBTTagCompoundFromBuffer(dat);
+		 }
+
+		 return itemstack;
+	 }
 }

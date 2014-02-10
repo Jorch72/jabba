@@ -2,20 +2,19 @@ package mcp.mobius.betterbarrels.common.items;
 
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
-import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemBarrelHammer extends Item implements IOverlayItem{
    public static enum HammerMode {
@@ -28,7 +27,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
       VOID(LocalizedChat.HAMMER_VOID);
       
       public final LocalizedChat message;
-      public Icon icon;
+      public IIcon icon;
 
       private HammerMode(final LocalizedChat message) {
          this.message = message;
@@ -52,8 +51,8 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
       }
    }
    
-   public ItemBarrelHammer(int id){
-      super(id);
+   public ItemBarrelHammer(){
+      super();
         this.setMaxStackSize(1);
         this.setHasSubtypes(true);
         this.setUnlocalizedName("hammer");
@@ -61,16 +60,16 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
    }
    
    @Override
-    public boolean shouldPassSneakingClickToBlock(World par2World, int par4, int par5, int par6)
+    public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player)
     {
-      if (par2World.getBlockId(par4, par5, par6) == BetterBarrels.barrelID) {
+      if (world.getBlock(x, y, z) == BetterBarrels.blockBarrel) {
         return true;
       }
       return false;
     }
    
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
        for (HammerMode mode: HammerMode.values()) {
           mode.icon = par1IconRegister.registerIcon(BetterBarrels.modid + ":hammer_" + mode.name().toLowerCase());
@@ -78,7 +77,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
     }    
     
     @Override
-    public Icon getIconFromDamage(int dmg)
+    public IIcon getIconFromDamage(int dmg)
     {
        if (dmg >= HammerMode.values().length) {
           dmg = 0;
@@ -107,9 +106,9 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void getSubItems(int itemID, CreativeTabs tabs, List list) {
+    public void getSubItems(Item item, CreativeTabs tabs, List list) {
        for(HammerMode mode: HammerMode.values()) {
-          list.add(new ItemStack(itemID, 1, mode.ordinal()));
+          list.add(new ItemStack(item, 1, mode.ordinal()));
        }
     }
 }

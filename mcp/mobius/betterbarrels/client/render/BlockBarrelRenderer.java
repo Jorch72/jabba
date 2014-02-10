@@ -1,20 +1,18 @@
 package mcp.mobius.betterbarrels.client.render;
 
-import org.lwjgl.opengl.GL11;
-
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.common.ForgeDirection;
+
+import org.lwjgl.opengl.GL11;
+
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
@@ -24,7 +22,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		BlockBarrel barrel      = (BlockBarrel)block;
 		Tessellator tessellator = Tessellator.instance;
 		
-		Icon iconSide, iconTop, iconLabel, iconLabelTop;
+		IIcon iconSide, iconTop, iconLabel, iconLabelTop;
 		iconSide     = BlockBarrel.text_side[0];
 		iconTop      = BlockBarrel.text_top[0];
 		iconLabel    = BlockBarrel.text_label[0];
@@ -120,12 +118,12 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		
 		int worldHeight = world.getHeight();
 		BlockBarrel block       = (BlockBarrel)tile;	
-		TileEntityBarrel barrel = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
+		TileEntityBarrel barrel = (TileEntityBarrel)world.getTileEntity(x, y, z);
 		ItemStack        stack  = barrel.getStorage().getItem();
 		Tessellator tessellator = Tessellator.instance;
 		
-		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
-		Icon iconStack = null;
+		IIcon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
+		IIcon iconStack = null;
 		int  levelStructural = barrel.coreUpgrades.levelStructural;
 		iconSide       = BlockBarrel.text_side[levelStructural];
 		iconTop        = BlockBarrel.text_top[levelStructural];
@@ -402,7 +400,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 	}
 	
 	@Override
-	public boolean shouldRender3DInInventory() {
+	public boolean shouldRender3DInInventory(int modelID) {
 		return true;
 	}
 

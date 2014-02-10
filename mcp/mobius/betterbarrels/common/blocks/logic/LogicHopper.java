@@ -1,14 +1,12 @@
 package mcp.mobius.betterbarrels.common.blocks.logic;
 
-import java.util.ArrayList;
-
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class LogicHopper {
 
@@ -27,12 +25,12 @@ public class LogicHopper {
 			if (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.HOPPER){
 				//System.out.printf("%s\n", side);
 				
-				TileEntity targetEntity = barrel.worldObj.getBlockTileEntity(barrel.xCoord + side.offsetX, barrel.yCoord + side.offsetY, barrel.zCoord + side.offsetZ);
+				TileEntity targetEntity = barrel.getWorldObj().getTileEntity(barrel.xCoord + side.offsetX, barrel.yCoord + side.offsetY, barrel.zCoord + side.offsetZ);
 				if ((targetEntity instanceof IInventory) && !this.isFull((IInventory)targetEntity, side.getOpposite())){
 					
 					stack = barrel.getStorage().getStackInSlot(1);
 					if(stack != null && stack.stackSize > 0 && this.pushItemToInventory((IInventory)targetEntity, side.getOpposite(), stack)){
-						barrel.getStorage().onInventoryChanged();
+						barrel.getStorage().markDirty();
 						transaction = true;
 					}
 				}
