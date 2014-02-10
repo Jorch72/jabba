@@ -141,6 +141,12 @@ public class BarrelCoreUpgrades {
             if (indexLastUpdate != -1) {
 
                UpgradeCore core = this.upgradeList.get(indexLastUpdate);
+               
+               if (core.type == UpgradeCore.Type.VOID && BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+                   BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+                   return;
+                }               
+               
                this.upgradeList.remove(indexLastUpdate);
                createAndDropItem(BetterBarrels.itemUpgradeCore, core.ordinal(), player);
 
@@ -229,14 +235,20 @@ public class BarrelCoreUpgrades {
                BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
             }
             break;
-         case VOID:
-            if (this.hasUpgrade(UpgradeCore.VOID)) {
-               removeAndDropUpgrade(UpgradeCore.VOID, player);
-               barrel.setVoid(false);
-            } else {
-               BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-            }
-            break;
+		 case VOID:
+			 if (this.hasUpgrade(UpgradeCore.VOID)) {
+		        if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+		            BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+		            break;
+		         }            	
+		        
+		        removeAndDropUpgrade(UpgradeCore.VOID, player);
+		        barrel.setVoid(false);
+			 
+			 } else {
+				 BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+			 }
+			 break;
       }
    }
 
@@ -285,6 +297,11 @@ public class BarrelCoreUpgrades {
       }
 
       else if (core == UpgradeCore.VOID) {
+          if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+              BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+              return;
+           }    	  
+    	  
          this.upgradeList.add(UpgradeCore.VOID);
          barrel.setVoid(true);
       }
