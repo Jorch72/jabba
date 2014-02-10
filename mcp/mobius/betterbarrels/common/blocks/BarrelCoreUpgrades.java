@@ -3,14 +3,6 @@ package mcp.mobius.betterbarrels.common.blocks;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
-import net.minecraftforge.common.ForgeDirection;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
@@ -18,9 +10,16 @@ import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer.HammerMode;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
-import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x06FullStorage;
+import mcp.mobius.betterbarrels.network.Message0x04Structuralupdate;
+import mcp.mobius.betterbarrels.network.Message0x05CoreUpdate;
+import mcp.mobius.betterbarrels.network.Message0x06FullStorage;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BarrelCoreUpgrades {
    private TileEntityBarrel barrel;
@@ -265,7 +264,7 @@ public class BarrelCoreUpgrades {
             barrel.getStorage().addStorageUpgrade();
          this.nStorageUpg += core.slotsUsed;
 
-         PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(barrel), barrel.worldObj.provider.dimensionId);
+         BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x06FullStorage(barrel), barrel.getWorldObj().provider.dimensionId);
       }
 
       if (core == UpgradeCore.REDSTONE) {
@@ -291,8 +290,8 @@ public class BarrelCoreUpgrades {
       }
 
       stack.stackSize -= 1;
-      barrel.onInventoryChanged();
-      PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(barrel), barrel.worldObj.provider.dimensionId);
+      barrel.markDirty();
+      BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x05CoreUpdate(barrel), barrel.getWorldObj().provider.dimensionId);
    }
 
    void applyStructural(ItemStack stack, EntityPlayer player) {
@@ -312,8 +311,8 @@ public class BarrelCoreUpgrades {
          BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REQUIRED, stack.getItemDamage());
       }
 
-      barrel.onInventoryChanged();
-      PacketDispatcher.sendPacketToAllInDimension(Packet0x04StructuralUpdate.create(barrel), barrel.worldObj.provider.dimensionId);
+      barrel.markDirty();
+      BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x04Structuralupdate(barrel), barrel.getWorldObj().provider.dimensionId);
    }
 
    /* OTHER */

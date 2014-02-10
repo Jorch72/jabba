@@ -3,18 +3,17 @@ package mcp.mobius.betterbarrels.common.blocks;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
-import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import mcp.mobius.betterbarrels.common.blocks.logic.ItemImmut;
-import net.minecraft.block.Block;
+import mcp.mobius.betterbarrels.common.blocks.logic.OreDictPair;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
-import mcp.mobius.betterbarrels.common.blocks.logic.OreDictPair;
 
 public class StorageLocal implements IBarrelStorage{
 
@@ -38,12 +37,12 @@ public class StorageLocal implements IBarrelStorage{
 	
     private static HashMap<OreDictPair, Boolean> oreDictCache = new HashMap<OreDictPair, Boolean>(); 	
 	
-	public StorageLocal(){ this.onInventoryChanged(); }	
-	public StorageLocal(NBTTagCompound tag){ this.readTagCompound(tag); this.onInventoryChanged(); }
+	public StorageLocal(){ this.markDirty(); }	
+	public StorageLocal(NBTTagCompound tag){ this.readTagCompound(tag); this.markDirty(); }
 	public StorageLocal(int nupgrades) {
 		for (int i = 0; i < nupgrades; i++)
 			this.addStorageUpgrade();
-		this.onInventoryChanged();
+		this.markDirty();
 	}
 	
 	private ItemStack getStackFromSlot(int slot){ return slot == 0 ? this.inputStack : this.outputStack; }
@@ -68,10 +67,10 @@ public class StorageLocal implements IBarrelStorage{
     			this.renderingTemplate.getTagCompound().removeTag("ench");
     		if (this.renderingTemplate.hasTagCompound() && this.renderingTemplate.getTagCompound().hasKey("CustomPotionEffects"))
     			this.renderingTemplate.getTagCompound().removeTag("CustomPotionEffects");    		
-    		if (this.renderingTemplate.itemID == Item.potion.itemID)
+    		if (this.renderingTemplate.getItem() == Items.potionitem)
     			this.renderingTemplate.setItemDamage(0);
-    		if (this.renderingTemplate.itemID == Item.expBottle.itemID)
-    			this.renderingTemplate = new ItemStack(Item.potion, 0, 0);
+    		if (this.renderingTemplate.getItem() == Items.experience_bottle)
+    			this.renderingTemplate = new ItemStack(Items.potionitem, 0, 0);
     	}
     	return this.renderingTemplate;
     }
@@ -100,8 +99,8 @@ public class StorageLocal implements IBarrelStorage{
 			return true;     	
     	
     	OreDictPair orePair  = new OreDictPair(
-    			new ItemImmut(this.getItem().itemID,   this.getItem().getItemDamage()),
-    			new ItemImmut(stack.itemID, stack.getItemDamage())
+    			new ItemImmut(Item.getIdFromItem(this.getItem().getItem()),   this.getItem().getItemDamage()),
+    			new ItemImmut(Item.getIdFromItem(stack.getItem()), stack.getItemDamage())
     	);
     	
     	if (!oreDictCache.containsKey(orePair)){
@@ -132,7 +131,7 @@ public class StorageLocal implements IBarrelStorage{
         if (this.getItem() != null){
             NBTTagCompound var3 = new NBTTagCompound();
             this.getItem().writeToNBT(var3);
-            retTag.setCompoundTag("current_item", var3);
+            retTag.setTag("current_item", var3);
         }
 		return retTag;
 	}
@@ -173,7 +172,7 @@ public class StorageLocal implements IBarrelStorage{
 		   if (stack.stackSize > 0)
 		      stack.stackSize = 0;
 		}
-		this.onInventoryChanged();
+		this.markDirty();
 		return deposit;    	
     }
 	
@@ -187,7 +186,7 @@ public class StorageLocal implements IBarrelStorage{
     
 	@Override	
     public ItemStack getStack(int amount){
-		this.onInventoryChanged();
+		this.markDirty();
 		
 		ItemStack retStack = null;
 		if (this.hasItem()){
@@ -199,13 +198,13 @@ public class StorageLocal implements IBarrelStorage{
 			retStack.stackSize = amount;
 		}
 		
-		this.onInventoryChanged();		
+		this.markDirty();		
 		return retStack;    	
     }
 	
     /* STATUS MANIPULATION */	
 	@Override
-	public boolean switchGhosting() { this.keepLastItem = !this.keepLastItem; this.onInventoryChanged(); return this.keepLastItem; }
+	public boolean switchGhosting() { this.keepLastItem = !this.keepLastItem; this.markDirty(); return this.keepLastItem; }
    @Override
    public boolean isGhosting() { return this.keepLastItem; }
    @Override
@@ -279,7 +278,7 @@ public class StorageLocal implements IBarrelStorage{
 	public int getSizeInventory() {	return 2; }
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		this.onInventoryChanged();
+		this.markDirty();
 		return this.getStackFromSlot(slot); 
 	}
 
@@ -293,7 +292,7 @@ public class StorageLocal implements IBarrelStorage{
 		stack.stackSize = stackSize;
 		this.getStackFromSlot(slot).stackSize -= stackSize;
 
-		this.onInventoryChanged();
+		this.markDirty();
 		return stack;		
 	}
 
@@ -307,7 +306,7 @@ public class StorageLocal implements IBarrelStorage{
 		stack.stackSize = stackSize;
 		this.getStackFromSlot(slot).stackSize -= stackSize;
 
-		//this.onInventoryChanged();
+		//this.markDirty();
 		return stack;		
 	}	
 	
@@ -321,20 +320,20 @@ public class StorageLocal implements IBarrelStorage{
 		else
 			this.outputStack = itemstack;
 		
-		this.onInventoryChanged();
+		this.markDirty();
 	}
 
 	@Override
-	public String getInvName() { return "jabba.localstorage"; }
+	public String getInventoryName() { return "jabba.localstorage"; }
 
 	@Override
-	public boolean isInvNameLocalized() { return false; }
+	public boolean hasCustomInventoryName() { return false; }
 
 	@Override
 	public int getInventoryStackLimit() { return 64; }
 
 	@Override
-	public void onInventoryChanged() {
+	public void markDirty() {
 		// TODO : Might need to do some cleanup here
 		
 		if (this.inputStack != null){
@@ -385,10 +384,10 @@ public class StorageLocal implements IBarrelStorage{
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) { return true; }	// This is not handled here but rather in the TE itself
 
 	@Override
-	public void openChest() {} // Unused
+	public void openInventory() {} // Unused
 
 	@Override
-	public void closeChest() {} // Unused
+	public void closeInventory() {} // Unused
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
@@ -405,7 +404,7 @@ public class StorageLocal implements IBarrelStorage{
 			return stack;
 		} 
 		else if (!this.hasItem() && this.isGhosting()){
-			return new ItemStack(Block.endPortal, 0);
+			return new ItemStack(Blocks.end_portal, 0);
 		}
 		else{
 			return null;
@@ -415,14 +414,14 @@ public class StorageLocal implements IBarrelStorage{
 	@Override
 	public void setStoredItemCount(int amount) {
 		this.totalAmount = amount;
-		this.onInventoryChanged();
+		this.markDirty();
 	}
 		
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
 		this.setItem(type);
 		this.totalAmount = amount;
-		this.onInventoryChanged();
+		this.markDirty();
 	}
 		
 	@Override

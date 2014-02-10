@@ -5,35 +5,28 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
+import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
+import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
+import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
+import mcp.mobius.betterbarrels.network.Message0x01ContentUpdate;
+import mcp.mobius.betterbarrels.network.Message0x02GhostUpdate;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.DimensionManager;
-import mcp.mobius.betterbarrels.BetterBarrels;
-import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
-import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
-import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
-import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
-import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 public class BSpaceStorageHandler {
 	private int version = 1;
@@ -97,7 +90,7 @@ public class BSpaceStorageHandler {
 			Coordinates coord = this.barrels.get(id);
 			IBlockAccess world = DimensionManager.getWorld(coord.dim);
 			if (world == null) return null;
-			TileEntity te = world.getBlockTileEntity(MathHelper.floor_double(coord.x), MathHelper.floor_double(coord.y), MathHelper.floor_double(coord.z));
+			TileEntity te = world.getTileEntity(MathHelper.floor_double(coord.x), MathHelper.floor_double(coord.y), MathHelper.floor_double(coord.z));
 			if (!(te instanceof TileEntityBarrel)) return null;
 			TileEntityBarrel barrel = (TileEntityBarrel)te;
 			if (barrel.id != id) return null;
@@ -208,8 +201,8 @@ public class BSpaceStorageHandler {
 			TileEntityBarrel target = this.getBarrel(targetID);
 			if (target != null){
 				target.getStorage().setGhosting(source.getStorage().isGhosting());
-				PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(target), target.worldObj.provider.dimensionId);
-				PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(target), target.worldObj.provider.dimensionId);
+				BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(target), target.getWorldObj().provider.dimensionId);
+				BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x02GhostUpdate(target), target.getWorldObj().provider.dimensionId);
 			}
 		}
 	}
@@ -224,17 +217,17 @@ public class BSpaceStorageHandler {
 
 		NBTTagCompound   coords = new NBTTagCompound();
 		for (Integer key : this.barrels.keySet())
-			coords.setCompoundTag(String.valueOf(key), this.barrels.get(key).writeToNBT());		
+			coords.setTag(String.valueOf(key), this.barrels.get(key).writeToNBT());		
 		nbt.setTag("barrelCoords",   coords);
 
 		NBTTagCompound   stores = new NBTTagCompound();
 		for (Integer key : this.storageMap.keySet())
-			stores.setCompoundTag(String.valueOf(key), this.storageMap.get(key).writeTagCompound());		
+			stores.setTag(String.valueOf(key), this.storageMap.get(key).writeTagCompound());		
 		nbt.setTag("storages",   stores);		
 
 		NBTTagCompound   storesOriginal = new NBTTagCompound();
 		for (Integer key : this.storageMapOriginal.keySet())
-			storesOriginal.setCompoundTag(String.valueOf(key), this.storageMapOriginal.get(key).writeTagCompound());		
+			storesOriginal.setTag(String.valueOf(key), this.storageMapOriginal.get(key).writeTagCompound());		
 		nbt.setTag("storagesOriginal", storesOriginal);
 
 		NBTTagCompound   list = new NBTTagCompound();
@@ -245,40 +238,36 @@ public class BSpaceStorageHandler {
 		
 	}
 	
-	private void readFromNBT(NBTTagCompound nbt){
+	private void readFromNBT(NBTTagCompound nbt){ //TODO: check this
 		this.maxBarrelID  = nbt.hasKey("maxBarrelID")  ? nbt.getInteger("maxBarrelID")  : 0;
 		this.links = new HashMap<Integer, HashSet<Integer>>();
  		
 		if (nbt.hasKey("barrelCoords")){
-			for (Object obj : nbt.getCompoundTag("barrelCoords").getTags()){
-				NBTTagCompound tag = (NBTTagCompound)obj;
-				int key = Integer.parseInt(tag.getName());
-				this.barrels.put(key, new Coordinates(tag));
-			}			
+			NBTTagCompound tag = nbt.getCompoundTag("barrelCoords");
+			for (Object key: tag.func_150296_c()) {
+				this.barrels.put(Integer.valueOf((String)key), new Coordinates(tag.getCompoundTag((String)key)));
+			}
 		}
 		
 		if (nbt.hasKey("storages")){
-			for (Object obj : nbt.getCompoundTag("storages").getTags()){
-				NBTTagCompound tag = (NBTTagCompound)obj;
-				int key = Integer.parseInt(tag.getName());
-				this.storageMap.put(key, new StorageLocal(tag));
-			}			
+			NBTTagCompound tag = nbt.getCompoundTag("storages");
+			for (Object key: tag.func_150296_c()) {
+				this.storageMap.put(Integer.valueOf((String)key), new StorageLocal(tag.getCompoundTag((String)key)));
+			}
 		}		
 		
 		if (nbt.hasKey("storagesOriginal")){
-			for (Object obj : nbt.getCompoundTag("storagesOriginal").getTags()){
-				NBTTagCompound tag = (NBTTagCompound)obj;
-				int key = Integer.parseInt(tag.getName());
-				this.storageMapOriginal.put(key, new StorageLocal(tag));
-			}			
+			NBTTagCompound tag = nbt.getCompoundTag("storagesOriginal");
+			for (Object key: tag.func_150296_c()) {
+				this.storageMapOriginal.put(Integer.valueOf((String)key), new StorageLocal(tag.getCompoundTag((String)key)));
+			}
 		}			
 		
  		if (nbt.hasKey("links")){
- 			for (Object obj : nbt.getCompoundTag("links").getTags()){
- 				NBTTagIntArray tag = (NBTTagIntArray)obj;
- 				int key = Integer.parseInt(tag.getName());
-				this.links.put(key, this.convertHashSet(tag.intArray));
- 			}
+			NBTTagCompound tag = nbt.getCompoundTag("links");
+			for (Object key: tag.func_150296_c()) {
+				this.links.put(Integer.valueOf((String)key), this.convertHashSet(tag.getIntArray((String)key)));
+			}
  			
  			this.relinkStorages();
  		}		

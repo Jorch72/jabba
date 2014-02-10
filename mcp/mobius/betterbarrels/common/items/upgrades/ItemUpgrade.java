@@ -2,18 +2,18 @@ package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.items.IOverlayItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
 public class ItemUpgrade extends Item implements IOverlayItem{
-	public ItemUpgrade(int id){
-		super(id);
-      this.setCreativeTab(JabbaCreativeTab.tab);
+	public ItemUpgrade(){
+		super();
+		this.setCreativeTab(JabbaCreativeTab.tab);
 	}
-	
+
 	@Override
-    public boolean shouldPassSneakingClickToBlock(World par2World, int par4, int par5, int par6)
-    {
-        return true;
-    }	
+	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
+		return true;
+	}	
 }

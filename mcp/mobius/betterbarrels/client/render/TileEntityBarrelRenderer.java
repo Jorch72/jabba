@@ -9,7 +9,7 @@ import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 

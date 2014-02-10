@@ -1,9 +1,9 @@
 package mcp.mobius.betterbarrels.common.items.upgrades;
 
+import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.util.Icon;
-import net.minecraft.util.StatCollector;
 
 public enum UpgradeCore {
    STORAGE(Type.STORAGE, 1),
@@ -24,7 +24,7 @@ public enum UpgradeCore {
    public final String translationKey;
 
    @SideOnly(Side.CLIENT)
-   public Icon icon;
+   public IIcon icon;
 
    private UpgradeCore(final Type type, final int slots) {
       this.type = type;

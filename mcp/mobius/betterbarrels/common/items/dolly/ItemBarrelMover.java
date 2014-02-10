@@ -4,20 +4,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
-import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x03SideUpgradeUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x07ForceRender;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,14 +20,15 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.common.registry.GameData;
 
 public class ItemBarrelMover extends Item {
-	protected Icon   text_empty = null;
-	protected Icon   text_filled = null;
+	protected IIcon   text_empty = null;
+	protected IIcon   text_filled = null;
     
 	protected static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
     protected static ArrayList<String> classExtensionsNames = new ArrayList<String>();
@@ -81,8 +76,8 @@ public class ItemBarrelMover extends Item {
     	}
     }
     
-	public ItemBarrelMover(int id){
-		super(id);
+	public ItemBarrelMover(){
+		super();
         this.setMaxStackSize(1); 
         //this.setHasSubtypes(true);
         //this.setMaxDamage(0);     
@@ -91,7 +86,7 @@ public class ItemBarrelMover extends Item {
 	}
 
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_empty");
     	this.text_empty  = this.itemIcon;
@@ -108,12 +103,12 @@ public class ItemBarrelMover extends Item {
     }
 
 	@Override	
-    public Icon getIcon(ItemStack stack, int pass){
+    public IIcon getIcon(ItemStack stack, int pass){
 		return this.getIconIndex(stack);
     }	
 
 	@Override	
-    public Icon getIconIndex(ItemStack stack){
+    public IIcon getIconIndex(ItemStack stack){
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
 			return this.text_filled;
 		else
@@ -138,9 +133,16 @@ public class ItemBarrelMover extends Item {
 	
 	protected boolean placeContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side){
 		NBTTagCompound nbtStack = stack.getTagCompound();
-		int blockID        = nbtStack.getCompoundTag("Container").getInteger("ID");
-		int blockMeta      = nbtStack.getCompoundTag("Container").getInteger("Meta");
-		String TEClassName = nbtStack.getCompoundTag("Container").getString("TEClass");
+		NBTTagCompound nbtContainerStack = nbtStack.getCompoundTag("Container");
+
+		Block storedBlock;
+		if(nbtContainerStack.hasKey("ID")) {
+			storedBlock = Block.getBlockById(nbtContainerStack.getInteger("ID"));
+		} else {
+			storedBlock = Block.getBlockFromName(nbtContainerStack.getString("Block"));
+		}
+		int blockMeta      = nbtContainerStack.getInteger("Meta");
+		String TEClassName = nbtContainerStack.getString("TEClass");
 		NBTTagCompound nbtContainer = nbtStack.getCompoundTag("Container").getCompoundTag("NBT");
 		
 		ForgeDirection targSide = ForgeDirection.getOrientation(side);			
@@ -150,13 +152,14 @@ public class ItemBarrelMover extends Item {
 		int targY = y;
 		int targZ = z;
 		
-		int targID = world.getBlockId(targX, targY, targZ);
+		Block targetBlock = world.getBlock(targX, targY, targZ);
 		
-        if (targID == Block.snow.blockID)
+        if (targetBlock == Blocks.snow)
             targSide = ForgeDirection.UP;
 		
-		if (targID != Block.vine.blockID && targID != Block.tallGrass.blockID && targID != Block.deadBush.blockID
-                && (Block.blocksList[targID] == null || !Block.blocksList[targID].isBlockReplaceable(world, targX, targY, targZ))){
+		if (targetBlock != Blocks.vine && targetBlock != Blocks.tallgrass && targetBlock != Blocks.deadbush
+                //&& (Block.blocksList[targetBlock] == null || !Block.blocksList[targetBlock].isBlockReplaceable(world, targX, targY, targZ))){
+				&& (targetBlock == null || !targetBlock.isReplaceable(world, targX, targY, targZ))){
 			if (targSide.equals(ForgeDirection.NORTH))
 				targZ -= 1;
 			if (targSide.equals(ForgeDirection.SOUTH))
@@ -171,7 +174,7 @@ public class ItemBarrelMover extends Item {
 				targY -= 1;
 		}
 		
-		if(!(world.canPlaceEntityOnSide(blockID, targX, targY, targZ, false, side, (Entity)null, stack))){return false;}
+		if(!(world.canPlaceEntityOnSide(storedBlock, targX, targY, targZ, false, side, (Entity)null, stack))){return false;}
 		
 		nbtContainer.setInteger("x", targX);
 		nbtContainer.setInteger("y", targY);
@@ -295,10 +298,10 @@ public class ItemBarrelMover extends Item {
 			nbtContainer.setIntArray("sideUpgrades", newSideArray);
 		}
 		
-		world.setBlock(targX, targY, targZ, blockID, blockMeta, 1 + 2);
-		world.getBlockTileEntity(targX, targY, targZ).readFromNBT(nbtContainer);
+		world.setBlock(targX, targY, targZ, storedBlock, blockMeta, 1 + 2);
+		world.getTileEntity(targX, targY, targZ).readFromNBT(nbtContainer);
 		
-		TileEntity entity = world.getBlockTileEntity(targX, targY, targZ);
+		TileEntity entity = world.getTileEntity(targX, targY, targZ);
 		
 		/* IC2 orientation fix part2 */
 		if (classMap.get("ic2.api.tile.IWrenchable") != null && classMap.get("ic2.api.tile.IWrenchable").isInstance(entity))
@@ -387,9 +390,9 @@ public class ItemBarrelMover extends Item {
 	}
 	
 	protected boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z){
-		int blockID            = world.getBlockId(x, y, z);
+		Block storedBlock = world.getBlock(x, y, z);;
 		int blockMeta          = world.getBlockMetadata(x, y, z);
-		TileEntity containerTE = world.getBlockTileEntity(x, y, z);
+		TileEntity containerTE = world.getTileEntity(x, y, z);
 		NBTTagCompound nbtContainer = new NBTTagCompound();
 		NBTTagCompound nbtTarget    = new NBTTagCompound();
 		
@@ -401,11 +404,11 @@ public class ItemBarrelMover extends Item {
 		
 		containerTE.writeToNBT(nbtContainer);
 		
-		nbtTarget.setInteger("ID",        blockID);
+		nbtTarget.setString("Block",     GameData.blockRegistry.getNameForObject(storedBlock));
 		nbtTarget.setInteger("Meta",      blockMeta);
 		nbtTarget.setString("TEClass",    containerTE.getClass().getName());
 		nbtTarget.setBoolean("isSpawner", containerTE instanceof TileEntityMobSpawner);
-		nbtTarget.setCompoundTag("NBT",   nbtContainer);
+		nbtTarget.setTag("NBT",   nbtContainer); //TODO: Check this, seems the nbt classes were streamlined somewhat
 		
 		if(!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());
@@ -413,11 +416,11 @@ public class ItemBarrelMover extends Item {
 		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
 			stack.getTagCompound().removeTag("Container");
 		
-		stack.getTagCompound().setCompoundTag("Container", nbtTarget);
+		stack.getTagCompound().setTag("Container", nbtTarget);
 
-		world.removeBlockTileEntity(x, y, z);
+		world.removeTileEntity(x, y, z);
 		try{
-			world.setBlock(x, y, z, 0, 0, 1 + 2);
+			world.setBlockToAir(x, y, z);
 		} catch (Exception e) {}
 		
 		return true;		
@@ -491,7 +494,8 @@ public class ItemBarrelMover extends Item {
 	
 	private String getBlockName(TileEntity tileEntity){
 
-		Block teBlock = Block.blocksList[tileEntity.getWorldObj().getBlockId(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord)];
+		//Block teBlock = Block.blocksList[tileEntity.getWorldObj().getBlockId(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord)];
+		Block teBlock = tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
 		
 		ItemStack pick = null;
 		try{

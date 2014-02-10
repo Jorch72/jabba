@@ -1,13 +1,15 @@
 package mcp.mobius.betterbarrels;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class RecipeHandler {
 
@@ -16,15 +18,15 @@ public class RecipeHandler {
 	public static RecipeHandler instance() { return RecipeHandler._instance; }	
 	
 	public void registerOres(){
-		OreDictionary.registerOre("ingotIron",  Item.ingotIron);
-		OreDictionary.registerOre("ingotGold",  Item.ingotGold);
-		OreDictionary.registerOre("slimeball",  Item.slimeBall);
-		OreDictionary.registerOre("gemDiamond", Item.diamond);
-		OreDictionary.registerOre("gemEmerald", Item.emerald);
-		OreDictionary.registerOre("chestWood",  Block.chest);
-		OreDictionary.registerOre("stickWood",  Item.stick);
-		OreDictionary.registerOre("obsidian",   Block.obsidian);
-		OreDictionary.registerOre("whiteStone", Block.whiteStone);
+		OreDictionary.registerOre("ingotIron",  Items.iron_ingot);
+		OreDictionary.registerOre("ingotGold",  Items.gold_ingot);
+		OreDictionary.registerOre("slimeball",  Items.slime_ball);
+		OreDictionary.registerOre("gemDiamond", Items.diamond);
+		OreDictionary.registerOre("gemEmerald", Items.emerald);
+		OreDictionary.registerOre("chestWood",  Blocks.chest);
+		OreDictionary.registerOre("stickWood",  Items.stick);
+		OreDictionary.registerOre("obsidian",   Blocks.obsidian);
+		OreDictionary.registerOre("whiteStone", Blocks.end_stone);
 	}
 	
 	public void registerRecipes(){
@@ -34,13 +36,13 @@ public class RecipeHandler {
 			this.addStructuralUpgrade(i, BetterBarrels.materialList[i]);
 		
 		this.addCoreUpgrade(0, BetterBarrels.blockBarrel);
-		this.addCoreUpgrade(1, Block.enderChest);
-		this.addCoreUpgrade(2, Block.blockRedstone);
-		this.addCoreUpgrade(3, Block.hopperBlock);
-		this.addCoreUpgrade(UpgradeCore.VOID.ordinal(), Block.obsidian);
+		this.addCoreUpgrade(1, Blocks.ender_chest);
+		this.addCoreUpgrade(2, Blocks.redstone_block);
+		this.addCoreUpgrade(3, Blocks.hopper);
+		this.addCoreUpgrade(UpgradeCore.VOID.ordinal(), Blocks.obsidian);
 		
-		this.addSideUpgrade(1, Block.hopperBlock);
-		this.addSideUpgrade(2, Item.redstone);
+		this.addSideUpgrade(1, Blocks.hopper);
+		this.addSideUpgrade(2, Items.redstone);
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.blockBarrel), new Object[]
 				 {"W-W", "WCW", "WWW", 
@@ -62,7 +64,7 @@ public class RecipeHandler {
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide, 4, 0), new Object[]
 				{" P ","PXP", " P ", 
-			 Character.valueOf('P'), Item.paper, 
+			 Character.valueOf('P'), Items.paper, 
 			 Character.valueOf('X'), "slimeball"}));		
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemHammer, 1, 0), new Object[]
@@ -73,7 +75,7 @@ public class RecipeHandler {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemTuningFork, 1, 0), new Object[]
 				{" P "," EP", "P  ", 
 			Character.valueOf('P'), "ingotIron",
-			Character.valueOf('E'), Item.enderPearl
+			Character.valueOf('E'), Items.ender_pearl
 				}));		
 
       addCoreUpgradeUpgrade(UpgradeCore.STORAGE3.ordinal(), UpgradeCore.STORAGE.ordinal());
@@ -125,42 +127,42 @@ public class RecipeHandler {
 	private void addStructuralUpgrade_(int level, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				'P', Block.fence, 
+				'P', Blocks.fence, 
 				'B', variableComponent});		
 	}
 
 	private void addStructuralUpgrade_(int level, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				'P', Block.fence, 
+				'P', Blocks.fence, 
 				'B', new ItemStack(variableComponent,1)});		
 	}	
 	
 	private void addStructuralUpgrade_(int level, String variableComponent){
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				Character.valueOf('P'), Block.fence, 
+				Character.valueOf('P'), Blocks.fence, 
 				Character.valueOf('B'), variableComponent}));		
 	}	
 	
 	private void addCoreUpgrade(int meta, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
 				{" P ", " B ", " P ",
-				'P', Block.pistonBase, 
+				'P', Blocks.piston, 
 				'B', variableComponent});		
 	}
 
 	private void addCoreUpgrade(int meta, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
 				{" P ", " B ", " P ",
-				'P', Block.pistonBase, 
+				'P', Blocks.piston, 
 				'B', new ItemStack(variableComponent,1)});		
 	}	
 	
 	private void addCoreUpgrade(int meta, String variableComponent){
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
 				{" P ", " B ", " P ",
-				Character.valueOf('P'), Block.pistonBase,
+				Character.valueOf('P'), Blocks.piston,
 				Character.valueOf('B'), variableComponent}));		
 	}	
 	

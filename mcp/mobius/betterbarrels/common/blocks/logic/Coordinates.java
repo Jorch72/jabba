@@ -23,7 +23,7 @@ public final class Coordinates{
 	public TileEntity getEntityAt(){
 		IBlockAccess world = DimensionManager.getWorld(this.dim);
 		if (world == null) return null;
-		return world.getBlockTileEntity(MathHelper.floor_double(this.x), MathHelper.floor_double(this.y) , MathHelper.floor_double(this.z));
+		return world.getTileEntity(MathHelper.floor_double(this.x), MathHelper.floor_double(this.y) , MathHelper.floor_double(this.z));
 	}
 	
 	public boolean equals(Object o)  {

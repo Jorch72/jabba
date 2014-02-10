@@ -3,24 +3,25 @@ package mcp.mobius.betterbarrels.common.items.upgrades;
 import java.util.List;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class ItemUpgradeSide extends ItemUpgrade {
-	public static Icon[] upgradeIcons = new Icon[3];
+	public static IIcon[] upgradeIcons = new IIcon[3];
 	
     public static String[] upgradeNames = { "upgrade.side.sticker",
     										"upgrade.side.hopper",
     										"upgrade.side.redstone"
     									};	
 	
-	public ItemUpgradeSide(int id){
-		super(id);
+	public ItemUpgradeSide(){
+		super();
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
         this.setMaxStackSize(16);
@@ -34,22 +35,22 @@ public class ItemUpgradeSide extends ItemUpgrade {
     }	
 	
     @Override    
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
     	for(int i=0 ; i < ItemUpgradeSide.upgradeIcons.length; i++)
     		ItemUpgradeSide.upgradeIcons[i]  = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "sideupg_" + String.valueOf(i));
     }	
 	
     @Override
-    public Icon getIconFromDamage(int i){
+    public IIcon getIconFromDamage(int i){
         return ItemUpgradeSide.upgradeIcons[i];
     }	
 	
 	@Override
     @SideOnly(Side.CLIENT)
-    public void getSubItems(int itemID, CreativeTabs tabs, List list){
+    public void getSubItems(Item item, CreativeTabs tabs, List list){
             for(int i = 0; i < ItemUpgradeSide.upgradeIcons.length; ++i){
-                    list.add(new ItemStack(itemID, 1, i));
+                    list.add(new ItemStack(item, 1, i));
              }
      }      
     

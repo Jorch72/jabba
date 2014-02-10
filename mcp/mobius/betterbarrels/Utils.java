@@ -37,7 +37,7 @@ public class Utils {
             break;
       }
 
-      EntityItem droppedEntity = new EntityItem(source.worldObj, stackCoordX, stackCoordY, stackCoordZ, stack);
+      EntityItem droppedEntity = new EntityItem(source.getWorldObj(), stackCoordX, stackCoordY, stackCoordZ, stack);
 
       if (player != null) {
          Vec3 motion = Vec3.createVectorHelper(player.posX - stackCoordX, player.posY - stackCoordY, player.posZ - stackCoordZ);
@@ -53,7 +53,7 @@ public class Utils {
       droppedEntity.motionY *= speedfactor;
       droppedEntity.motionZ *= speedfactor;
 
-      source.worldObj.spawnEntityInWorld(droppedEntity);
+      source.getWorldObj().spawnEntityInWorld(droppedEntity);
    }
 
 }

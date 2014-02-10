@@ -1,15 +1,14 @@
 package mcp.mobius.betterbarrels.client;
 
-import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.Loader;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.bspace.BBEventHandler;
 import mcp.mobius.betterbarrels.client.render.BlockBarrelRenderer;
 import mcp.mobius.betterbarrels.client.render.TileEntityBarrelRenderer;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
+import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends BaseProxy {
 	

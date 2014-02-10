@@ -2,18 +2,19 @@ package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemUpgradeCore extends ItemUpgrade {
-   public ItemUpgradeCore(int id) {
-      super(id);
+   public ItemUpgradeCore() {
+      super();
       this.setHasSubtypes(true);
       this.setMaxDamage(0);
       this.setMaxStackSize(16);
@@ -26,13 +27,13 @@ public class ItemUpgradeCore extends ItemUpgrade {
    }
 
    @Override
-   public void registerIcons(IconRegister par1IconRegister) {
+   public void registerIcons(IIconRegister par1IconRegister) {
       for (UpgradeCore upgrade: UpgradeCore.values())
          upgrade.icon = par1IconRegister.registerIcon(BetterBarrels.modid + ":coreupg_" + upgrade.ordinal());
    }
 
    @Override
-   public Icon getIconFromDamage(int i) {
+   public IIcon getIconFromDamage(int i) {
       return UpgradeCore.values()[i].icon;
    }
 
@@ -45,9 +46,9 @@ public class ItemUpgradeCore extends ItemUpgrade {
    
    @Override
    @SideOnly(Side.CLIENT)
-   public void getSubItems(int itemID, CreativeTabs tabs, List list) {
+   public void getSubItems(Item item, CreativeTabs tabs, List list) {
       for (UpgradeCore upgrade: UpgradeCore.values()) {
-         list.add(new ItemStack(itemID, 1, upgrade.ordinal()));
+         list.add(new ItemStack(item, 1, upgrade.ordinal()));
       }
    }
 }
