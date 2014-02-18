@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.zip.ZipException;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -330,29 +331,44 @@ public class BSpaceStorageHandler {
             if(!saveDir.exists())
                 saveDir.mkdirs();
             saveFiles = new File[]{new File(saveDir, "data1.dat"), new File(saveDir, "data2.dat"), new File(saveDir, "lock.dat")};
+
+            boolean dataLoaded = false;
+
             if(saveFiles[2].exists() && saveFiles[2].length() > 0)
             {
                 FileInputStream fin = new FileInputStream(saveFiles[2]);
                 saveTo = fin.read()^1;
                 fin.close();
-                
-                if(saveFiles[saveTo^1].exists())
-                {
-                    DataInputStream din = new DataInputStream(new FileInputStream(saveFiles[saveTo^1]));
-                    saveTag = CompressedStreamTools.readCompressed(din);
-                    din.close();
-                }
-                else
-                {
-                    saveTag = new NBTTagCompound();
+
+                try {
+                   if(saveFiles[saveTo^1].exists())
+                   {
+                       DataInputStream din = new DataInputStream(new FileInputStream(saveFiles[saveTo^1]));
+                       saveTag = CompressedStreamTools.readCompressed(din);
+                       din.close();
+                       dataLoaded = true;
+                   }
+                } catch (ZipException e) {
+                   if(saveFiles[saveTo].exists())
+                   {
+                       DataInputStream din = new DataInputStream(new FileInputStream(saveFiles[saveTo]));
+                       saveTag = CompressedStreamTools.readCompressed(din);
+                       din.close();
+                       dataLoaded = true;
+                   }
                 }
             }
-            else
+
+            if (!dataLoaded) {
                 saveTag = new NBTTagCompound();
+            }
         }
         catch(Exception e)
         {
-            throw new RuntimeException(e);
+           if (e instanceof ZipException) {
+              BetterBarrels.log.log(Level.SEVERE, "Primary and Backup JABBA data files have been corrupted.");
+           }
+           throw new RuntimeException(e);
         }
         
         this.readFromNBT(saveTag);
