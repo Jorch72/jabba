@@ -34,11 +34,16 @@ import net.minecraftforge.common.ForgeDirection;
 public class ItemBarrelMover extends Item {
 	protected Icon   text_empty = null;
 	protected Icon   text_filled = null;
+	protected DollyType type = DollyType.NORMAL;
     
 	protected static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
     protected static ArrayList<String> classExtensionsNames = new ArrayList<String>();
     protected static HashMap<String, Class> classMap        = new HashMap<String, Class>();
     
+    protected enum DollyType {
+       NORMAL, DIAMOND, CLONE;
+    }
+
     static {
     	classExtensionsNames.add("cpw.mods.ironchest.TileEntityIronChest");
     	classExtensionsNames.add("buildcraft.energy.TileEngine");
@@ -86,25 +91,29 @@ public class ItemBarrelMover extends Item {
         this.setMaxStackSize(1); 
         //this.setHasSubtypes(true);
         //this.setMaxDamage(0);     
-        this.setUnlocalizedName("dolly.normal.empty");
         this.setCreativeTab(JabbaCreativeTab.tab);
 	}
 
     @Override    
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_empty");
+    	this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_" + this.type.name().toLowerCase() + "_empty");
     	this.text_empty  = this.itemIcon;
-    	this.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_filled");
+    	this.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_" + this.type.name().toLowerCase() + "_filled");
     }    
     
 	@Override	
+   public String getUnlocalizedName() {
+       return getUnlocalizedName(null);
+    }
+
+    @Override	
     public String getUnlocalizedName(ItemStack stack)
     {
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
-			return "item.dolly.normal.full";
+		if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
+			return "item.dolly." + this.type.name().toLowerCase() + ".full";
 		else
-			return "item.dolly.normal.empty";			
+			return "item.dolly." + this.type.name().toLowerCase() + ".empty";			
     }
 
 	@Override	
