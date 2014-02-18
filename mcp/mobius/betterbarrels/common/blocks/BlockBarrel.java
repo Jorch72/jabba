@@ -25,13 +25,10 @@ import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 
 public class BlockBarrel extends BlockContainer{
 
-	public static Icon[] text_side     = new Icon[16];
-	public static Icon[] text_top      = new Icon[16];
-	public static Icon[] text_label    = new Icon[16];
-	public static Icon[] text_labeltop = new Icon[16];
 	public static Icon   text_sidehopper = null;
 	public static Icon   text_siders     = null;
 	public static Icon   text_lock       = null;
@@ -53,18 +50,15 @@ public class BlockBarrel extends BlockContainer{
 	
     @Override    
     public void registerIcons(IconRegister iconRegister){
-    	for (int i=0; i<8; i++)
-    	{
-    		BlockBarrel.text_side[i]     = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_side_"     + String.valueOf(i));
-    		BlockBarrel.text_top[i]      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_top_"      + String.valueOf(i));
-    		BlockBarrel.text_label[i]    = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_label_"    + String.valueOf(i));
-    		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
-    	}
 		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_hopper");
 		BlockBarrel.text_siders      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_redstone");
 		BlockBarrel.text_lock        = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_locked");
 		BlockBarrel.text_linked      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_linked");
-		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");    	
+		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");
+		StructuralLevel.registerBlockIconPieces(iconRegister);
+		if (StructuralLevel.LEVELS == null) StructuralLevel.createAndRegister();
+		for (int i = 0; i < StructuralLevel.LEVELS.length; i++)
+		   StructuralLevel.LEVELS[i].registerBlockIcons(iconRegister, i);
     }
    
     @Override

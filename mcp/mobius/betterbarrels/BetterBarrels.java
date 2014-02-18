@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
@@ -20,6 +22,7 @@ import mcp.mobius.betterbarrels.common.items.dolly.ItemDiamondMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
@@ -74,7 +77,6 @@ public class BetterBarrels {
 	public static boolean  highRezTexture     = true;
 	public static boolean  showUpgradeSymbols = true;
 	public static boolean  diamondDollyActive = true;	
-	public static String[] materialList       = new String[]{"Ore.plankWood", "Ore.ingotIron", "Ore.ingotGold", "Ore.gemDiamond", "Ore.obsidian", "Ore.whiteStone", "Ore.gemEmerald"};
 	
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
@@ -110,7 +112,8 @@ public class BetterBarrels {
 			itemMoverDiamondID  = config.get("item",   "DiamondMover",    3509).getInt();				
 			
 			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
-			materialList        = config.get(Configuration.CATEGORY_GENERAL, "materialList", materialList).getStringList();
+         StructuralLevel.upgradeMaterialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.upgradeMaterialsList).getStringList();
+         StructuralLevel.maxCraftableTier = Math.min(24, Math.min(StructuralLevel.upgradeMaterialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", StructuralLevel.upgradeMaterialsList.length).getInt()));
 			
 			
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
@@ -156,7 +159,9 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		RecipeHandler.instance().registerRecipes();
+      StructuralLevel.createAndRegister();
+
+      RecipeHandler.instance().registerRecipes();
 
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
 
