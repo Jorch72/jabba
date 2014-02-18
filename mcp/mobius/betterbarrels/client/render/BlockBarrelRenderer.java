@@ -6,6 +6,7 @@ import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -25,10 +26,10 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		Tessellator tessellator = Tessellator.instance;
 		
 		Icon iconSide, iconTop, iconLabel, iconLabelTop;
-		iconSide     = BlockBarrel.text_side[0];
-		iconTop      = BlockBarrel.text_top[0];
-		iconLabel    = BlockBarrel.text_label[0];
-		iconLabelTop = BlockBarrel.text_labeltop[0];
+		iconSide     = StructuralLevel.LEVELS[0].getIconSide();
+		iconTop      = StructuralLevel.LEVELS[0].getIconTop();
+		iconLabel    = StructuralLevel.LEVELS[0].getIconLabel();
+		iconLabelTop = StructuralLevel.LEVELS[0].getIconLabelTop();
 		
 		double minXSide = iconSide.getMinU();
 		double maxXSide = iconSide.getMaxU();
@@ -127,10 +128,10 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		Icon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
 		Icon iconStack = null;
 		int  levelStructural = barrel.coreUpgrades.levelStructural;
-		iconSide       = BlockBarrel.text_side[levelStructural];
-		iconTop        = BlockBarrel.text_top[levelStructural];
-		iconLabel      = BlockBarrel.text_label[levelStructural];
-		iconLabelTop   = BlockBarrel.text_labeltop[levelStructural];
+      iconSide       = StructuralLevel.LEVELS[levelStructural].getIconSide();
+      iconTop        = StructuralLevel.LEVELS[levelStructural].getIconTop();
+      iconLabel      = StructuralLevel.LEVELS[levelStructural].getIconLabel();
+      iconLabelTop   = StructuralLevel.LEVELS[levelStructural].getIconLabelTop();
 		iconSideHopper = BlockBarrel.text_sidehopper;
 		iconSideRS     = BlockBarrel.text_siders;
 		iconLock       = BlockBarrel.text_lock;

@@ -2,6 +2,7 @@ package mcp.mobius.betterbarrels;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -30,9 +31,8 @@ public class RecipeHandler {
 	
 	public void registerRecipes(){
 		
-		//for (int i = 0; i < BetterBarrels.materialList.length; i++)
-		for (int i = 0; i < Math.min(7, BetterBarrels.materialList.length); i++)
-			this.addStructuralUpgrade(i, BetterBarrels.materialList[i]);
+		for (int i = 0; i < Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i++)
+			this.addStructuralUpgrade(i, StructuralLevel.upgradeMaterialsList[i]);
 		
 		this.addCoreUpgrade(0, BetterBarrels.blockBarrel);
 		this.addCoreUpgrade(1, "transdimBlock");

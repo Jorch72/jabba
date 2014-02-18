@@ -17,13 +17,7 @@ item.upgrade.side.sticker.name=Sticker
 item.upgrade.side.hopper.name=Hopper facade
 item.upgrade.side.redstone.name=Redstone facade
 
-item.upgrade.structural.0.name=Structural MKI (Wood)
-item.upgrade.structural.1.name=Structural MKII (Iron)
-item.upgrade.structural.2.name=Structural MKIII (Gold)
-item.upgrade.structural.3.name=Structural MKIV (Diamond)
-item.upgrade.structural.4.name=Structural MKV (Obsidian)
-item.upgrade.structural.5.name=Structural MKVI (End stone)
-item.upgrade.structural.6.name=Structural MKVII (Emerald)
+item.upgrade.structural=Structural MK
 
 item.hammer.normal.name=Barrel Hammer
 item.hammer.bspace.name=Barrel Hammer(Resonating)

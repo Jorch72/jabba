@@ -16,6 +16,7 @@ import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer.HammerMode;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
@@ -41,10 +42,7 @@ public class BarrelCoreUpgrades {
    /* SLOT HANDLING */
 
    public int getMaxUpgradeSlots() {
-      int nslots = 0;
-      for (int i = 0; i < this.levelStructural; i++)
-         nslots += MathHelper.floor_double(Math.pow(2, i));
-      return nslots;
+      return StructuralLevel.LEVELS[this.levelStructural].getMaxCoreSlots();
    }
 
    public int getUsedSlots() {

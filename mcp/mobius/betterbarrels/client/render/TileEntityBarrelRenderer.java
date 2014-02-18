@@ -7,6 +7,7 @@ import mcp.mobius.betterbarrels.common.items.IOverlayItem;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -45,7 +46,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
         	boolean isHammer = this.mc.thePlayer.getHeldItem() != null ? this.mc.thePlayer.getHeldItem().getItem() instanceof IOverlayItem ? true : false : false;
         	boolean hasItem  = barrelEntity.getStorage().hasItem();
         	
-        	int color = ItemUpgradeStructural.textColor[barrelEntity.coreUpgrades.levelStructural];
+        	int color = StructuralLevel.LEVELS[barrelEntity.coreUpgrades.levelStructural].getTextColor();
         	
 	        for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS){					
 				if (hasItem &&  this.isItemDisplaySide(barrelEntity, forgeSide)){
