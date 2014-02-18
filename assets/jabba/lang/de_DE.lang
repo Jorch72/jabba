@@ -17,13 +17,7 @@ item.upgrade.side.sticker.name=Sticker
 item.upgrade.side.hopper.name=Trichterfassade
 item.upgrade.side.redstone.name=Redstone-Fassade
 
-item.upgrade.structural.0.name=Struktur-Upgrade MKI (Holz)
-item.upgrade.structural.1.name=Struktur-Upgrade MKII (Eisen)
-item.upgrade.structural.2.name=Struktur-Upgrade MKIII (Gold)
-item.upgrade.structural.3.name=Struktur-Upgrade MKIV (Diamant)
-item.upgrade.structural.4.name=Struktur-Upgrade MKV (Obsidian)
-item.upgrade.structural.5.name=Struktur-Upgrade MKVI (Endstein)
-item.upgrade.structural.6.name=Struktur-Upgrade MKVII (Smaragd)
+item.upgrade.structural=Struktur-Upgrade MK
 
 item.hammer.normal.name=Fasshammer
 item.hammer.bspace.name=Fasshammer(Resonierend)
