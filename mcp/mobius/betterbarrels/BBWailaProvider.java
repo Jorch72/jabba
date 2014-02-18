@@ -54,6 +54,7 @@ public class BBWailaProvider implements IWailaDataProvider {
 		registrar.addConfig(StatCollector.translateToLocal("itemGroup.jabba"), "bb.itemnumb", StatCollector.translateToLocal("text.jabba.waila.key.quantity"));
 		registrar.addConfig(StatCollector.translateToLocal("itemGroup.jabba"), "bb.space", StatCollector.translateToLocal("text.jabba.waila.key.stacks"));
 		registrar.registerBodyProvider(new BBWailaProvider(), TileEntityBarrel.class);
+		//registrar.registerSyncedNBTKey("*", TileEntityBarrel.class);
 	}
 	
 }

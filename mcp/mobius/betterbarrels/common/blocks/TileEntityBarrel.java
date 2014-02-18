@@ -58,6 +58,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public  boolean isLinked           = false;
 	public  byte    nTicks             = 0;
 	public  int     id                 = -1;
+	public  long    timeSinceLastUpd   = System.currentTimeMillis();
+	
 	
 	public BarrelCoreUpgrades coreUpgrades;
 
@@ -536,15 +538,25 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     /* IInventory Interface Implementation */
     /*/////////////////////////////////////*/
     
+    private void sendContentSyncPacket(){
+		long currTime = System.currentTimeMillis();
+		if (currTime - this.timeSinceLastUpd > 1000){
+			PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+			//PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 200, this.worldObj.provider.dimensionId, Packet0x01ContentUpdate.create(this));
+			this.timeSinceLastUpd = currTime;
+		}    	
+    }
+    
 	@Override
 	public int getSizeInventory() {return this.getStorage().getSizeInventory();}
 	@Override
 	public ItemStack getStackInSlot(int islot) {
 		ItemStack stack = this.getStorage().getStackInSlot(islot);
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
-		return stack; 
+		this.sendContentSyncPacket();
+		return stack;
 	}
+	
 	@Override
 	public ItemStack decrStackSize(int islot, int quantity) {
 		TileEntity ent = this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
@@ -555,15 +567,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			stack = this.getStorage().decrStackSize(islot, quantity);
 		
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.sendContentSyncPacket();
 		return stack;
 	}
+	
 	@Override
 	public void setInventorySlotContents(int islot, ItemStack stack) { 
 		this.getStorage().setInventorySlotContents(islot, stack);
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.sendContentSyncPacket();
 	}
+	
 	@Override
 	public ItemStack getStackInSlotOnClosing(int var1) {return null;}	
 	@Override
@@ -593,14 +607,14 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public void setStoredItemCount(int amount) {
 		this.getStorage().setStoredItemCount(amount);
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.sendContentSyncPacket();
 	}
 
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
 		this.getStorage().setStoredItemType(type, amount);
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		this.sendContentSyncPacket();
 	}
 
 	@Override
