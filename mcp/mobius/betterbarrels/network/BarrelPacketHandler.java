@@ -69,6 +69,7 @@ public class BarrelPacketHandler implements IPacketHandler {
                barrel.coreUpgrades.hasEnder     = packetCast.hasEnder;
 					barrel.coreUpgrades.nStorageUpg  = packetCast.nStorageUpg;
 					barrel.setVoid(packetCast.hasVoid);
+               barrel.setCreative(packetCast.hasCreative);
 				}
 			}	
 			else if (header == 0x06){
