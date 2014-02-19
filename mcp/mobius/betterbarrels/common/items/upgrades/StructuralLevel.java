@@ -89,7 +89,7 @@ public class StructuralLevel {
                   ranOnce = true;
                   return;
                }
-               StringTranslate.inject(new ByteArrayInputStream(("item.upgrade.structural." + String.valueOf(level) + ".name=" + StatCollector.translateToLocal("item.upgrade.structural") + romanNumeral(level) + " (" + name + ")").getBytes()));
+               StringTranslate.inject(new ByteArrayInputStream(("item.upgrade.structural." + String.valueOf(level) + ".name=" + StatCollector.translateToLocal("item.upgrade.structural") + " " + romanNumeral(level) + " (" + name + ")").getBytes()));
                generateIcons();
             }
          });
@@ -392,6 +392,7 @@ public class StructuralLevel {
          GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
          int[] itemBasePixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, StructuralLevel.iconItemBase);
          int[] itemArrowPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, StructuralLevel.iconItemArrow);
+         int[] itemRomanPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, this.iconItem);
 
          int[] materialPixels;
          // Check if the material is an item
@@ -420,6 +421,7 @@ public class StructuralLevel {
          mergeArraysBasedOnAlpha(topLabelBorderPixels, topLabelBackgroundPixels);
          mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
          mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
+         mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
 
          GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
          uploadReplacementTexture(this.iconBlockLabel, labelBorderPixels);
