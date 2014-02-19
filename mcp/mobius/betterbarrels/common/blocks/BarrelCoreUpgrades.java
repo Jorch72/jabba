@@ -33,6 +33,7 @@ public class BarrelCoreUpgrades {
    public boolean hasHopper   = false;
    public boolean hasEnder    = false;
    public boolean hasVoid     = false;
+   public boolean hasCreative = false;
 
    public BarrelCoreUpgrades(TileEntityBarrel barrel) {
       this.barrel = barrel;
@@ -155,6 +156,7 @@ public class BarrelCoreUpgrades {
                this.hasHopper = this.hasUpgrade(UpgradeCore.HOPPER);
                this.hasEnder = this.hasUpgrade(UpgradeCore.ENDER);
                barrel.setVoid(this.hasUpgrade(UpgradeCore.VOID));
+               barrel.setCreative(this.hasUpgrade(UpgradeCore.CREATIVE));
 
                if (core.type == UpgradeCore.Type.ENDER) {
                   removeEnder(player);
@@ -250,6 +252,20 @@ public class BarrelCoreUpgrades {
 				 BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
 			 }
 			 break;
+       case CREATIVE:
+          if (this.hasUpgrade(UpgradeCore.CREATIVE)) {
+              if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+                  BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+                  break;
+               }              
+              
+              removeAndDropUpgrade(UpgradeCore.CREATIVE, player);
+              barrel.setCreative(false);
+          
+          } else {
+             BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+          }
+          break;
       }
    }
 
@@ -307,6 +323,16 @@ public class BarrelCoreUpgrades {
          barrel.setVoid(true);
       }
 
+      else if (core == UpgradeCore.CREATIVE) {
+         if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+             BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+             return;
+          }        
+       
+        this.upgradeList.add(UpgradeCore.CREATIVE);
+        barrel.setCreative(true);
+     }
+
       stack.stackSize -= 1;
       barrel.onInventoryChanged();
       PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(barrel), barrel.worldObj.provider.dimensionId);
@@ -348,6 +374,7 @@ public class BarrelCoreUpgrades {
       NBTTag.setBoolean("hopper",        this.hasHopper);
       NBTTag.setBoolean("ender",         this.hasEnder);
       NBTTag.setBoolean("void",          this.hasVoid);
+      NBTTag.setBoolean("creative",      this.hasCreative);
       NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
    }
 
@@ -363,5 +390,6 @@ public class BarrelCoreUpgrades {
       this.hasEnder        = NBTTag.getBoolean("ender");
       this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
       barrel.setVoid(NBTTag.getBoolean("void"));
+      barrel.setCreative(NBTTag.getBoolean("creative"));
    }
 }

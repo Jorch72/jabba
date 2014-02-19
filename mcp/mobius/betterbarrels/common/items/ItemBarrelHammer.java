@@ -19,23 +19,20 @@ import net.minecraft.world.World;
 
 public class ItemBarrelHammer extends Item implements IOverlayItem{
    public static enum HammerMode {
-      NORMAL(LocalizedChat.HAMMER_NORMAL),
-      BSPACE(LocalizedChat.HAMMER_BSPACE),
-      REDSTONE(LocalizedChat.HAMMER_REDSTONE),
-      HOPPER(LocalizedChat.HAMMER_HOPPER),
-      STORAGE(LocalizedChat.HAMMER_STORAGE),
-      STRUCTURAL(LocalizedChat.HAMMER_STRUCTURAL),
-      VOID(LocalizedChat.HAMMER_VOID);
+      NORMAL, BSPACE, REDSTONE, HOPPER, STORAGE, STRUCTURAL, VOID, CREATIVE;
       
       public final LocalizedChat message;
       public Icon icon;
 
-      private HammerMode(final LocalizedChat message) {
-         this.message = message;
+      private HammerMode() {
+         this.message = LocalizedChat.valueOf("HAMMER_" + this.name().toUpperCase());
       }
 
-      public static ItemStack setNextMode(ItemStack item) {
+      public static ItemStack setNextMode(ItemStack item, EntityPlayer player) {
          int next_mode = item.getItemDamage() + 1;
+         if (!player.capabilities.isCreativeMode && next_mode == HammerMode.CREATIVE.ordinal()) {
+            next_mode++;
+         }
          if (next_mode >= HammerMode.values().length) {
             next_mode = 0;
          }
@@ -95,7 +92,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
     @Override
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
        if (par3EntityPlayer.isSneaking()) {
-          par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem] = HammerMode.setNextMode(par1ItemStack);
+          par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem] = HammerMode.setNextMode(par1ItemStack, par3EntityPlayer);
    
           if (!par2World.isRemote) {
              BarrelPacketHandler.sendLocalizedChat(par3EntityPlayer, HammerMode.getMode(par1ItemStack).message);
