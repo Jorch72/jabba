@@ -113,7 +113,14 @@ public class BetterBarrels {
 			
 			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
          StructuralLevel.upgradeMaterialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.upgradeMaterialsList).getStringList();
-         StructuralLevel.maxCraftableTier = Math.min(24, Math.min(StructuralLevel.upgradeMaterialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", StructuralLevel.upgradeMaterialsList.length).getInt()));
+         if(StructuralLevel.upgradeMaterialsList.length > 18) {
+            String[] trimedList = new String[18];
+            for(int i=0;i<18;i++)
+               trimedList[i] = StructuralLevel.upgradeMaterialsList[i];
+            StructuralLevel.upgradeMaterialsList = trimedList;
+            config.get(Configuration.CATEGORY_GENERAL, "materialList", trimedList).set(trimedList);
+         }
+         StructuralLevel.maxCraftableTier = Math.min(18, Math.min(StructuralLevel.upgradeMaterialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", StructuralLevel.upgradeMaterialsList.length).getInt()));
 			
 			
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
