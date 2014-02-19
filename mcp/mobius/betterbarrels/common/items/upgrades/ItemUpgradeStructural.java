@@ -34,7 +34,7 @@ public class ItemUpgradeStructural extends ItemUpgrade {
 
    @Override
    public Icon getIconFromDamage(int i) {
-      return StructuralLevel.LEVELS[i+1].getIconItem();
+      return StructuralLevel.LEVELS[Math.min(i+1, StructuralLevel.LEVELS.length-1)].getIconItem();
    }
 
    @SuppressWarnings("unchecked")
