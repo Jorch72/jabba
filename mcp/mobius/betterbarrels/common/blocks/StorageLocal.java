@@ -126,7 +126,6 @@ public class StorageLocal implements IBarrelStorage{
 		NBTTagCompound retTag = new NBTTagCompound();
 
 		retTag.setInteger("amount",       this.totalAmount);
-		retTag.setBoolean("keepLastItem", this.keepLastItem);
 		retTag.setInteger("maxstacks",    this.maxstacks);
 		retTag.setInteger("upgCapacity",  this.upgCapacity);
         
@@ -135,6 +134,12 @@ public class StorageLocal implements IBarrelStorage{
             this.getItem().writeToNBT(var3);
             retTag.setCompoundTag("current_item", var3);
         }
+      if (this.keepLastItem)
+         retTag.setBoolean("keepLastItem", this.keepLastItem);
+      if (this.deleteExcess)
+         retTag.setBoolean("deleteExcess", this.deleteExcess);
+      if (this.alwaysProvide)
+         retTag.setBoolean("alwaysProvide", this.alwaysProvide);
 		return retTag;
 	}
 	@Override
@@ -144,6 +149,8 @@ public class StorageLocal implements IBarrelStorage{
 		this.upgCapacity      = tag.getInteger("upgCapacity");
     	this.itemTemplate     = tag.hasKey("current_item") ? ItemStack.loadItemStackFromNBT(tag.getCompoundTag("current_item")) : null;		
     	this.keepLastItem     = tag.hasKey("keepLastItem") ? tag.getBoolean("keepLastItem") : false;
+      this.deleteExcess     = tag.hasKey("deleteExcess") ? tag.getBoolean("deleteExcess") : false;
+      this.alwaysProvide    = tag.hasKey("alwaysProvide") ? tag.getBoolean("alwaysProvide") : false;
     	this.setItem(this.itemTemplate);
 	}    
     
