@@ -333,7 +333,7 @@ public class StructuralLevel {
    }
 
    private int[] getPixelsForTexture(IntBuffer pixelBuf, int bufferWidth, TextureAtlasSprite icon) {
-      int[] pixels = new int[this.iconBlockLabel.getIconWidth() * this.iconBlockLabel.getIconHeight()];
+      int[] pixels = new int[icon.getIconWidth() * icon.getIconHeight()];
       int offset = (icon.getOriginY() * bufferWidth) + icon.getOriginX();
       for (int i = 0; i < icon.getIconHeight(); i++) {
          pixelBuf.position(offset + (i * bufferWidth));
