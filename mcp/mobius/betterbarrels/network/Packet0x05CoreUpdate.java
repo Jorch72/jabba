@@ -14,7 +14,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 public class Packet0x05CoreUpdate {
 	public byte header;
 	public int  x,y,z;
-	public byte  nStorageUpg = 0;
+	public int  nStorageUpg = 0;
 	public boolean hasRedstone = false;
 	public boolean hasHopper   = false;
    public boolean hasEnder    = false;

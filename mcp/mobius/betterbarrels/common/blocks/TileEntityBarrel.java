@@ -46,7 +46,7 @@ import net.minecraftforge.common.ForgeDirection;
 
 
 public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDeepStorageUnit {
-	private static int version = 4;
+	private static int version = 5;
 	
     private long clickTime = -20; //Click timer for double click handling
 	
@@ -216,7 +216,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setInteger("tuneID",     this.id);
 		stack.getTagCompound().setInteger("structural", coreUpgrades.levelStructural);
-		stack.getTagCompound().setByte("storage",       coreUpgrades.nStorageUpg);
+		stack.getTagCompound().setInteger("storage",    coreUpgrades.nStorageUpg);
 		stack.getTagCompound().setBoolean("void",       coreUpgrades.hasVoid);
 	}
 	
@@ -232,7 +232,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 		
 		int  structural = stack.getTagCompound().getInteger("structural");
-		byte storage    = stack.getTagCompound().getByte("storage");
+		int  storage    = stack.getTagCompound().getInteger("storage");
 		int  barrelID   = stack.getTagCompound().getInteger("tuneID");
 		boolean hasVoid = stack.getTagCompound().getBoolean("void");
 		
