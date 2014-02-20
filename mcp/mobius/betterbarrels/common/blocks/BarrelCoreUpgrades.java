@@ -29,7 +29,7 @@ public class BarrelCoreUpgrades {
    public ArrayList<UpgradeCore> upgradeList = new ArrayList<UpgradeCore>();
 
    public int levelStructural = 0;
-   public byte nStorageUpg    = 0;
+   public int nStorageUpg     = 0;
    public boolean hasRedstone = false;
    public boolean hasHopper   = false;
    public boolean hasEnder    = false;
@@ -346,7 +346,7 @@ public class BarrelCoreUpgrades {
       NBTTag.setBoolean("hopper",        this.hasHopper);
       NBTTag.setBoolean("ender",         this.hasEnder);
       NBTTag.setBoolean("void",          this.hasVoid);
-      NBTTag.setByte("nStorageUpg",      this.nStorageUpg);
+      NBTTag.setInteger("nStorageUpg",   this.nStorageUpg);
    }
 
    public void readFromNBT(NBTTagCompound NBTTag, int saveVersion) {
@@ -359,7 +359,11 @@ public class BarrelCoreUpgrades {
       this.hasRedstone     = NBTTag.getBoolean("redstone");
       this.hasHopper       = NBTTag.getBoolean("hopper");
       this.hasEnder        = NBTTag.getBoolean("ender");
-      this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
+      if (saveVersion < 5) {
+         this.nStorageUpg     = NBTTag.getByte("nStorageUpg");
+      } else {
+         this.nStorageUpg     = NBTTag.getInteger("nStorageUpg");
+      }
       barrel.setVoid(NBTTag.getBoolean("void"));
    }
 }
