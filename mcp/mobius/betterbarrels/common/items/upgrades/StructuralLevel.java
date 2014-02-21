@@ -418,7 +418,7 @@ public class StructuralLevel {
 
          // PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
          PixelARGB color = averageColorFromArrayB(materialPixels);
-         // System.out.println("Color R: " + color.R + ", G: " + color.G + ", B: " + color.B);
+         //System.out.println("Color for [" + materialStack.getDisplayName() + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
 
          //this.textColor = color.YIQContrastTextColor().combined;
 
