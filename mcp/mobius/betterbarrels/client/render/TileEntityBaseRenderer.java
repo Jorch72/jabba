@@ -52,8 +52,12 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 		int color = (alpha << 24) | (red << 16) | (blue << 8) | green;
 		this.renderTextOnBlock(renderString, side, orientation, barrelPos, size, posx, posy, color, align);
 	}
+
+	protected void renderTextOnBlock(String renderString, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, int color, byte align) {
+      this.renderTextOnBlock(renderString, side, orientation, barrelPos, size, posx, posy, 0F, color, align);
+   }
 	
-	protected void renderTextOnBlock(String renderString, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, int color, byte align){
+	protected void renderTextOnBlock(String renderString, ForgeDirection side, ForgeDirection orientation, Coordinates barrelPos, float size, double posx, double posy, float angle, int color, byte align){
 
     	if (renderString == null || renderString.equals("")){return;}
         	
@@ -64,6 +68,8 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
     	this.alignRendering(side, orientation, barrelPos);
         this.moveRendering(size, posx, posy, -0.01);
         
+        GL11.glRotatef(angle, 0.0f, 0.0f, 1.0f);
+
         GL11.glDepthMask(false);            	
         GL11.glDisable(GL11.GL_LIGHTING);
 
