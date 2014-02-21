@@ -80,6 +80,8 @@ public class RecipeHandler {
       addCoreUpgradeUpgrade(UpgradeCore.STORAGE3.ordinal(), UpgradeCore.STORAGE.ordinal());
       addCoreUpgradeUpgrade(UpgradeCore.STORAGE9.ordinal(), UpgradeCore.STORAGE3.ordinal());
       addCoreUpgradeUpgrade(UpgradeCore.STORAGE27.ordinal(), UpgradeCore.STORAGE9.ordinal());
+      addCoreUpgradeUpgrade(UpgradeCore.STORAGE81.ordinal(), UpgradeCore.STORAGE27.ordinal());
+      addCoreUpgradeUpgrade(UpgradeCore.STORAGE243.ordinal(), UpgradeCore.STORAGE81.ordinal());
 	}
 
 	private void addCoreUpgradeUpgrade(int resultMeta, int sourceMeta) {
