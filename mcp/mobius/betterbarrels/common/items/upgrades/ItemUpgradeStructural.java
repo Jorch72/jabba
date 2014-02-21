@@ -5,7 +5,6 @@ import java.util.List;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -37,7 +36,7 @@ public class ItemUpgradeStructural extends ItemUpgrade {
       return StructuralLevel.LEVELS[Math.min(i+1, StructuralLevel.LEVELS.length-1)].getIconItem();
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({ "unchecked", "rawtypes" })
    @Override
    @SideOnly(Side.CLIENT)
    public void getSubItems(int itemID, CreativeTabs tabs, List list) {

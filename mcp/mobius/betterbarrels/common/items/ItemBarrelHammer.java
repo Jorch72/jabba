@@ -7,7 +7,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
-import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -106,6 +105,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
    }
 
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @SideOnly(Side.CLIENT)
     public void getSubItems(int itemID, CreativeTabs tabs, List list) {
        for(HammerMode mode: HammerMode.values()) {
