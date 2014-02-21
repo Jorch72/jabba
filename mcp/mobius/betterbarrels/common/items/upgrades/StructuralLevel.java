@@ -281,6 +281,17 @@ public class StructuralLevel {
          return this;
       }
 
+      PixelARGB addSkipTransparent(PixelARGB add) {
+         if (add.A == 0)
+            return this;
+         addCount++;
+         R += add.R;
+         G += add.G;
+         B += add.B;
+         combined = ((A & 0xFF) << 24) + ((R & 0xFF) << 16) + ((G & 0xFF) << 8) + (B & 0xFF);
+         return this;
+      }
+
       PixelARGB normalizeIgnoreAlpha() {
          if (addCount == 0) return this;
          R = R / addCount;
@@ -327,7 +338,8 @@ public class StructuralLevel {
    private PixelARGB averageColorFromArrayB(int[] pixels) {
       PixelARGB totals = new PixelARGB(0);
       for (int pixel: pixels) {
-         totals.addIgnoreAlpha(new PixelARGB(pixel));
+         //totals.addIgnoreAlpha(new PixelARGB(pixel));
+         totals.addSkipTransparent(new PixelARGB(pixel));
       }
       return totals.normalizeIgnoreAlpha();
    }
@@ -408,13 +420,15 @@ public class StructuralLevel {
          PixelARGB color = averageColorFromArrayB(materialPixels);
          // System.out.println("Color R: " + color.R + ", G: " + color.G + ", B: " + color.B);
 
-         this.textColor = color.YIQContrastTextColor().combined;
+         //this.textColor = color.YIQContrastTextColor().combined;
 
          grainMergeArrayWithColor(labelBorderPixels, color);
          grainMergeArrayWithColor(topBorderPixels, color);
          grainMergeArrayWithColor(topLabelBorderPixels, color);
          grainMergeArrayWithColor(sideBorderPixels, color);
          grainMergeArrayWithColor(itemArrowPixels, color);
+
+         this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
 
          mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
          mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
