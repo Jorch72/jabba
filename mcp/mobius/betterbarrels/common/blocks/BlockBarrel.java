@@ -44,8 +44,9 @@ public class BlockBarrel extends BlockContainer{
 	      super(MapColor.woodColor);
 	      this.setBurning();
 	      this.setAdventureModeExempt();
-      }
+	   }
 	}
+
     public BlockBarrel(int par1){
         super(par1, new MaterialWoodAdventureExempt());
         this.setHardness(2.0F);
