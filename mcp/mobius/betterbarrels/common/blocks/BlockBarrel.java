@@ -39,16 +39,13 @@ public class BlockBarrel extends BlockContainer{
 	public static Icon   text_linked     = null;
 	public static Icon   text_locklinked = null;
 	
-	private static class MaterialWoodAdventureExempt extends Material {
-	   public MaterialWoodAdventureExempt() {
-	      super(MapColor.woodColor);
-	      this.setBurning();
-	      this.setAdventureModeExempt();
-	   }
-	}
-
     public BlockBarrel(int par1){
-        super(par1, new MaterialWoodAdventureExempt());
+        super(par1, new Material(MapColor.woodColor) {
+           {
+              this.setBurning();
+              this.setAdventureModeExempt();
+           }
+        });
         this.setHardness(2.0F);
         this.setResistance(5.0F);
         this.setUnlocalizedName("blockbarrel");
