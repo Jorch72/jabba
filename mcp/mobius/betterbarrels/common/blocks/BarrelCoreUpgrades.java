@@ -307,7 +307,9 @@ public class BarrelCoreUpgrades {
          barrel.setVoid(true);
       }
 
-      stack.stackSize -= 1;
+      if (!player.capabilities.isCreativeMode) {
+         stack.stackSize -= 1;
+      }
       barrel.onInventoryChanged();
       PacketDispatcher.sendPacketToAllInDimension(Packet0x05CoreUpdate.create(barrel), barrel.worldObj.provider.dimensionId);
    }
@@ -319,7 +321,9 @@ public class BarrelCoreUpgrades {
       }
 
       if (stack.getItemDamage() == this.levelStructural) {
-         stack.stackSize -= 1;
+         if (!player.capabilities.isCreativeMode) {
+            stack.stackSize -= 1;
+         }
          this.levelStructural += 1;
       } else if ((player instanceof EntityPlayerMP) && (stack.getItemDamage() == (this.levelStructural - 1))) {
          BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_EXISTS);
