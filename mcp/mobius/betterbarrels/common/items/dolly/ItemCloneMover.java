@@ -18,10 +18,14 @@ public class ItemCloneMover extends ItemBarrelMover {
     * 
     * Easter-Egg: Spawns a sheep named "Dolly" when no TE stored and right clicked on ground
     * 
-    * Things of concern: BSpace barrels, will have to regenerate the link: Feb 08 09:46:46 <ProfMobius> Be VERY careful with the clone thing Feb 08 09:47:30 <ProfMobius> I'm keeping a fixed index for every barrel. It is stored in the BSpaceHandler and you will have to reset it when you are creating
-    * the clone Feb 08 09:47:49 <ProfMobius> otherwise, you are going to trigger really weird behaviors with ender barrels and surely break things Feb 08 09:48:31 <taelnia> i saw that index, and thank you for the tip, I wasn't quite sure yet how to handle linked barrels Feb 08 09:49:07 <taelnia>
-    * void upgrade appears to be working fine though, but I only did limited testing on it Feb 08 09:49:22 <ProfMobius> Setting it to -1 in the NBT when storing the barrel in the dolly should be enough to regenerate an index when you put it back down, but it does require checking Feb 08 09:49:39
-    * <taelnia> noted, I'll attempt to be careful :)
+    * Things of concern: BSpace barrels, will have to regenerate the link:
+    * Feb 08 09:46:46 <ProfMobius> Be VERY careful with the clone thing
+    * Feb 08 09:47:30 <ProfMobius> I'm keeping a fixed index for every barrel. It is stored in the BSpaceHandler and you will have to reset it when you are creating the clone
+    * Feb 08 09:47:49 <ProfMobius> otherwise, you are going to trigger really weird behaviors with ender barrels and surely break things
+    * Feb 08 09:48:31 <taelnia> i saw that index, and thank you for the tip, I wasn't quite sure yet how to handle linked barrels
+    * Feb 08 09:49:07 <taelnia> void upgrade appears to be working fine though, but I only did limited testing on it
+    * Feb 08 09:49:22 <ProfMobius> Setting it to -1 in the NBT when storing the barrel in the dolly should be enough to regenerate an index when you put it back down, but it does require checking
+    * Feb 08 09:49:39 <taelnia> noted, I'll attempt to be careful :)
     */
    NBTTagCompound savedTileTag;
 
