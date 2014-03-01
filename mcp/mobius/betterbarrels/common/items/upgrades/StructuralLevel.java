@@ -1,15 +1,10 @@
 package mcp.mobius.betterbarrels.common.items.upgrades;
 
-import java.io.ByteArrayInputStream;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.block.Block;
@@ -17,15 +12,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.ReloadableResourceManager;
-import net.minecraft.client.resources.ResourceManager;
-import net.minecraft.client.resources.ResourceManagerReloadListener;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
-import net.minecraft.util.StringTranslate;
 import net.minecraftforge.oredict.OreDictionary;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class StructuralLevel {
    public static String[] upgradeMaterialsList = new String[]{ "Ore.plankWood", "Ore.ingotIron", "Ore.ingotGold", "Ore.gemDiamond", "Ore.obsidian", "Ore.whiteStone", "Ore.gemEmerald" };
@@ -34,8 +30,8 @@ public class StructuralLevel {
 
    private static boolean initialized = false;
 
-   private String name;
-   private ItemStack materialStack;
+   public String name;
+   public ItemStack materialStack;
    private TextureAtlasSprite iconBlockSide;
    private TextureAtlasSprite iconBlockLabel;
    private TextureAtlasSprite iconBlockTop;
@@ -43,23 +39,6 @@ public class StructuralLevel {
    private TextureAtlasSprite iconItem;
    private int textColor;
    private int maxCoreSlots;
-
-   // Define field we are refelcting for
-   private static ReloadableResourceManager rm = null;
-   // Reflect (1.6.4: Vanilla, SRG, and DeObf)
-   static {
-      for (String field: new String[]{ "ao", "field_110451_am", "mcResourceManager" }) {
-         try {
-            Field fResourceManager = Minecraft.getMinecraft().getClass().getDeclaredField(field);
-            if (fResourceManager != null) {
-               fResourceManager.setAccessible(true);
-               StructuralLevel.rm = (ReloadableResourceManager)fResourceManager.get(Minecraft.getMinecraft());
-               break;
-            }
-         } catch (Exception e) {
-         }
-      }
-   }
 
    private StructuralLevel() {
       // Special case for base barrel with no upgrade
@@ -77,23 +56,6 @@ public class StructuralLevel {
       this.maxCoreSlots = 0;
       for (int i = 0; i < level; i++)
          this.maxCoreSlots += MathHelper.floor_double(Math.pow(2, i));
-
-      // Use Reflected field found earlier
-      if (StructuralLevel.rm != null) {
-         StructuralLevel.rm.registerReloadListener(new ResourceManagerReloadListener() {
-            private boolean ranOnce = false;
-
-            @Override
-            public void onResourceManagerReload(ResourceManager resourcemanager) {
-               if (!ranOnce) { // The MC engine calls this several times, ignore the first
-                  ranOnce = true;
-                  return;
-               }
-               StringTranslate.inject(new ByteArrayInputStream(("item.upgrade.structural." + String.valueOf(level) + ".name=" + StatCollector.translateToLocal("item.upgrade.structural") + " " + romanNumeral(level) + " (" + name + ")").getBytes()));
-               generateIcons();
-            }
-         });
-      }
    }
 
    public static void createAndRegister() {
@@ -106,26 +68,32 @@ public class StructuralLevel {
       initialized = true;
    }
 
+   @SideOnly(Side.CLIENT)
    public Icon getIconSide() {
       return this.iconBlockSide;
    }
 
+   @SideOnly(Side.CLIENT)
    public Icon getIconTop() {
       return this.iconBlockTop;
    }
 
+   @SideOnly(Side.CLIENT)
    public Icon getIconLabel() {
       return this.iconBlockLabel;
    }
 
+   @SideOnly(Side.CLIENT)
    public Icon getIconLabelTop() {
       return this.iconBlockTopLabel;
    }
 
+   @SideOnly(Side.CLIENT)
    public Icon getIconItem() {
       return this.iconItem;
    }
 
+   @SideOnly(Side.CLIENT)
    public int getTextColor() {
       return this.textColor;
    }
@@ -143,33 +111,46 @@ public class StructuralLevel {
     * use opengl to replace modified array into original texture sheet since or registered Icons just store offsets to the texture sheet
     * End result: final icon used is dynamically generated at runtime, at every resource manager reload
     */
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconLabelBackground;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconLabelBorder;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconTopBackground;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconTopBorder;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconTopLabel;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconSideBackground;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconSideBorder;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconItemBase;
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite iconItemArrow;
 
+   @SideOnly(Side.CLIENT)
    private static class AccessibleTextureAtlasSprite extends TextureAtlasSprite {
       AccessibleTextureAtlasSprite(String par1Str) {
          super(par1Str);
       }
    }
 
+   @SideOnly(Side.CLIENT)
    private static TextureAtlasSprite registerIcon(IconRegister par1IconRegister, String key) {
       TextureAtlasSprite ret = new AccessibleTextureAtlasSprite(key);
       ((TextureMap)par1IconRegister).setTextureEntry(key, ret);
       return ret;
    }
 
+   @SideOnly(Side.CLIENT)
    public static void registerItemIconPieces(IconRegister par1IconRegister) {
       StructuralLevel.iconItemBase = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":capaupg_base");
       StructuralLevel.iconItemArrow = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":capaupg_color");
    }
 
+   @SideOnly(Side.CLIENT)
    public static void registerBlockIconPieces(IconRegister par1IconRegister) {
       StructuralLevel.iconLabelBackground = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_label_background");
       StructuralLevel.iconLabelBorder = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_label_border");
@@ -180,10 +161,12 @@ public class StructuralLevel {
       StructuralLevel.iconSideBorder = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_side_border");
    }
 
+   @SideOnly(Side.CLIENT)
    public void registerItemIcon(IconRegister par1IconRegister, int ordinal) {
       this.iconItem = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/capacity/" + String.valueOf(ordinal));
    }
 
+   @SideOnly(Side.CLIENT)
    public void registerBlockIcons(IconRegister par1IconRegister, int ordinal) {
       if (ordinal > 0) {
          this.iconBlockSide = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/side/" + String.valueOf(ordinal));
@@ -198,7 +181,7 @@ public class StructuralLevel {
       }
    }
 
-   private String romanNumeral(int num) {
+   public static String romanNumeral(int num) {
       LinkedHashMap<String, Integer> numeralConversion = new LinkedHashMap<String, Integer>();
       numeralConversion.put("M", 1000);
       numeralConversion.put("CM", 900);
@@ -338,12 +321,13 @@ public class StructuralLevel {
    private PixelARGB averageColorFromArrayB(int[] pixels) {
       PixelARGB totals = new PixelARGB(0);
       for (int pixel: pixels) {
-         //totals.addIgnoreAlpha(new PixelARGB(pixel));
+         // totals.addIgnoreAlpha(new PixelARGB(pixel));
          totals.addSkipTransparent(new PixelARGB(pixel));
       }
       return totals.normalizeIgnoreAlpha();
    }
 
+   @SideOnly(Side.CLIENT)
    private int[] getPixelsForTexture(IntBuffer pixelBuf, int bufferWidth, TextureAtlasSprite icon) {
       int[] pixels = new int[icon.getIconWidth() * icon.getIconHeight()];
       int offset = (icon.getOriginY() * bufferWidth) + icon.getOriginX();
@@ -354,6 +338,7 @@ public class StructuralLevel {
       return pixels;
    }
 
+   @SideOnly(Side.CLIENT)
    private void uploadReplacementTexture(TextureAtlasSprite icon, int[] pixels) {
       IntBuffer iconPixelBuf = ByteBuffer.allocateDirect(icon.getIconWidth() * icon.getIconHeight() * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
       iconPixelBuf.clear();
@@ -364,7 +349,8 @@ public class StructuralLevel {
       GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, icon.getOriginX(), icon.getOriginY(), icon.getIconWidth(), icon.getIconHeight(), GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, iconPixelBuf);
    }
 
-   private void generateIcons() {
+   @SideOnly(Side.CLIENT)
+   public void generateIcons() {
       int terrainTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationBlocksTexture).getGlTextureId();
       int itemTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationItemsTexture).getGlTextureId();
       if (terrainTextureId != 0 && itemTextureId != 0) {
@@ -418,9 +404,9 @@ public class StructuralLevel {
 
          // PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
          PixelARGB color = averageColorFromArrayB(materialPixels);
-         //System.out.println("Color for [" + materialStack.getDisplayName() + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
+         // System.out.println("Color for [" + materialStack.getDisplayName() + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
 
-         //this.textColor = color.YIQContrastTextColor().combined;
+         // this.textColor = color.YIQContrastTextColor().combined;
 
          grainMergeArrayWithColor(labelBorderPixels, color);
          grainMergeArrayWithColor(topBorderPixels, color);
