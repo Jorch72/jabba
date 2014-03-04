@@ -3,6 +3,7 @@ package mcp.mobius.betterbarrels.common.blocks;
 import java.util.Random;
 
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -36,7 +37,12 @@ public class BlockBarrel extends BlockContainer{
 	public static Icon   text_locklinked = null;
 	
     public BlockBarrel(int par1){
-        super(par1, Material.wood);
+        super(par1, new Material(MapColor.woodColor) {
+           {
+              this.setBurning();
+              this.setAdventureModeExempt();
+           }
+        });
         this.setHardness(2.0F);
         this.setResistance(5.0F);
         this.setUnlocalizedName("blockbarrel");
@@ -88,6 +94,16 @@ public class BlockBarrel extends BlockContainer{
         }
     }
     
+    @Override
+    public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+       if (!player.isSneaking() ) {
+          this.onBlockClicked(world, x, y, z, player);
+          return false;
+       } else {
+          return super.removeBlockByPlayer(world, player, x, y, z);
+       }
+    }
+
     @Override
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player){
         if (!world.isRemote){
