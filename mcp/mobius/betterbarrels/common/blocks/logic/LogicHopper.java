@@ -30,6 +30,7 @@ public class LogicHopper {
 					if(stack != null && stack.stackSize > 0 && this.pushItemToInventory((IInventory)targetEntity, side.getOpposite(), stack)){
 						barrel.getStorage().onInventoryChanged();
 						transaction = true;
+						targetEntity.onInventoryChanged();
 					}
 				}
 			}
