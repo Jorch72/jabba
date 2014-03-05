@@ -88,6 +88,7 @@ public class ItemBarrelMover extends Item {
         //this.setMaxDamage(0);     
         this.setUnlocalizedName("dolly.normal.empty");
         this.setCreativeTab(JabbaCreativeTab.tab);
+        this.setNoRepair();
 	}
 
     @Override    
@@ -560,5 +561,5 @@ public class ItemBarrelMover extends Item {
 		default:	
 			return (short)-1;
 		}
-	}		
+	}	
 }

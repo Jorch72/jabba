@@ -96,7 +96,7 @@ public class BlockBarrel extends BlockContainer{
     
     @Override
     public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z) {
-       if (!player.isSneaking() ) {
+	   if (player.capabilities.isCreativeMode && !player.isSneaking() ) {
           this.onBlockClicked(world, x, y, z, player);
           return false;
        } else {
