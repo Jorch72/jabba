@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
@@ -416,8 +417,11 @@ public class ItemBarrelMover extends Item {
 		
 		stack.getTagCompound().setCompoundTag("Container", nbtTarget);
 
+		if (containerTE instanceof TileEntityBarrel){
+			BSpaceStorageHandler.instance().unregisterEnderBarrel(((TileEntityBarrel)containerTE).id);
+		}
+		
 		try{
-			world.setBlock(x, y, z, 0, blockMeta, 1 + 2);
 			world.removeBlockTileEntity(x, y, z);
 			world.setBlock(x, y, z, 0, 0, 1 + 2);
 		} catch (Exception e) {

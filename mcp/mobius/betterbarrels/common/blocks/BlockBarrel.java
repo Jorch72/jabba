@@ -1,6 +1,7 @@
 package mcp.mobius.betterbarrels.common.blocks;
 
 import java.util.Random;
+import java.util.logging.Level;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
@@ -156,6 +157,12 @@ public class BlockBarrel extends BlockContainer{
 
     	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	
+    	try{
+    		BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
+    	} catch (Exception e){
+    		BetterBarrels.log.log(Level.INFO, "Tried ot remove the barrel from the index without a valid entity");
+    	}
+    	
     	// We drop the structural upgrades
     	if ((barrelEntity != null) && (barrelEntity.coreUpgrades.levelStructural > 0)){
     		int currentUpgrade = barrelEntity.coreUpgrades.levelStructural;
@@ -200,7 +207,6 @@ public class BlockBarrel extends BlockContainer{
         	}
         }
 
-        BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
         super.breakBlock(world, x, y, z, par5, par6);        
         
     }
