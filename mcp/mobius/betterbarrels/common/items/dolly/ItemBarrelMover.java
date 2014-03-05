@@ -326,7 +326,7 @@ public class ItemBarrelMover extends Item {
 				setFacing.invoke(entity, (short)this.getBarrelOrientationOnPlacement(player, targY, false).ordinal());
 			
 		} catch (Exception e){
-			System.out.printf("%s\n", e);
+			e.printStackTrace();
 		}		
 	}
 	
@@ -415,10 +415,16 @@ public class ItemBarrelMover extends Item {
 		
 		stack.getTagCompound().setCompoundTag("Container", nbtTarget);
 
-		world.removeBlockTileEntity(x, y, z);
 		try{
+			world.setBlock(x, y, z, 0, blockMeta, 1 + 2);
+			world.removeBlockTileEntity(x, y, z);
 			world.setBlock(x, y, z, 0, 0, 1 + 2);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+
+
 		
 		return true;		
 	}
