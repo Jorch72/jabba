@@ -417,13 +417,13 @@ public class ItemBarrelMover extends Item {
 		
 		stack.getTagCompound().setCompoundTag("Container", nbtTarget);
 
-		if (containerTE instanceof TileEntityBarrel){
-			BSpaceStorageHandler.instance().unregisterEnderBarrel(((TileEntityBarrel)containerTE).id);
-		}
+		//if (containerTE instanceof TileEntityBarrel){
+		//	BSpaceStorageHandler.instance().unregisterEnderBarrel(((TileEntityBarrel)containerTE).id);
+		//}
 		
 		try{
-			world.removeBlockTileEntity(x, y, z);
 			world.setBlock(x, y, z, 0, 0, 1 + 2);
+			world.removeBlockTileEntity(x, y, z);			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

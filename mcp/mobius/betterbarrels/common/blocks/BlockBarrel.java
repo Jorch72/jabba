@@ -153,17 +153,10 @@ public class BlockBarrel extends BlockContainer{
 	}
 	
 	@Override
-    public void breakBlock(World world, int x, int y, int z, int par5, int par6){
-
-    	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
-    	
-    	try{
-    		BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
-    	} catch (Exception e){
-    		BetterBarrels.log.log(Level.INFO, "Tried ot remove the barrel from the index without a valid entity");
-    	}
-    	
-    	// We drop the structural upgrades
+	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int par5) {
+		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);		
+		
+		// We drop the structural upgrades
     	if ((barrelEntity != null) && (barrelEntity.coreUpgrades.levelStructural > 0)){
     		int currentUpgrade = barrelEntity.coreUpgrades.levelStructural;
     		while (currentUpgrade > 0){
@@ -205,7 +198,24 @@ public class BlockBarrel extends BlockContainer{
         		if (droppedstack != null)
         			this.dropStack(world, droppedstack, x, y, z);
         	}
-        }
+        }		
+	}
+	
+	@Override
+	public void onBlockHarvested(World world, int x, int y, int z, int par5, EntityPlayer par6EntityPlayer){
+    	this.onBlockDestroyedByPlayer(world, x, y, z, par5);
+	}
+	
+	@Override
+    public void breakBlock(World world, int x, int y, int z, int par5, int par6){
+
+    	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
+    	
+    	try{
+    		BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
+    	} catch (Exception e){
+    		BetterBarrels.log.log(Level.INFO, "Tried ot remove the barrel from the index without a valid entity");
+    	}
 
         super.breakBlock(world, x, y, z, par5, par6);        
         
