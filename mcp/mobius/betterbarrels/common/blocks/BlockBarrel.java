@@ -228,12 +228,20 @@ public class BlockBarrel extends BlockContainer{
 		return BetterBarrels.blockBarrelRendererID;
 	}    
     
-    /*
+	/*
+    public boolean renderAsNormalBlock()
+    {
+        return false;
+    }
+    */
+    
+	/*
     @Override
     public boolean isBlockNormalCube(World world, int x, int y, int z){
     	return false;
     }
     */
+
     
     /*
     private boolean isIndirectlyPowered(World par1World, int par2, int par3, int par4)
