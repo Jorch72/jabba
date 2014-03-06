@@ -6,6 +6,7 @@ import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -77,11 +78,15 @@ public class RecipeHandler {
 			Character.valueOf('E'), Item.enderPearl
 				}));		
 
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE3.ordinal(), UpgradeCore.STORAGE.ordinal());
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE9.ordinal(), UpgradeCore.STORAGE3.ordinal());
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE27.ordinal(), UpgradeCore.STORAGE9.ordinal());
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE81.ordinal(), UpgradeCore.STORAGE27.ordinal());
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE243.ordinal(), UpgradeCore.STORAGE81.ordinal());
+		UpgradeCore prevStorage = UpgradeCore.STORAGE;
+		for (UpgradeCore core : UpgradeCore.values()) {
+		   if(core.type == UpgradeCore.Type.STORAGE && core.slotsUsed > 1) {
+		      if (core.slotsUsed > StructuralLevel.LEVELS[StructuralLevel.maxCraftableTier].getMaxCoreSlots())
+		         break;
+		      addCoreUpgradeUpgrade(core.ordinal(), prevStorage.ordinal());
+		      prevStorage = core;
+		   }
+		}
 	}
 
 	private void addCoreUpgradeUpgrade(int resultMeta, int sourceMeta) {
