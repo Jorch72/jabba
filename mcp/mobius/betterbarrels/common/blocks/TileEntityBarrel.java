@@ -3,6 +3,7 @@ package mcp.mobius.betterbarrels.common.blocks;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -524,9 +525,15 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     }	
 	
     /* OTHER */
+    private boolean skipUpdatePacket = false;
 
     @Override
     public void onInventoryChanged() {
+       if (skipUpdatePacket) {
+          skipUpdatePacket = false;
+          //BetterBarrels.log.log(Level.INFO, "Skipping the barrel content update and related packet; was previously called.");
+          return;
+       }
        super.onInventoryChanged();
        if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
        if (coreUpgrades.hasEnder && !this.worldObj.isRemote) BSpaceStorageHandler.instance().updateAllBarrels(this.id);
@@ -550,6 +557,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public int getSizeInventory() {return this.getStorage().getSizeInventory();}
 	@Override
 	public ItemStack getStackInSlot(int islot) {
+      this.skipUpdatePacket = false;
 		ItemStack stack = this.getStorage().getStackInSlot(islot);
 		//this.onInventoryChanged();
 		//this.sendContentSyncPacket();
@@ -558,6 +566,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	@Override
 	public ItemStack decrStackSize(int islot, int quantity) {
+      this.skipUpdatePacket = false;
 		TileEntity ent = this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
 		ItemStack stack;
 		if (ent instanceof TileEntityHopper)
@@ -572,8 +581,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	@Override
 	public void setInventorySlotContents(int islot, ItemStack stack) { 
+      this.skipUpdatePacket = false;
 		this.getStorage().setInventorySlotContents(islot, stack);
-		//this.onInventoryChanged();
+		this.onInventoryChanged();
+		this.skipUpdatePacket = true;
 		//this.sendContentSyncPacket();
 	}
 	
@@ -604,6 +615,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 	@Override
 	public void setStoredItemCount(int amount) {
+      this.skipUpdatePacket = false;
 		this.getStorage().setStoredItemCount(amount);
 		//this.onInventoryChanged();
 		//this.sendContentSyncPacket();
