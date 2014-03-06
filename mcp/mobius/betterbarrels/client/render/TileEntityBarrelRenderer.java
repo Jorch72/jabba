@@ -23,6 +23,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
     protected static ItemStack coreRedstone = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 2);
     protected static ItemStack coreHopper   = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 3);  
     protected static ItemStack coreVoid     = new ItemStack(BetterBarrels.itemUpgradeCore, 0, UpgradeCore.VOID.ordinal());  
+    protected static ItemStack coreCreative = new ItemStack(BetterBarrels.itemUpgradeCore, 0, UpgradeCore.CREATIVE.ordinal());  
 	
 	public static TileEntityBarrelRenderer instance(){
 		if (_instance == null)
@@ -108,6 +109,11 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
                      this.renderStackOnBlock(TileEntityBarrelRenderer.coreVoid, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
                      offsetY -= 35;
                   }  
+
+                  if (barrelEntity.coreUpgrades.hasCreative){
+                     this.renderStackOnBlock(TileEntityBarrelRenderer.coreCreative, forgeSide, orientation, barrelPos, 2.0F, 0.0F, offsetY);
+                     offsetY -= 35;
+                  }  
 		        	}
 		        }
 			}
@@ -126,7 +132,9 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
     	//int amount  = Math.min(barrel.storage.getAmount(), (int)Math.pow(2, barrel.upgradeCapacity) * barrel.storage.getBaseStacks() * barrel.storage.getItem().stackSize);
     	int amount = barrel.getStorage().getAmount(); 
         
-        if (maxstacksize != 1){
+        if (barrel.coreUpgrades.hasCreative) {
+           outstring = "-";
+        } else if (maxstacksize != 1){
         	int nstacks = amount/maxstacksize;
         	int remains = amount%maxstacksize;
         	

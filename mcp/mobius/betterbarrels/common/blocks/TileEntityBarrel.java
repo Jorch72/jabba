@@ -95,6 +95,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
       this.storage.setVoid(delete);
 	}
 
+   public void setCreative(boolean infinite) {
+      this.coreUpgrades.hasCreative = infinite;
+      this.storage.setCreative(infinite);
+   }
+
 	/* UPDATE HANDLING */
 	@Override
 	public boolean canUpdate(){
@@ -220,6 +225,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.getTagCompound().setInteger("structural", coreUpgrades.levelStructural);
 		stack.getTagCompound().setInteger("storage",    coreUpgrades.nStorageUpg);
 		stack.getTagCompound().setBoolean("void",       coreUpgrades.hasVoid);
+      stack.getTagCompound().setBoolean("creative",   coreUpgrades.hasCreative);
 	}
 	
 	private void tuneBarrel(ItemStack stack, EntityPlayer player, ForgeDirection side){
@@ -237,8 +243,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		int  storage    = stack.getTagCompound().getInteger("storage");
 		int  barrelID   = stack.getTagCompound().getInteger("tuneID");
 		boolean hasVoid = stack.getTagCompound().getBoolean("void");
+      boolean hasCreative = stack.getTagCompound().getBoolean("creative");
 		
-		if (coreUpgrades.levelStructural != structural || coreUpgrades.nStorageUpg != storage || coreUpgrades.hasVoid != hasVoid){
+		if (coreUpgrades.levelStructural != structural || coreUpgrades.nStorageUpg != storage || coreUpgrades.hasVoid != hasVoid || coreUpgrades.hasCreative != hasCreative){
 	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSAPCE_STRUCTURE);
 			return;			
 		}
