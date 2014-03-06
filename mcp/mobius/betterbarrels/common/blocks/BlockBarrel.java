@@ -203,7 +203,10 @@ public class BlockBarrel extends BlockContainer{
 	
 	@Override
 	public void onBlockHarvested(World world, int x, int y, int z, int par5, EntityPlayer par6EntityPlayer){
-    	this.onBlockDestroyedByPlayer(world, x, y, z, par5);
+	   // Note: the part after the OR can be excluded if you wish for instant block destruction with no item drop in creative
+	   if (!par6EntityPlayer.capabilities.isCreativeMode || (par6EntityPlayer.capabilities.isCreativeMode && par6EntityPlayer.isSneaking())) {
+	      this.onBlockDestroyedByPlayer(world, x, y, z, par5);
+	   }
 	}
 	
 	@Override
@@ -214,7 +217,7 @@ public class BlockBarrel extends BlockContainer{
     	try{
     		BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
     	} catch (Exception e){
-    		BetterBarrels.log.log(Level.INFO, "Tried ot remove the barrel from the index without a valid entity");
+    		BetterBarrels.log.log(Level.INFO, "Tried to remove the barrel from the index without a valid entity");
     	}
 
         super.breakBlock(world, x, y, z, par5, par6);        
