@@ -403,7 +403,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		this.clickTime = this.worldObj.getTotalWorldTime();	
 		
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+		//PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
 	/* SAVING AND LOADING OF DATA */
