@@ -208,7 +208,6 @@ public class BlockBarrel extends BlockContainer{
 	
 	@Override
     public void breakBlock(World world, int x, int y, int z, int par5, int par6){
-
     	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	
     	try{
