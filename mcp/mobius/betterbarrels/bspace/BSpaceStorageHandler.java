@@ -86,7 +86,10 @@ public class BSpaceStorageHandler {
 	}
 	
 	public IBarrelStorage getStorage(int id){
-		return this.storageMap.get(id);
+		IBarrelStorage storage = this.storageMap.get(id);
+		//if (storage == null)
+		//	throw new RuntimeException("What the hell ?");
+		return storage;
 	}
 	
 	public IBarrelStorage getStorageOriginal(int id){

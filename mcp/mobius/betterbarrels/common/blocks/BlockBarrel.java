@@ -199,6 +199,12 @@ public class BlockBarrel extends BlockContainer{
         			this.dropStack(world, droppedstack, x, y, z);
         	}
         }		
+        
+    	try{
+    		BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
+    	} catch (Exception e){
+    		BetterBarrels.log.log(Level.INFO, "Tried to remove the barrel from the index without a valid entity");
+    	}
 	}
 	
 	@Override
@@ -208,13 +214,9 @@ public class BlockBarrel extends BlockContainer{
 	
 	@Override
     public void breakBlock(World world, int x, int y, int z, int par5, int par6){
-    	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
+    	//TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getBlockTileEntity(x, y, z);
     	
-    	try{
-    		BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
-    	} catch (Exception e){
-    		BetterBarrels.log.log(Level.INFO, "Tried ot remove the barrel from the index without a valid entity");
-    	}
+
 
         super.breakBlock(world, x, y, z, par5, par6);        
         
