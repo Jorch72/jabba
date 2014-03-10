@@ -422,8 +422,8 @@ public class ItemBarrelMover extends Item {
 		//}
 		
 		try{
+			world.removeBlockTileEntity(x, y, z);
 			world.setBlock(x, y, z, 0, 0, 1 + 2);
-			world.removeBlockTileEntity(x, y, z);			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
