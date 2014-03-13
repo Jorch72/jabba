@@ -63,7 +63,7 @@ public class BlockBarrel extends BlockContainer{
 		BlockBarrel.text_linked      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_linked");
 		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");
 		StructuralLevel.registerBlockIconPieces(iconRegister);
-		if (StructuralLevel.LEVELS == null) StructuralLevel.createAndRegister();
+		if (StructuralLevel.LEVELS == null) StructuralLevel.createLevelArray();
 		for (int i = 0; i < StructuralLevel.LEVELS.length; i++)
 		   StructuralLevel.LEVELS[i].registerBlockIcons(iconRegister, i);
     }
