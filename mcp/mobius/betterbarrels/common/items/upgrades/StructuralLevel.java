@@ -5,6 +5,7 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.block.Block;
@@ -12,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
@@ -31,6 +33,7 @@ public class StructuralLevel {
    private static boolean initialized = false;
 
    public String name;
+   public String oreDictName;
    public ItemStack materialStack;
    private TextureAtlasSprite iconBlockSide;
    private TextureAtlasSprite iconBlockLabel;
@@ -47,7 +50,8 @@ public class StructuralLevel {
    }
 
    private StructuralLevel(String oreDictMaterial, final int level) {
-      ArrayList<ItemStack> ores = OreDictionary.getOres(oreDictMaterial.split("\\.")[1]);
+      this.oreDictName = oreDictMaterial.split("\\.")[1];
+      ArrayList<ItemStack> ores = OreDictionary.getOres(this.oreDictName);
       ItemStack firstOreItem = ores.get(0);
 
       this.materialStack = firstOreItem;
@@ -392,14 +396,47 @@ public class StructuralLevel {
          int[] itemArrowPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, StructuralLevel.iconItemArrow);
          int[] itemRomanPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, this.iconItem);
 
-         int[] materialPixels;
-         // Check if the material is an item
-         if (Block.blocksList[materialStack.itemID] == null || (Block.blocksList[materialStack.itemID] != null && Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller"))) {
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
-            materialPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
-         } else {
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-            materialPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+         int[] materialPixels = null;
+         boolean foundSourceMaterial = false;
+         try {
+            // First check if it's an item
+            boolean bindItem = false;
+            if (Item.itemsList[materialStack.itemID] != null) {
+               if (materialStack.itemID < Block.blocksList.length) {
+                  if (Block.blocksList[materialStack.itemID] == null || (Block.blocksList[materialStack.itemID] != null && Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller"))) {
+                     bindItem = true;
+                  }
+               } else {
+                  bindItem = true;
+               }
+            }
+            if (bindItem) {
+               GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
+               materialPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+               foundSourceMaterial = true;
+            }
+            if (!foundSourceMaterial) {
+               // then check if a block
+               if (Block.blocksList[materialStack.itemID] != null && !Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
+                  GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
+                  materialPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+                  foundSourceMaterial = true;
+               }
+            }
+         } catch (Throwable t) {
+            // safety check against blocks here if combined item/block check errors
+            if (Block.blocksList[materialStack.itemID] != null && !Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
+               GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
+               materialPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+               foundSourceMaterial = true;
+            }
+         } finally {
+            // nothing found, skip out
+            if (!foundSourceMaterial) {
+               BetterBarrels.log.log(Level.SEVERE, "Encountered an issue while locating the requested source material[" + this.oreDictName + "].  Ore Dictionary returned IDNumber " + materialStack.itemID + " for the first itemStack for that request.");
+               GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+               return;
+            }
          }
 
          // PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
