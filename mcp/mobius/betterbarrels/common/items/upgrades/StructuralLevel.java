@@ -434,40 +434,40 @@ public class StructuralLevel {
             // nothing found, skip out
             if (!foundSourceMaterial) {
                BetterBarrels.log.log(Level.SEVERE, "Encountered an issue while locating the requested source material[" + this.oreDictName + "].  Ore Dictionary returned IDNumber " + materialStack.itemID + " for the first itemStack for that request.");
-               GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
-               return;
             }
          }
 
-         // PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
-         PixelARGB color = averageColorFromArrayB(materialPixels);
-         // System.out.println("Color for [" + materialStack.getDisplayName() + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
-
-         // this.textColor = color.YIQContrastTextColor().combined;
-
-         grainMergeArrayWithColor(labelBorderPixels, color);
-         grainMergeArrayWithColor(topBorderPixels, color);
-         grainMergeArrayWithColor(topLabelBorderPixels, color);
-         grainMergeArrayWithColor(sideBorderPixels, color);
-         grainMergeArrayWithColor(itemArrowPixels, color);
-
-         this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
-
-         mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
-         mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
-         mergeArraysBasedOnAlpha(topLabelBorderPixels, topLabelBackgroundPixels);
-         mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
-         mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
-         mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
-
-         GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-         uploadReplacementTexture(this.iconBlockLabel, labelBorderPixels);
-         uploadReplacementTexture(this.iconBlockTop, topBorderPixels);
-         uploadReplacementTexture(this.iconBlockTopLabel, topLabelBorderPixels);
-         uploadReplacementTexture(this.iconBlockSide, sideBorderPixels);
-
-         GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
-         uploadReplacementTexture(this.iconItem, itemBasePixels);
+         if (foundSourceMaterial) {
+            // PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
+            PixelARGB color = averageColorFromArrayB(materialPixels);
+            // System.out.println("Color for [" + materialStack.getDisplayName() + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
+   
+            // this.textColor = color.YIQContrastTextColor().combined;
+   
+            grainMergeArrayWithColor(labelBorderPixels, color);
+            grainMergeArrayWithColor(topBorderPixels, color);
+            grainMergeArrayWithColor(topLabelBorderPixels, color);
+            grainMergeArrayWithColor(sideBorderPixels, color);
+            grainMergeArrayWithColor(itemArrowPixels, color);
+   
+            this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
+   
+            mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
+            mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
+            mergeArraysBasedOnAlpha(topLabelBorderPixels, topLabelBackgroundPixels);
+            mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
+            mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
+            mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
+   
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
+            uploadReplacementTexture(this.iconBlockLabel, labelBorderPixels);
+            uploadReplacementTexture(this.iconBlockTop, topBorderPixels);
+            uploadReplacementTexture(this.iconBlockTopLabel, topLabelBorderPixels);
+            uploadReplacementTexture(this.iconBlockSide, sideBorderPixels);
+   
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
+            uploadReplacementTexture(this.iconItem, itemBasePixels);
+         }
 
          GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
       }
