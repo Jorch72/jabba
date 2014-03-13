@@ -30,7 +30,7 @@ public class StructuralLevel {
    public static int maxCraftableTier = upgradeMaterialsList.length;
    public static StructuralLevel[] LEVELS;
 
-   private static boolean initialized = false;
+   private static boolean structureArrayInitialized = false;
 
    public String name;
    public String oreDictName;
@@ -42,6 +42,7 @@ public class StructuralLevel {
    private TextureAtlasSprite iconItem;
    private int textColor;
    private int maxCoreSlots;
+   private boolean needsMaterialInitialization = false;
 
    private StructuralLevel() {
       // Special case for base barrel with no upgrade
@@ -51,25 +52,37 @@ public class StructuralLevel {
 
    private StructuralLevel(String oreDictMaterial, final int level) {
       this.oreDictName = oreDictMaterial.split("\\.")[1];
-      ArrayList<ItemStack> ores = OreDictionary.getOres(this.oreDictName);
-      ItemStack firstOreItem = ores.get(0);
-
-      this.materialStack = firstOreItem;
-      this.name = materialStack.getDisplayName();
+      this.needsMaterialInitialization = true;
 
       this.maxCoreSlots = 0;
       for (int i = 0; i < level; i++)
          this.maxCoreSlots += MathHelper.floor_double(Math.pow(2, i));
    }
 
-   public static void createAndRegister() {
-      if (initialized) return;
+   public void initializeMaterial() {
+      if(this.needsMaterialInitialization) {
+         ArrayList<ItemStack> ores = OreDictionary.getOres(this.oreDictName);
+         ItemStack firstOreItem = ores.get(0);
+      
+         this.materialStack = firstOreItem;
+         this.name = materialStack.getDisplayName();
+      }
+   }
+
+   public static void createLevelArray() {
+      if (structureArrayInitialized) return;
       LEVELS = new StructuralLevel[Math.min(24, upgradeMaterialsList.length) + 1];
       LEVELS[0] = new StructuralLevel();
       for (int i = 1; i < LEVELS.length; i++) {
          LEVELS[i] = new StructuralLevel(upgradeMaterialsList[i - 1], i);
       }
-      initialized = true;
+      structureArrayInitialized = true;
+   }
+
+   public static void initializeStructureMaterials() {
+      for (StructuralLevel level : StructuralLevel.LEVELS) {
+         level.initializeMaterial();
+      }
    }
 
    @SideOnly(Side.CLIENT)
