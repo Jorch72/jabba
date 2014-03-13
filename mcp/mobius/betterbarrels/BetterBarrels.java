@@ -166,7 +166,7 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-      StructuralLevel.createAndRegister();
+      StructuralLevel.createLevelArray();
 
       RecipeHandler.instance().registerRecipes();
 
@@ -182,6 +182,8 @@ public class BetterBarrels {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit();
+
+		StructuralLevel.initializeStructureMaterials();
 	}	
 
 	@EventHandler
