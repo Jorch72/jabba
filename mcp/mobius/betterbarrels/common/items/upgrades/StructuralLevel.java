@@ -43,14 +43,17 @@ public class StructuralLevel {
    private int textColor;
    private int maxCoreSlots;
    private boolean needsMaterialInitialization = false;
+   private int level;
 
    private StructuralLevel() {
       // Special case for base barrel with no upgrade
       this.textColor = 0xFFFFFFFF;
       this.maxCoreSlots = 0;
+      this.level = 0;
    }
 
    private StructuralLevel(String oreDictMaterial, final int level) {
+      this.level = level;
       this.oreDictName = oreDictMaterial.split("\\.")[1];
       this.needsMaterialInitialization = true;
 
@@ -378,6 +381,7 @@ public class StructuralLevel {
          GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
          int terrainTextureWidth = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
          int terrainTextureHeight = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
+         System.out.println("JABBA-Debug: Level: " + this.level +  ", Width: " + terrainTextureWidth + ", Height: " + terrainTextureHeight);
          IntBuffer terrainTexturePixelBuf = ByteBuffer.allocateDirect(terrainTextureWidth * terrainTextureHeight * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
          terrainTexturePixelBuf.clear();
          GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, terrainTexturePixelBuf);
