@@ -25,7 +25,6 @@ public class ItemUpgradeStructural extends ItemUpgrade {
 
    @Override
    public void registerIcons(IconRegister par1IconRegister) {
-      StructuralLevel.registerItemIconPieces(par1IconRegister);
       if (StructuralLevel.LEVELS == null) StructuralLevel.createLevelArray();
       for (int i = 1; i < StructuralLevel.LEVELS.length; i++)
          StructuralLevel.LEVELS[i].registerItemIcon(par1IconRegister, i);

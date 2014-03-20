@@ -48,38 +48,28 @@ public class ClientProxy extends BaseProxy {
 	
    public static ReloadableResourceManager rm = null;
 
+   @Override
    public void postInit(){
-	   // Reflect (1.6.4: Vanilla, SRG, and DeObf)
-      for (String field: new String[]{ "ao", "field_110451_am", "mcResourceManager" }) {
-         try {
-            Field fResourceManager = Minecraft.getMinecraft().getClass().getDeclaredField(field);
-            if (fResourceManager != null) {
-               fResourceManager.setAccessible(true);
-               rm = (ReloadableResourceManager)fResourceManager.get(Minecraft.getMinecraft());
-               break;
-            }
-         } catch (Exception e) {
-         }
-      }
-      if (rm != null) {
-         rm.registerReloadListener(new ResourceManagerReloadListener() {
-            private boolean ranOnce = false;
+      ((ReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new ResourceManagerReloadListener() {
+         private boolean ranOnce = false;
 
-            @Override
-            public void onResourceManagerReload(ResourceManager resourcemanager) {
-               if (!ranOnce) { // The MC engine calls this several times, ignore the first
-                  ranOnce = true;
-                  return;
-               }
-               if (StructuralLevel.LEVELS != null) {
-                  for (int level = 1; level < StructuralLevel.LEVELS.length; level++) {
-                     StringTranslate.inject(new ByteArrayInputStream(("item.upgrade.structural." + String.valueOf(level) + ".name=" + StatCollector.translateToLocal("item.upgrade.structural") + " " +  StructuralLevel.romanNumeral(level) + " (" +  StructuralLevel.LEVELS[level].name + ")").getBytes()));
-                     StructuralLevel.LEVELS[level].generateIcons();
-                  }
+         @Override
+         public void onResourceManagerReload(ResourceManager resourcemanager) {
+            if (!ranOnce) { // FML reloads the resources at the end of the MC loading cycle, we want to run then and afterwards
+               ranOnce = true;
+               return;
+            }
+            StructuralLevel.loadBaseTextureData();
+            if (StructuralLevel.LEVELS != null) {
+               for (int level = 1; level < StructuralLevel.LEVELS.length; level++) {
+                  StructuralLevel.LEVELS[level].discoverMaterialName();
+                  StringTranslate.inject(new ByteArrayInputStream(("item.upgrade.structural." + String.valueOf(level) + ".name=" + StatCollector.translateToLocal("item.upgrade.structural") + " " +  StructuralLevel.romanNumeral(level) + " (" +  StructuralLevel.LEVELS[level].name + ")").getBytes()));
+                  StructuralLevel.LEVELS[level].generateIcons();
                }
             }
-         });
-      }
+            StructuralLevel.unloadBaseTextureData();
+         }
+      });
 	}
 }
 

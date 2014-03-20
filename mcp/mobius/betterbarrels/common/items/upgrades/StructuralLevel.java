@@ -1,11 +1,7 @@
 package mcp.mobius.betterbarrels.common.items.upgrades;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.block.Block;
@@ -13,15 +9,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -43,17 +41,14 @@ public class StructuralLevel {
    private int textColor;
    private int maxCoreSlots;
    private boolean needsMaterialInitialization = false;
-   private int level;
 
    private StructuralLevel() {
       // Special case for base barrel with no upgrade
       this.textColor = 0xFFFFFFFF;
       this.maxCoreSlots = 0;
-      this.level = 0;
    }
 
    private StructuralLevel(String oreDictMaterial, final int level) {
-      this.level = level;
       this.oreDictName = oreDictMaterial.split("\\.")[1];
       this.needsMaterialInitialization = true;
 
@@ -65,10 +60,26 @@ public class StructuralLevel {
    public void initializeMaterial() {
       if(this.needsMaterialInitialization) {
          ArrayList<ItemStack> ores = OreDictionary.getOres(this.oreDictName);
-         ItemStack firstOreItem = ores.get(0);
-      
-         this.materialStack = firstOreItem;
-         this.name = materialStack.getDisplayName();
+
+         if (ores.size() > 0) {
+            this.materialStack = ores.get(0);
+         } else {
+            this.materialStack = new ItemStack(Block.portal);
+         }
+      }
+   }
+
+   public static void initializeStructuralMaterials() {
+      for (StructuralLevel level : StructuralLevel.LEVELS) {
+         level.initializeMaterial();
+      }
+   }
+
+   public void discoverMaterialName() {
+      this.name = materialStack.getDisplayName();
+
+      if (this.name.indexOf(".name") > 0) {
+         this.name = LanguageRegistry.instance().getStringLocalization(this.name);
       }
    }
 
@@ -80,12 +91,6 @@ public class StructuralLevel {
          LEVELS[i] = new StructuralLevel(upgradeMaterialsList[i - 1], i);
       }
       structureArrayInitialized = true;
-   }
-
-   public static void initializeStructureMaterials() {
-      for (StructuralLevel level : StructuralLevel.LEVELS) {
-         level.initializeMaterial();
-      }
    }
 
    @SideOnly(Side.CLIENT)
@@ -132,23 +137,39 @@ public class StructuralLevel {
     * End result: final icon used is dynamically generated at runtime, at every resource manager reload
     */
    @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconLabelBackground;
+   private static class BaseTextures {
+      public int[] labelBackground;
+      public int[] labelBorder;
+      public int[] topBackground;
+      public int[] topBorder;
+      public int[] topLabel;
+      public int[] sideBackground;
+      public int[] sideBorder;
+      public int[] item;
+      public int[] itemArrow;
+   }
+
    @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconLabelBorder;
-   @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconTopBackground;
-   @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconTopBorder;
-   @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconTopLabel;
-   @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconSideBackground;
-   @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconSideBorder;
-   @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconItemBase;
-   @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite iconItemArrow;
+   private static BaseTextures baseTexturePixels;
+   
+   public static void loadBaseTextureData() {
+      //BetterBarrels.log.info("Pre-loading component texture data.");
+      StructuralLevel.baseTexturePixels = new BaseTextures();
+
+      StructuralLevel.baseTexturePixels.labelBorder = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_label_border");
+      StructuralLevel.baseTexturePixels.labelBackground = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_label_background");
+      StructuralLevel.baseTexturePixels.topBorder = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_top_border");
+      StructuralLevel.baseTexturePixels.topBackground = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_top_background");
+      StructuralLevel.baseTexturePixels.topLabel = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_top_label");
+      StructuralLevel.baseTexturePixels.sideBorder = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_side_border");
+      StructuralLevel.baseTexturePixels.sideBackground = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_side_background");
+      StructuralLevel.baseTexturePixels.item = getPixelsForTexture(true, BetterBarrels.modid + ":capaupg_base");
+      StructuralLevel.baseTexturePixels.itemArrow = getPixelsForTexture(true, BetterBarrels.modid + ":capaupg_color");
+   }
+   
+   public static void unloadBaseTextureData() {
+      StructuralLevel.baseTexturePixels = null;
+   }
 
    @SideOnly(Side.CLIENT)
    private static class AccessibleTextureAtlasSprite extends TextureAtlasSprite {
@@ -162,23 +183,6 @@ public class StructuralLevel {
       TextureAtlasSprite ret = new AccessibleTextureAtlasSprite(key);
       ((TextureMap)par1IconRegister).setTextureEntry(key, ret);
       return ret;
-   }
-
-   @SideOnly(Side.CLIENT)
-   public static void registerItemIconPieces(IconRegister par1IconRegister) {
-      StructuralLevel.iconItemBase = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":capaupg_base");
-      StructuralLevel.iconItemArrow = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":capaupg_color");
-   }
-
-   @SideOnly(Side.CLIENT)
-   public static void registerBlockIconPieces(IconRegister par1IconRegister) {
-      StructuralLevel.iconLabelBackground = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_label_background");
-      StructuralLevel.iconLabelBorder = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_label_border");
-      StructuralLevel.iconTopBackground = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_top_background");
-      StructuralLevel.iconTopBorder = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_top_border");
-      StructuralLevel.iconTopLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_top_label");
-      StructuralLevel.iconSideBackground = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_side_background");
-      StructuralLevel.iconSideBorder = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_side_border");
    }
 
    @SideOnly(Side.CLIENT)
@@ -348,25 +352,39 @@ public class StructuralLevel {
    }
 
    @SideOnly(Side.CLIENT)
-   private int[] getPixelsForTexture(IntBuffer pixelBuf, int bufferWidth, TextureAtlasSprite icon) {
-      int[] pixels = new int[icon.getIconWidth() * icon.getIconHeight()];
-      int offset = (icon.getOriginY() * bufferWidth) + icon.getOriginX();
-      for (int i = 0; i < icon.getIconHeight(); i++) {
-         pixelBuf.position(offset + (i * bufferWidth));
-         pixelBuf.get(pixels, (i * icon.getIconWidth()), icon.getIconWidth());
+   private static int[] getPixelsForTexture(boolean item, ResourceLocation resourcelocation) {
+      TextureMap map = (TextureMap)Minecraft.getMinecraft().renderEngine.getTexture(item ? TextureMap.locationItemsTexture: TextureMap.locationBlocksTexture);
+      ResourceLocation resourcelocation1 = new ResourceLocation(resourcelocation.getResourceDomain(), String.format("%s/%s%s", new Object[] {map.basePath, resourcelocation.getResourcePath(), ".png"}));
+      int[] pixels = null;
+      try {
+         pixels = TextureUtil.readImageData(Minecraft.getMinecraft().getResourceManager(), resourcelocation1);
+      } catch (Throwable t) {
+         System.out.println("JABBA-Debug Problem loading texture: " + resourcelocation);
       }
       return pixels;
    }
 
    @SideOnly(Side.CLIENT)
-   private void uploadReplacementTexture(TextureAtlasSprite icon, int[] pixels) {
-      IntBuffer iconPixelBuf = ByteBuffer.allocateDirect(icon.getIconWidth() * icon.getIconHeight() * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
-      iconPixelBuf.clear();
-      iconPixelBuf.limit(pixels.length);
-      iconPixelBuf.put(pixels);
-      iconPixelBuf.position(0);
+   private static int[] getPixelsForTexture(boolean item, String location) {
+      return getPixelsForTexture(item, new ResourceLocation(location));
+   }
 
-      GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, icon.getOriginX(), icon.getOriginY(), icon.getIconWidth(), icon.getIconHeight(), GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, iconPixelBuf);
+   @SideOnly(Side.CLIENT)
+   private static int[] getPixelsForTexture(boolean item, Icon icon) {
+      int[] pixels = getPixelsForTexture(item, new ResourceLocation(icon.getIconName()));
+      if (pixels == null) {
+         pixels = new int[icon.getIconHeight() * icon.getIconWidth()];
+      }
+      return pixels;
+   }
+
+   @SideOnly(Side.CLIENT)
+   private void uploadReplacementTexture(Icon icon, int[] pixels) {
+      if (icon instanceof TextureAtlasSprite) {
+         TextureUtil.uploadTextureSub(pixels, icon.getIconWidth(), icon.getIconHeight(), ((TextureAtlasSprite)icon).getOriginX(), ((TextureAtlasSprite)icon).getOriginY(), false, false);
+      } else {
+         BetterBarrels.log.severe("Attempting to upload a replacement texture for a class not derived from TextureAtlasSprite: " + icon.getClass().getCanonicalName() + ", " + icon.getIconName());
+      }
    }
 
    @SideOnly(Side.CLIENT)
@@ -377,41 +395,20 @@ public class StructuralLevel {
          // Store previous texture
          int previousTextureID = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
 
-         // bind and copy block texture into buffer
-         GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-         int terrainTextureWidth = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
-         int terrainTextureHeight = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
-         System.out.println("JABBA-Debug: Level: " + this.level +  ", Width: " + terrainTextureWidth + ", Height: " + terrainTextureHeight);
-         IntBuffer terrainTexturePixelBuf = ByteBuffer.allocateDirect(terrainTextureWidth * terrainTextureHeight * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
-         terrainTexturePixelBuf.clear();
-         GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, terrainTexturePixelBuf);
-         terrainTexturePixelBuf.limit(terrainTextureWidth * terrainTextureHeight);
-
-         // bind and copy item texture into buffer
-         GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
-         int itemTextureWidth = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
-         int itemTextureHeight = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
-         IntBuffer itemTexturePixelBuf = ByteBuffer.allocateDirect(itemTextureWidth * itemTextureHeight * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
-         itemTexturePixelBuf.clear();
-         GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, itemTexturePixelBuf);
-         itemTexturePixelBuf.limit(itemTextureWidth * itemTextureHeight);
-
          // Copy the block textures we need into arrays
-         GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-         int[] labelBorderPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconLabelBorder);
-         int[] labelBackgroundPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconLabelBackground);
-         int[] topBorderPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconTopBorder);
-         int[] topBackgroundPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconTopBackground);
-         int[] topLabelBorderPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconTopBorder);
-         int[] topLabelBackgroundPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconTopLabel);
-         int[] sideBorderPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconSideBorder);
-         int[] sideBackgroundPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, StructuralLevel.iconSideBackground);
+         int[] labelBorderPixels = baseTexturePixels.labelBorder.clone();
+         int[] labelBackgroundPixels = baseTexturePixels.labelBackground.clone();
+         int[] topBorderPixels = baseTexturePixels.topBorder.clone();
+         int[] topBackgroundPixels = baseTexturePixels.topBackground.clone();
+         int[] topLabelBorderPixels = baseTexturePixels.topBorder.clone();
+         int[] topLabelBackgroundPixels = baseTexturePixels.topLabel.clone();
+         int[] sideBorderPixels = baseTexturePixels.sideBorder.clone();
+         int[] sideBackgroundPixels = baseTexturePixels.sideBackground.clone();
 
-         // Copy the block textures we need into arrays
-         GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
-         int[] itemBasePixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, StructuralLevel.iconItemBase);
-         int[] itemArrowPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, StructuralLevel.iconItemArrow);
-         int[] itemRomanPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, this.iconItem);
+         // Copy the item textures we need into arrays
+         int[] itemBasePixels = baseTexturePixels.item.clone();
+         int[] itemArrowPixels = baseTexturePixels.itemArrow.clone();
+         int[] itemRomanPixels = StructuralLevel.getPixelsForTexture(true, this.iconItem);
 
          int[] materialPixels = null;
          boolean foundSourceMaterial = false;
@@ -428,29 +425,36 @@ public class StructuralLevel {
                }
             }
             if (bindItem) {
-               GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
-               materialPixels = this.getPixelsForTexture(itemTexturePixelBuf, itemTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+               if (this.name.equals("Unstable Ingot") || this.name.equals("Unstable Nugget")) {
+                  if (this.materialStack.getItemDamage() > 0) {
+                     materialPixels = getPixelsForTexture(true, "extrautils:unstablenugget");
+                     mergeArraysBasedOnAlpha(materialPixels, getPixelsForTexture(true, "extrautils:unstablenugget1"));
+                  } else {
+                     materialPixels = getPixelsForTexture(true, "extrautils:unstableingot");
+                     mergeArraysBasedOnAlpha(materialPixels, getPixelsForTexture(true, "extrautils:unstableingot1"));
+                  }
+               } else {
+                  materialPixels = getPixelsForTexture(true, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+               }
                foundSourceMaterial = true;
             }
             if (!foundSourceMaterial) {
                // then check if a block
                if (Block.blocksList[materialStack.itemID] != null && !Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
-                  GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-                  materialPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+                  materialPixels = getPixelsForTexture(false, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
                   foundSourceMaterial = true;
                }
             }
          } catch (Throwable t) {
             // safety check against blocks here if combined item/block check errors
             if (Block.blocksList[materialStack.itemID] != null && !Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
-               GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-               materialPixels = this.getPixelsForTexture(terrainTexturePixelBuf, terrainTextureWidth, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+               materialPixels = getPixelsForTexture(false, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
                foundSourceMaterial = true;
             }
          } finally {
             // nothing found, skip out
             if (!foundSourceMaterial) {
-               BetterBarrels.log.log(Level.SEVERE, "Encountered an issue while locating the requested source material[" + this.oreDictName + "].  Ore Dictionary returned IDNumber " + materialStack.itemID + " for the first itemStack for that request.");
+               BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + this.oreDictName + "].  Ore Dictionary returned IDNumber " + materialStack.itemID + " for the first itemStack for that request.");
             }
          }
 
@@ -484,9 +488,9 @@ public class StructuralLevel {
    
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
             uploadReplacementTexture(this.iconItem, itemBasePixels);
-         }
 
-         GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+         }
       }
    }
 }
