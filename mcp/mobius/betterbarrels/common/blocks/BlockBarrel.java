@@ -62,7 +62,6 @@ public class BlockBarrel extends BlockContainer{
 		BlockBarrel.text_lock        = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_locked");
 		BlockBarrel.text_linked      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_linked");
 		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");
-		StructuralLevel.registerBlockIconPieces(iconRegister);
 		if (StructuralLevel.LEVELS == null) StructuralLevel.createLevelArray();
 		for (int i = 0; i < StructuralLevel.LEVELS.length; i++)
 		   StructuralLevel.LEVELS[i].registerBlockIcons(iconRegister, i);
@@ -203,7 +202,7 @@ public class BlockBarrel extends BlockContainer{
     	try{
     		BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
     	} catch (Exception e){
-    		BetterBarrels.log.log(Level.INFO, "Tried to remove the barrel from the index without a valid entity");
+    		BetterBarrels.log.info("Tried to remove the barrel from the index without a valid entity");
     	}
 	}
 	

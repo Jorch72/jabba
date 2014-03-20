@@ -5,12 +5,7 @@ import java.util.logging.Logger;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.Configuration;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
@@ -25,7 +20,6 @@ import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
 import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -37,20 +31,17 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.2", dependencies="after:Waila;after:NotEnoughItems")
-@NetworkMod(channels = {"JABBA"}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
-
+@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.2b", dependencies="after:Waila;after:NotEnoughItems")
+@NetworkMod(channels = {BetterBarrels.modid}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 public class BetterBarrels {
 
 	public static final String modid = "JABBA";
 	
-	public static Logger log = Logger.getLogger("BetterBarrels");	
-	
-	
+	public static Logger log = Logger.getLogger(modid);
+
     // The instance of your mod that Forge uses.
-	@Instance("ProfMobius_BetterBarrels")
+	@Instance(modid)
 	public static BetterBarrels instance;
 	
 	// Says where the client and server 'proxy' code is loaded.
@@ -181,9 +172,9 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		proxy.postInit();
+      StructuralLevel.initializeStructuralMaterials();
 
-		StructuralLevel.initializeStructureMaterials();
+      proxy.postInit();
 	}	
 
 	@EventHandler

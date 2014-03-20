@@ -369,7 +369,7 @@ public class BSpaceStorageHandler {
         catch(Exception e)
         {
            if (e instanceof ZipException) {
-              BetterBarrels.log.log(Level.SEVERE, "Primary and Backup JABBA data files have been corrupted.");
+              BetterBarrels.log.severe("Primary and Backup JABBA data files have been corrupted.");
            }
            throw new RuntimeException(e);
         }
