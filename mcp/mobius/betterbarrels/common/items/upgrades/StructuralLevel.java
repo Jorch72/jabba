@@ -337,7 +337,10 @@ public class StructuralLevel {
       }
    }
 
-   private void mergeArraysBasedOnAlpha(int[] target, int[] merge) {
+   private void mergeArraysBasedOnAlpha(int[] target, int[] merge) throws Exception {
+      if (target.length != merge.length) {
+         throw new Exception("Attempting to merge differently sized texture data.  Please ensure your texture pieces are the same dimensions");
+      }
       // Merge arrays, ignoring any transparent pixels in the merge array
       for (int i = 0; i < merge.length; i++) {
          PixelARGB targetPixel = new PixelARGB(target[i]);
@@ -465,25 +468,25 @@ public class StructuralLevel {
             // PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
             PixelARGB color = averageColorFromArrayB(materialPixels);
             // System.out.println("Color for [" + materialStack.getDisplayName() + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
-   
+
             // this.textColor = color.YIQContrastTextColor().combined;
-   
+
             grainMergeArrayWithColor(labelBorderPixels, color);
             grainMergeArrayWithColor(topBorderPixels, color);
             grainMergeArrayWithColor(topLabelBorderPixels, color);
             grainMergeArrayWithColor(sideBorderPixels, color);
             grainMergeArrayWithColor(itemArrowPixels, color);
-   
+
             this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
-   
-            mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
-            mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
-            mergeArraysBasedOnAlpha(topLabelBorderPixels, topLabelBackgroundPixels);
-            mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
-            mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
-            mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
 
             try {
+               mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
+               mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
+               mergeArraysBasedOnAlpha(topLabelBorderPixels, topLabelBackgroundPixels);
+               mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
+               mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
+               mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
+
                GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
                this.iconBlockLabel.replaceTextureData(labelBorderPixels);
                this.iconBlockTop.replaceTextureData(topBorderPixels);
@@ -493,7 +496,9 @@ public class StructuralLevel {
                GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
                this.iconItem.replaceTextureData(itemBasePixels);
                GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
-            } catch(Exception e) {}
+            } catch(Exception e) {
+               BetterBarrels.log.severe("" + e.getMessage());
+            }
          }
       }
    }
