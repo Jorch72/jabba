@@ -19,6 +19,8 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -33,11 +35,11 @@ public class StructuralLevel {
    public String name;
    public String oreDictName;
    public ItemStack materialStack;
-   private TextureAtlasSprite iconBlockSide;
-   private TextureAtlasSprite iconBlockLabel;
-   private TextureAtlasSprite iconBlockTop;
-   private TextureAtlasSprite iconBlockTopLabel;
-   private TextureAtlasSprite iconItem;
+   private AccessibleTextureAtlasSprite iconBlockSide;
+   private AccessibleTextureAtlasSprite iconBlockLabel;
+   private AccessibleTextureAtlasSprite iconBlockTop;
+   private AccessibleTextureAtlasSprite iconBlockTopLabel;
+   private AccessibleTextureAtlasSprite iconItem;
    private int textColor;
    private int maxCoreSlots;
    private boolean needsMaterialInitialization = false;
@@ -176,11 +178,21 @@ public class StructuralLevel {
       AccessibleTextureAtlasSprite(String par1Str) {
          super(par1Str);
       }
+
+      @SuppressWarnings("unchecked")
+      public void replaceTextureData(int[] pixels) throws Exception {
+         if (pixels.length != (this.height * this.width)) {
+            throw new Exception("Attempting to replace texture image data with too much or too little data.");
+         }
+         this.setFramesTextureData(Lists.newArrayList());
+         this.framesTextureData.add(pixels);
+         TextureUtil.uploadTextureSub(pixels, this.width, this.height, this.originX, this.originY, false, false);
+      }
    }
 
    @SideOnly(Side.CLIENT)
-   private static TextureAtlasSprite registerIcon(IconRegister par1IconRegister, String key) {
-      TextureAtlasSprite ret = new AccessibleTextureAtlasSprite(key);
+   private static AccessibleTextureAtlasSprite registerIcon(IconRegister par1IconRegister, String key) {
+      AccessibleTextureAtlasSprite ret = new AccessibleTextureAtlasSprite(key);
       ((TextureMap)par1IconRegister).setTextureEntry(key, ret);
       return ret;
    }
@@ -198,10 +210,10 @@ public class StructuralLevel {
          this.iconBlockTop = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/top/" + String.valueOf(ordinal));
          this.iconBlockTopLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/toplabel/" + String.valueOf(ordinal));
       } else {
-         this.iconBlockSide = (TextureAtlasSprite)par1IconRegister.registerIcon(BetterBarrels.modid + ":barrel_side_" + String.valueOf(ordinal));
-         this.iconBlockTop = (TextureAtlasSprite)par1IconRegister.registerIcon(BetterBarrels.modid + ":barrel_top_" + String.valueOf(ordinal));
-         this.iconBlockLabel = (TextureAtlasSprite)par1IconRegister.registerIcon(BetterBarrels.modid + ":barrel_label_" + String.valueOf(ordinal));
-         this.iconBlockTopLabel = (TextureAtlasSprite)par1IconRegister.registerIcon(BetterBarrels.modid + ":barrel_labeltop_" + String.valueOf(ordinal));
+         this.iconBlockSide = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_side_" + String.valueOf(ordinal));
+         this.iconBlockTop = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_top_" + String.valueOf(ordinal));
+         this.iconBlockLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_label_" + String.valueOf(ordinal));
+         this.iconBlockTopLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_labeltop_" + String.valueOf(ordinal));
       }
    }
 
@@ -379,15 +391,6 @@ public class StructuralLevel {
    }
 
    @SideOnly(Side.CLIENT)
-   private void uploadReplacementTexture(Icon icon, int[] pixels) {
-      if (icon instanceof TextureAtlasSprite) {
-         TextureUtil.uploadTextureSub(pixels, icon.getIconWidth(), icon.getIconHeight(), ((TextureAtlasSprite)icon).getOriginX(), ((TextureAtlasSprite)icon).getOriginY(), false, false);
-      } else {
-         BetterBarrels.log.severe("Attempting to upload a replacement texture for a class not derived from TextureAtlasSprite: " + icon.getClass().getCanonicalName() + ", " + icon.getIconName());
-      }
-   }
-
-   @SideOnly(Side.CLIENT)
    public void generateIcons() {
       int terrainTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationBlocksTexture).getGlTextureId();
       int itemTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationItemsTexture).getGlTextureId();
@@ -479,17 +482,18 @@ public class StructuralLevel {
             mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
             mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
             mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
-   
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-            uploadReplacementTexture(this.iconBlockLabel, labelBorderPixels);
-            uploadReplacementTexture(this.iconBlockTop, topBorderPixels);
-            uploadReplacementTexture(this.iconBlockTopLabel, topLabelBorderPixels);
-            uploadReplacementTexture(this.iconBlockSide, sideBorderPixels);
-   
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
-            uploadReplacementTexture(this.iconItem, itemBasePixels);
 
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+            try {
+               GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
+               this.iconBlockLabel.replaceTextureData(labelBorderPixels);
+               this.iconBlockTop.replaceTextureData(topBorderPixels);
+               this.iconBlockTopLabel.replaceTextureData(topLabelBorderPixels);
+               this.iconBlockSide.replaceTextureData(sideBorderPixels);
+
+               GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
+               this.iconItem.replaceTextureData(itemBasePixels);
+               GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+            } catch(Exception e) {}
          }
       }
    }
