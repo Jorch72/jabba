@@ -1,5 +1,6 @@
 package mcp.mobius.betterbarrels;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,12 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.2b", dependencies="after:Waila;after:NotEnoughItems")
 @NetworkMod(channels = {BetterBarrels.modid}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 public class BetterBarrels {
+   
+   private static boolean DEBUG_TEXTURES = false || Boolean.parseBoolean(System.getProperty("mcp.mobius.debugJabbaTextures","false"));
+   public static void debug(String msg) {
+      if (DEBUG_TEXTURES)
+         log.log(Level.WARNING, msg);
+   }
 
 	public static final String modid = "JABBA";
 	
@@ -111,7 +118,9 @@ public class BetterBarrels {
             StructuralLevel.upgradeMaterialsList = trimedList;
             config.get(Configuration.CATEGORY_GENERAL, "materialList", trimedList).set(trimedList);
          }
+         debug("00 - Loaded materials list: " + Arrays.toString(StructuralLevel.upgradeMaterialsList));
          StructuralLevel.maxCraftableTier = Math.min(18, Math.min(StructuralLevel.upgradeMaterialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", StructuralLevel.upgradeMaterialsList.length).getInt()));
+         debug("01 - Max craftable tier: " + StructuralLevel.maxCraftableTier);
 			
 			
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);

@@ -57,6 +57,8 @@ public class StructuralLevel {
       this.maxCoreSlots = 0;
       for (int i = 0; i < level; i++)
          this.maxCoreSlots += MathHelper.floor_double(Math.pow(2, i));
+      
+      BetterBarrels.debug("03 - Created structural entry for [" + this.oreDictName + "] with " + this.maxCoreSlots + " slots.");
    }
 
    public void initializeMaterial() {
@@ -68,26 +70,31 @@ public class StructuralLevel {
          } else {
             this.materialStack = new ItemStack(Block.portal);
          }
+         BetterBarrels.debug("05 - Looking up [" + this.oreDictName + "] and found: " + this.materialStack.getDisplayName());
       }
    }
 
    public static void initializeStructuralMaterials() {
+      BetterBarrels.debug("04 - Looking up structural materials in the Ore Dictionary");
       for (StructuralLevel level : StructuralLevel.LEVELS) {
          level.initializeMaterial();
       }
    }
 
    public void discoverMaterialName() {
+      BetterBarrels.debug("15 - Looking up user friendly name for " + this.oreDictName);
       this.name = materialStack.getDisplayName();
 
       if (this.name.indexOf(".name") > 0) {
          this.name = LanguageRegistry.instance().getStringLocalization(this.name);
       }
+      BetterBarrels.debug("16 - Found: " + this.name);
    }
 
    public static void createLevelArray() {
       if (structureArrayInitialized) return;
-      LEVELS = new StructuralLevel[Math.min(24, upgradeMaterialsList.length) + 1];
+      LEVELS = new StructuralLevel[Math.min(18, upgradeMaterialsList.length) + 1];
+      BetterBarrels.debug("02 - Creating materials array of length " + LEVELS.length);
       LEVELS[0] = new StructuralLevel();
       for (int i = 1; i < LEVELS.length; i++) {
          LEVELS[i] = new StructuralLevel(upgradeMaterialsList[i - 1], i);
@@ -155,7 +162,7 @@ public class StructuralLevel {
    private static BaseTextures baseTexturePixels;
    
    public static void loadBaseTextureData() {
-      //BetterBarrels.log.info("Pre-loading component texture data.");
+      BetterBarrels.debug("08 - Pre-loading component texture data.");
       StructuralLevel.baseTexturePixels = new BaseTextures();
 
       StructuralLevel.baseTexturePixels.labelBorder = getPixelsForTexture(false, BetterBarrels.modid + ":barrel_label_border");
@@ -170,6 +177,7 @@ public class StructuralLevel {
    }
    
    public static void unloadBaseTextureData() {
+      BetterBarrels.debug("39 - Unloading preloaded texture data");
       StructuralLevel.baseTexturePixels = null;
    }
 
@@ -181,20 +189,27 @@ public class StructuralLevel {
 
       @SuppressWarnings("unchecked")
       public void replaceTextureData(int[] pixels) throws Exception {
+         BetterBarrels.debug("37 - Attempting to replace texture for ["+this.getIconName()+"] with an array of ["+(pixels!=null?pixels.length:"(null)")+"] pixels, current texture dims are ["+this.width+"x"+this.height+"] for a total size of "+(this.width*this.height));
+         BetterBarrels.debug(this.toString());
          if (pixels.length != (this.height * this.width)) {
             throw new Exception("Attempting to replace texture image data with too much or too little data.");
          }
          this.setFramesTextureData(Lists.newArrayList());
          this.framesTextureData.add(pixels);
+         BetterBarrels.debug("38 - Calling Minecraft Texture upload utility method");
          TextureUtil.uploadTextureSub(pixels, this.width, this.height, this.originX, this.originY, false, false);
+         this.clearFramesTextureData();
       }
    }
 
    @SideOnly(Side.CLIENT)
    private static AccessibleTextureAtlasSprite registerIcon(IconRegister par1IconRegister, String key) {
       AccessibleTextureAtlasSprite ret = new AccessibleTextureAtlasSprite(key);
-      ((TextureMap)par1IconRegister).setTextureEntry(key, ret);
-      return ret;
+      if (((TextureMap)par1IconRegister).setTextureEntry(key, ret)) {
+         return ret;
+      } else {
+         return (AccessibleTextureAtlasSprite)((TextureMap)par1IconRegister).getTextureExtry(key);
+      }
    }
 
    @SideOnly(Side.CLIENT)
@@ -328,6 +343,7 @@ public class StructuralLevel {
    }
 
    private void grainMergeArrayWithColor(int[] pixels, PixelARGB color) {
+      BetterBarrels.debug("35 - Running grain merge on material with color");
       for (int i = 0; i < pixels.length; i++) {
          PixelARGB pix = new PixelARGB(pixels[i]);
          if (pix.A == 0)
@@ -335,11 +351,12 @@ public class StructuralLevel {
          else
             pixels[i] = (new PixelARGB(Math.max(0, (Math.min(255, pix.A + color.A - 128))), Math.max(0, (Math.min(255, pix.R + color.R - 128))), Math.max(0, (Math.min(255, pix.G + color.G - 128))), Math.max(0, (Math.min(255, pix.B + color.B - 128))))).combined;
       }
+      BetterBarrels.debug("36 - sanity check, pixels.length:" + pixels.length);
    }
 
    private void mergeArraysBasedOnAlpha(int[] target, int[] merge) throws Exception {
-      if (target.length != merge.length) {
-         throw new Exception("Attempting to merge differently sized texture data.  Please ensure your texture pieces are the same dimensions");
+      if (target == null || merge == null || target.length != merge.length) {
+         throw new Exception("Attempting to merge wrong sized texture data(" + (target != null ? target.length : "(null)") + " vs " + (merge != null ? merge.length : "(null)") + ").  Please ensure your texture pieces exist and are the same dimensions");
       }
       // Merge arrays, ignoring any transparent pixels in the merge array
       for (int i = 0; i < merge.length; i++) {
@@ -368,14 +385,18 @@ public class StructuralLevel {
 
    @SideOnly(Side.CLIENT)
    private static int[] getPixelsForTexture(boolean item, ResourceLocation resourcelocation) {
+      BetterBarrels.debug("09 - Entering texture load method for texture : " + resourcelocation.toString());
       TextureMap map = (TextureMap)Minecraft.getMinecraft().renderEngine.getTexture(item ? TextureMap.locationItemsTexture: TextureMap.locationBlocksTexture);
+      BetterBarrels.debug("10 - Found texture map base path:" + map.basePath);
       ResourceLocation resourcelocation1 = new ResourceLocation(resourcelocation.getResourceDomain(), String.format("%s/%s%s", new Object[] {map.basePath, resourcelocation.getResourcePath(), ".png"}));
+      BetterBarrels.debug("11 - Modified resource path : " + resourcelocation1.toString());
       int[] pixels = null;
       try {
          pixels = TextureUtil.readImageData(Minecraft.getMinecraft().getResourceManager(), resourcelocation1);
       } catch (Throwable t) {
-         System.out.println("JABBA-Debug Problem loading texture: " + resourcelocation);
+         BetterBarrels.log.severe("JABBA-Debug Problem loading texture: " + resourcelocation);
       }
+      BetterBarrels.debug("12 - read texture data of length : " + (pixels != null ? pixels.length : "(null)"));
       return pixels;
    }
 
@@ -389,12 +410,14 @@ public class StructuralLevel {
       int[] pixels = getPixelsForTexture(item, new ResourceLocation(icon.getIconName()));
       if (pixels == null) {
          pixels = new int[icon.getIconHeight() * icon.getIconWidth()];
+         BetterBarrels.debug("13 - No texture data read, creating empty array of length : " + pixels.length);
       }
       return pixels;
    }
 
    @SideOnly(Side.CLIENT)
    public void generateIcons() {
+      BetterBarrels.debug("17 - Entering Texture Generation for Structural Tier with Material: " + this.name);
       int terrainTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationBlocksTexture).getGlTextureId();
       int itemTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationItemsTexture).getGlTextureId();
       if (terrainTextureId != 0 && itemTextureId != 0) {
@@ -403,23 +426,35 @@ public class StructuralLevel {
 
          // Copy the block textures we need into arrays
          int[] labelBorderPixels = baseTexturePixels.labelBorder.clone();
+         BetterBarrels.debug("18 - " + labelBorderPixels.length);
          int[] labelBackgroundPixels = baseTexturePixels.labelBackground.clone();
+         BetterBarrels.debug("19 - " + labelBackgroundPixels.length);
          int[] topBorderPixels = baseTexturePixels.topBorder.clone();
+         BetterBarrels.debug("20 - " + topBorderPixels.length);
          int[] topBackgroundPixels = baseTexturePixels.topBackground.clone();
+         BetterBarrels.debug("21 - " + topBackgroundPixels.length);
          int[] topLabelBorderPixels = baseTexturePixels.topBorder.clone();
+         BetterBarrels.debug("22 - " + topLabelBorderPixels.length);
          int[] topLabelBackgroundPixels = baseTexturePixels.topLabel.clone();
+         BetterBarrels.debug("23 - " + topLabelBackgroundPixels.length);
          int[] sideBorderPixels = baseTexturePixels.sideBorder.clone();
+         BetterBarrels.debug("24 - " + sideBorderPixels.length);
          int[] sideBackgroundPixels = baseTexturePixels.sideBackground.clone();
+         BetterBarrels.debug("25 - " + sideBackgroundPixels.length);
 
          // Copy the item textures we need into arrays
          int[] itemBasePixels = baseTexturePixels.item.clone();
+         BetterBarrels.debug("26 - " + itemBasePixels.length);
          int[] itemArrowPixels = baseTexturePixels.itemArrow.clone();
+         BetterBarrels.debug("27 - " + itemArrowPixels.length);
          int[] itemRomanPixels = StructuralLevel.getPixelsForTexture(true, this.iconItem);
+         BetterBarrels.debug("28 - " + itemRomanPixels.length);
 
          int[] materialPixels = null;
          boolean foundSourceMaterial = false;
          try {
             // First check if it's an item
+            BetterBarrels.debug("29 - Checking item sheet for material");
             boolean bindItem = false;
             if (Item.itemsList[materialStack.itemID] != null) {
                if (materialStack.itemID < Block.blocksList.length) {
@@ -431,6 +466,7 @@ public class StructuralLevel {
                }
             }
             if (bindItem) {
+               BetterBarrels.debug("30 - Item found, attempting to load");
                if (this.name.equals("Unstable Ingot") || this.name.equals("Unstable Nugget")) {
                   if (this.materialStack.getItemDamage() > 0) {
                      materialPixels = getPixelsForTexture(true, "extrautils:unstablenugget");
@@ -442,16 +478,22 @@ public class StructuralLevel {
                } else {
                   materialPixels = getPixelsForTexture(true, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
                }
+               BetterBarrels.debug("30 - Loaded texture data for [" + this.name + "]: read an array of length: " + (materialPixels != null ? materialPixels.length: "(null)"));
+
                foundSourceMaterial = true;
             }
             if (!foundSourceMaterial) {
+               BetterBarrels.debug("31 - Item not found, checking blocks");
                // then check if a block
                if (Block.blocksList[materialStack.itemID] != null && !Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
+                  BetterBarrels.debug("32 - Block found");
                   materialPixels = getPixelsForTexture(false, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
+                  BetterBarrels.debug("33 - Loaded texture data for [" + this.name + "]: read an array of length: " + (materialPixels != null ? materialPixels.length: "(null)"));
                   foundSourceMaterial = true;
                }
             }
          } catch (Throwable t) {
+            BetterBarrels.debug("34 - MATERIAL LOOKUP ERROR");
             // safety check against blocks here if combined item/block check errors
             if (Block.blocksList[materialStack.itemID] != null && !Block.blocksList[materialStack.itemID].getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
                materialPixels = getPixelsForTexture(false, (TextureAtlasSprite)materialStack.getItem().getIconFromDamage(materialStack.getItemDamage()));
@@ -467,7 +509,7 @@ public class StructuralLevel {
          if (foundSourceMaterial) {
             // PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
             PixelARGB color = averageColorFromArrayB(materialPixels);
-            // System.out.println("Color for [" + materialStack.getDisplayName() + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
+            BetterBarrels.debug("Calculated Color for [" + this.name + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
 
             // this.textColor = color.YIQContrastTextColor().combined;
 
