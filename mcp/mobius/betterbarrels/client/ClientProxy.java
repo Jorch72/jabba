@@ -46,10 +46,9 @@ public class ClientProxy extends BaseProxy {
 	
 	}
 	
-   public static ReloadableResourceManager rm = null;
-
    @Override
    public void postInit(){
+      BetterBarrels.debug("06 - Registering resource manager reload listener");
       ((ReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new ResourceManagerReloadListener() {
          private boolean ranOnce = false;
 
@@ -59,6 +58,7 @@ public class ClientProxy extends BaseProxy {
                ranOnce = true;
                return;
             }
+            BetterBarrels.debug("07 - Resource pack is reloading, rechecking names and regenerating textures");
             StructuralLevel.loadBaseTextureData();
             if (StructuralLevel.LEVELS != null) {
                for (int level = 1; level < StructuralLevel.LEVELS.length; level++) {
