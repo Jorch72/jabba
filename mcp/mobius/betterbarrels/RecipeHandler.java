@@ -1,5 +1,6 @@
 package mcp.mobius.betterbarrels;
 
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -32,9 +33,8 @@ public class RecipeHandler {
 	
 	public void registerRecipes(){
 		
-		//for (int i = 0; i < BetterBarrels.materialList.length; i++)
-		for (int i = 0; i < Math.min(7, BetterBarrels.materialList.length); i++)
-			this.addStructuralUpgrade(i, BetterBarrels.materialList[i]);
+		for (int i = 0; i < Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i++)
+			this.addStructuralUpgrade(i, StructuralLevel.upgradeMaterialsList[i]);
 		
 		this.addCoreUpgrade(0, BetterBarrels.blockBarrel);
 		this.addCoreUpgrade(1, "transdimBlock");
@@ -79,9 +79,15 @@ public class RecipeHandler {
 			Character.valueOf('E'), Items.ender_pearl
 				}));		
 
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE3.ordinal(), UpgradeCore.STORAGE.ordinal());
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE9.ordinal(), UpgradeCore.STORAGE3.ordinal());
-      addCoreUpgradeUpgrade(UpgradeCore.STORAGE27.ordinal(), UpgradeCore.STORAGE9.ordinal());
+		UpgradeCore prevStorage = UpgradeCore.STORAGE;
+		for (UpgradeCore core : UpgradeCore.values()) {
+			if(core.type == UpgradeCore.Type.STORAGE && core.slotsUsed > 1) {
+				if (core.slotsUsed > StructuralLevel.LEVELS[StructuralLevel.maxCraftableTier].getMaxCoreSlots())
+					break;
+				addCoreUpgradeUpgrade(core.ordinal(), prevStorage.ordinal());
+				prevStorage = core;
+			}
+		}
 	}
 
 	private void addCoreUpgradeUpgrade(int resultMeta, int sourceMeta) {

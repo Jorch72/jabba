@@ -3,10 +3,12 @@ package mcp.mobius.betterbarrels.common.blocks;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
 import mcp.mobius.betterbarrels.common.blocks.logic.ItemImmut;
-import mcp.mobius.betterbarrels.common.blocks.logic.OreDictPair;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -14,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
+import mcp.mobius.betterbarrels.common.blocks.logic.OreDictPair;
 
 public class StorageLocal implements IBarrelStorage{
 
@@ -32,6 +35,7 @@ public class StorageLocal implements IBarrelStorage{
 	private int upgCapacity   = 0;				//Current capacity upgrade level
 	private boolean keepLastItem = false;	//Ghosting mod. If true, we don't reset the item type when the barrel is empty
 	private boolean deleteExcess = false;  // Void mod, when true, extra added items are deleted
+	private boolean alwaysProvide = false; // Creative mod, when true will always return a stack with the requested amount
 	
 	private Set<Coordinates> linkedStorages = new HashSet<Coordinates>();
 	
@@ -124,7 +128,6 @@ public class StorageLocal implements IBarrelStorage{
 		NBTTagCompound retTag = new NBTTagCompound();
 
 		retTag.setInteger("amount",       this.totalAmount);
-		retTag.setBoolean("keepLastItem", this.keepLastItem);
 		retTag.setInteger("maxstacks",    this.maxstacks);
 		retTag.setInteger("upgCapacity",  this.upgCapacity);
         
@@ -133,6 +136,12 @@ public class StorageLocal implements IBarrelStorage{
             this.getItem().writeToNBT(var3);
             retTag.setTag("current_item", var3);
         }
+      if (this.keepLastItem)
+         retTag.setBoolean("keepLastItem", this.keepLastItem);
+      if (this.deleteExcess)
+         retTag.setBoolean("deleteExcess", this.deleteExcess);
+      if (this.alwaysProvide)
+         retTag.setBoolean("alwaysProvide", this.alwaysProvide);
 		return retTag;
 	}
 	@Override
@@ -142,6 +151,8 @@ public class StorageLocal implements IBarrelStorage{
 		this.upgCapacity      = tag.getInteger("upgCapacity");
     	this.itemTemplate     = tag.hasKey("current_item") ? ItemStack.loadItemStackFromNBT(tag.getCompoundTag("current_item")) : null;		
     	this.keepLastItem     = tag.hasKey("keepLastItem") ? tag.getBoolean("keepLastItem") : false;
+      this.deleteExcess     = tag.hasKey("deleteExcess") ? tag.getBoolean("deleteExcess") : false;
+      this.alwaysProvide    = tag.hasKey("alwaysProvide") ? tag.getBoolean("alwaysProvide") : false;
     	this.setItem(this.itemTemplate);
 	}    
     
@@ -167,10 +178,10 @@ public class StorageLocal implements IBarrelStorage{
 			this.totalAmount += deposit;
 		}
 		if (this.deleteExcess) {
-         if (deposit == 0)
-            deposit = stack.stackSize;
-		   if (stack.stackSize > 0)
-		      stack.stackSize = 0;
+			if (deposit == 0)
+				deposit = stack.stackSize;
+			if (stack.stackSize > 0)
+				stack.stackSize = 0;
 		}
 		this.markDirty();
 		return deposit;    	
@@ -191,10 +202,12 @@ public class StorageLocal implements IBarrelStorage{
 		ItemStack retStack = null;
 		if (this.hasItem()){
 			amount = Math.min(amount, this.getItem().getMaxStackSize());
-			amount = Math.min(amount, this.totalAmount);
+			if (!this.alwaysProvide)
+			   amount = Math.min(amount, this.totalAmount);
 
 			retStack = this.getItem().copy();			
-			this.totalAmount  -= amount;
+         if (!this.alwaysProvide)
+            this.totalAmount  -= amount;
 			retStack.stackSize = amount;
 		}
 		
@@ -214,6 +227,11 @@ public class StorageLocal implements IBarrelStorage{
    public boolean isVoid() { return this.deleteExcess; }
    @Override
    public void setVoid(boolean delete) { this.deleteExcess = delete; } 
+
+   @Override
+   public boolean isCreative() { return this.alwaysProvide; }
+   @Override
+   public void setCreative(boolean infinite) { this.alwaysProvide = infinite; } 
 
    /* AMOUNT HANDLING */
 	@Override
@@ -355,18 +373,19 @@ public class StorageLocal implements IBarrelStorage{
 			this.inputStack.stackSize = this.itemTemplate.getMaxStackSize() - this.getFreeSpace();
 		}
 		
-		if (this.hasItem() && outputStack == null && this.prevOutputStack != null)
+		if (this.hasItem() && outputStack == null && this.prevOutputStack != null && !this.alwaysProvide)
 			this.totalAmount -= prevOutputStack.stackSize;
 
 		if (this.prevOutputStack != null && this.outputStack != null){
 			int delta = this.prevOutputStack.stackSize - this.outputStack.stackSize;
-			this.totalAmount -= delta;
-			this.outputStack.stackSize = Math.min(this.outputStack.getMaxStackSize(), this.totalAmount);
+			if (!this.alwaysProvide)
+			   this.totalAmount -= delta;
+			this.outputStack.stackSize = this.alwaysProvide ? this.outputStack.getMaxStackSize() : Math.min(this.outputStack.getMaxStackSize(), this.totalAmount);
 		}		
 		
 		if (this.hasItem() && outputStack == null){
 			this.outputStack = this.itemTemplate.copy();
-			this.outputStack.stackSize = Math.min(this.outputStack.getMaxStackSize(), this.totalAmount);			
+			this.outputStack.stackSize = this.alwaysProvide ? this.outputStack.getMaxStackSize() : Math.min(this.outputStack.getMaxStackSize(), this.totalAmount);			
 		}
 		
 		if (this.totalAmount == 0 && !this.isGhosting()){
@@ -400,7 +419,7 @@ public class StorageLocal implements IBarrelStorage{
 	public ItemStack getStoredItemType() {
 		if (this.hasItem()){
 			ItemStack stack = this.getItem().copy();
-			stack.stackSize = this.totalAmount;
+			stack.stackSize = this.alwaysProvide ? this.getItem().getMaxStackSize() : this.totalAmount;
 			return stack;
 		} 
 		else if (!this.hasItem() && this.isGhosting()){

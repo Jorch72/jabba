@@ -14,8 +14,6 @@ public class LogicHopper {
 	private LogicHopper(){}
 	public static LogicHopper instance() { return LogicHopper._instance; }
 
-	private int[] sideConvert = {0, 1, 4, 5, 3, 2, -1};	
-	
 	public boolean run(TileEntityBarrel barrel){
 		boolean transaction = false;
 		ItemStack  stack = barrel.getStorage().getStackInSlot(1);
@@ -32,6 +30,7 @@ public class LogicHopper {
 					if(stack != null && stack.stackSize > 0 && this.pushItemToInventory((IInventory)targetEntity, side.getOpposite(), stack)){
 						barrel.getStorage().markDirty();
 						transaction = true;
+						targetEntity.markDirty();
 					}
 				}
 			}
@@ -42,11 +41,9 @@ public class LogicHopper {
 
 	
 	private boolean isFull(IInventory inventory, ForgeDirection side){
-		int mcSide = sideConvert[side.ordinal()];
-		
-    	if (inventory instanceof ISidedInventory  && mcSide > -1){
+    	if (inventory instanceof ISidedInventory  && side.ordinal() > -1){
     	    ISidedInventory sinv = (ISidedInventory)inventory;
-    	    int[] islots = sinv.getAccessibleSlotsFromSide(mcSide);
+    	    int[] islots = sinv.getAccessibleSlotsFromSide(side.ordinal());
     	    
     	    for (int index : islots){
     	    	ItemStack is = sinv.getStackInSlot(index); 
@@ -64,14 +61,12 @@ public class LogicHopper {
 	}
 	
 	private boolean pushItemToInventory(IInventory inventory, ForgeDirection side, ItemStack stack){
-		int mcSide = sideConvert[side.ordinal()];
-	
-    	if (inventory instanceof ISidedInventory  && mcSide > -1){
+    	if (inventory instanceof ISidedInventory  && side.ordinal() > -1){
     	    ISidedInventory sinv = (ISidedInventory)inventory;
-    	    int[] islots = sinv.getAccessibleSlotsFromSide(mcSide); 
+    	    int[] islots = sinv.getAccessibleSlotsFromSide(side.ordinal()); 
     	    
     	    for (int slot : islots){
-    	    	if (!sinv.canInsertItem(slot, stack, mcSide)) continue;
+    	    	if (!sinv.canInsertItem(slot, stack, side.ordinal())) continue;
     	    	ItemStack targetStack = sinv.getStackInSlot(slot);
     	    	
     	    	if (targetStack == null){

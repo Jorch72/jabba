@@ -83,6 +83,7 @@ public class ItemBarrelMover extends Item {
         //this.setMaxDamage(0);     
         this.setUnlocalizedName("dolly.normal.empty");
         this.setCreativeTab(JabbaCreativeTab.tab);
+        this.setNoRepair();
 	}
 
     @Override    
@@ -329,7 +330,7 @@ public class ItemBarrelMover extends Item {
 				setFacing.invoke(entity, (short)this.getBarrelOrientationOnPlacement(player, targY, false).ordinal());
 			
 		} catch (Exception e){
-			System.out.printf("%s\n", e);
+			e.printStackTrace();
 		}		
 	}
 	
@@ -418,11 +419,17 @@ public class ItemBarrelMover extends Item {
 		
 		stack.getTagCompound().setTag("Container", nbtTarget);
 
-		world.removeTileEntity(x, y, z);
+		//if (containerTE instanceof TileEntityBarrel){
+		//	BSpaceStorageHandler.instance().unregisterEnderBarrel(((TileEntityBarrel)containerTE).id);
+		//}
+
 		try{
-			world.setBlockToAir(x, y, z);
-		} catch (Exception e) {}
-		
+			world.removeTileEntity(x, y, z);
+			world.setBlock(x, y, z, Blocks.air, 0, 1 + 2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return true;		
 	}
 	

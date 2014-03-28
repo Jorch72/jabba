@@ -31,7 +31,7 @@ public class ItemUpgradeSide extends ItemUpgrade {
 	@Override	
     public String getUnlocalizedName(ItemStack stack)
     {   
-		return "item." + ItemUpgradeSide.upgradeNames[stack.getItemDamage()];
+		return "item." + ItemUpgradeSide.upgradeNames[Math.min(stack.getItemDamage(),ItemUpgradeSide.upgradeNames.length-1)];
     }	
 	
     @Override    
@@ -43,15 +43,15 @@ public class ItemUpgradeSide extends ItemUpgrade {
 	
     @Override
     public IIcon getIconFromDamage(int i){
-        return ItemUpgradeSide.upgradeIcons[i];
+    	return ItemUpgradeSide.upgradeIcons[Math.min(i,ItemUpgradeSide.upgradeIcons.length-1)];
     }	
 	
-	@Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tabs, List list){
             for(int i = 0; i < ItemUpgradeSide.upgradeIcons.length; ++i){
                     list.add(new ItemStack(item, 1, i));
              }
      }      
-    
 }
