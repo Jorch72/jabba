@@ -36,6 +36,9 @@ public interface IBarrelStorage extends ISidedInventory, IDeepStorageUnit{
     public boolean isVoid();
     public void    setVoid(boolean delete);
 
+    public boolean isCreative();
+    public void    setCreative(boolean delete);
+
     //public void    upgCapacity(int level);
 	public void    addStorageUpgrade();
 	public void    rmStorageUpgrade();	

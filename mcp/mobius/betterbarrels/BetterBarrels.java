@@ -1,5 +1,7 @@
 package mcp.mobius.betterbarrels;
 
+import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
@@ -13,13 +15,11 @@ import mcp.mobius.betterbarrels.common.items.dolly.ItemDiamondMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
-
-import org.apache.logging.log4j.Level;
-
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -32,17 +32,23 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.0c", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.2c", dependencies="after:Waila;after:NotEnoughItems")
 //@NetworkMod(channels = {"JABBA"}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 
 public class BetterBarrels {
 
+	private static boolean DEBUG_TEXTURES = false || Boolean.parseBoolean(System.getProperty("mcp.mobius.debugJabbaTextures","false"));
+	public static void debug(String msg) {
+		if (DEBUG_TEXTURES)
+			log.log(Level.WARNING, msg);
+	}
+
 	public static final String modid = "JABBA";
 	
-	public static Logger log = Logger.getLogger("BetterBarrels");	
+	public static Logger log = Logger.getLogger(modid);	
 
     // The instance of your mod that Forge uses.
-	@Instance("ProfMobius_BetterBarrels")
+	@Instance(modid)
 	public static BetterBarrels instance;
 	
 	// Says where the client and server 'proxy' code is loaded.
@@ -56,7 +62,6 @@ public class BetterBarrels {
 	public static boolean  highRezTexture     = true;
 	public static boolean  showUpgradeSymbols = true;
 	public static boolean  diamondDollyActive = true;	
-	public static String[] materialList       = new String[]{"Ore.plankWood", "Ore.ingotIron", "Ore.ingotGold", "Ore.gemDiamond", "Ore.obsidian", "Ore.whiteStone", "Ore.gemEmerald"};
 	
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
@@ -80,13 +85,23 @@ public class BetterBarrels {
 			config.load();
 
 			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
-			materialList        = config.get(Configuration.CATEGORY_GENERAL, "materialList", materialList).getStringList();
+			StructuralLevel.upgradeMaterialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.upgradeMaterialsList).getStringList();
+			if(StructuralLevel.upgradeMaterialsList.length > 18) {
+				String[] trimedList = new String[18];
+				for(int i=0;i<18;i++)
+					trimedList[i] = StructuralLevel.upgradeMaterialsList[i];
+				StructuralLevel.upgradeMaterialsList = trimedList;
+				config.get(Configuration.CATEGORY_GENERAL, "materialList", trimedList).set(trimedList);
+			}
+			debug("00 - Loaded materials list: " + Arrays.toString(StructuralLevel.upgradeMaterialsList));
+			StructuralLevel.maxCraftableTier = Math.min(18, Math.min(StructuralLevel.upgradeMaterialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", StructuralLevel.upgradeMaterialsList.length).getInt()));
+			debug("01 - Max craftable tier: " + StructuralLevel.maxCraftableTier);
 
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			//highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
 			//showUpgradeSymbols = config.get(Configuration.CATEGORY_GENERAL, "showUpgradeSymbols", false).getBoolean(false);
 		} catch (Exception e) {
-			FMLLog.log(Level.ERROR, e, "BlockBarrel has a problem loading it's configuration");
+			FMLLog.log(org.apache.logging.log4j.Level.ERROR, e, "BlockBarrel has a problem loading it's configuration");
 			FMLLog.severe(e.getMessage());	
 		} finally {
 			if (config.hasChanged())
@@ -125,6 +140,8 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
+		StructuralLevel.createLevelArray();
+
 		RecipeHandler.instance().registerRecipes();
 
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
@@ -136,6 +153,8 @@ public class BetterBarrels {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		StructuralLevel.initializeStructuralMaterials();
+
 		proxy.postInit();
 	}	
 

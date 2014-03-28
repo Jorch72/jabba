@@ -39,7 +39,7 @@ import cpw.mods.fml.relauncher.Side;
 
 
 public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDeepStorageUnit {
-	private static int version = 4;
+	private static int version = 5;
 	
     private long clickTime = -20; //Click timer for double click handling
 	
@@ -71,11 +71,18 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}
 	
 	public IBarrelStorage getStorage(){
+		IBarrelStorage ret;
 		// If I'm enderish, I should request the storage from the Manager. Otherwise, do the usual stuff
 		if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote)
-			return BSpaceStorageHandler.instance().getStorage(this.id);
+			ret = BSpaceStorageHandler.instance().getStorage(this.id);
 		else
-			return this.storage;
+			ret = this.storage;
+
+		if (ret == null) {
+			BetterBarrels.log.severe("Barrel at X: " + this.xCoord + " Y: " + this.yCoord + " Z: " + this.zCoord + " has no storage." + (this.coreUpgrades.hasEnder ? " It thinks it is a BSpace barrel with ID: " + this.id: ""));
+		}
+
+		return ret;
 	}
 	
 	public void setStorage(IBarrelStorage storage){
@@ -85,6 +92,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public void setVoid(boolean delete) {
       this.coreUpgrades.hasVoid = delete;
       this.storage.setVoid(delete);
+	}
+
+	public void setCreative(boolean infinite) {
+		this.coreUpgrades.hasCreative = infinite;
+		this.storage.setCreative(infinite);
 	}
 
 	/* UPDATE HANDLING */
@@ -103,8 +115,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		this.nTicks += 1;
 		if (this.nTicks % 8 == 0){
 			if (this.logicHopper.run(this)){
+				this.skipUpdatePacket = false;
 				this.markDirty();
-				BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
+				//BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 			}
 			this.nTicks = 0;
 		}
@@ -160,8 +173,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if ((droppedStack != null) && (droppedStack.stackSize > 0))
 			Utils.dropItemInWorld(this, player, droppedStack, 0.02);
 		
+		this.skipUpdatePacket = false;
 		this.markDirty();
-		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
+		//BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	public void rightClick(EntityPlayer player, int side){
@@ -210,8 +224,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setInteger("tuneID",     this.id);
 		stack.getTagCompound().setInteger("structural", coreUpgrades.levelStructural);
-		stack.getTagCompound().setByte("storage",       coreUpgrades.nStorageUpg);
+		stack.getTagCompound().setInteger("storage",    coreUpgrades.nStorageUpg);
 		stack.getTagCompound().setBoolean("void",       coreUpgrades.hasVoid);
+		stack.getTagCompound().setBoolean("creative",   coreUpgrades.hasCreative);
 	}
 	
 	private void tuneBarrel(ItemStack stack, EntityPlayer player, ForgeDirection side){
@@ -226,12 +241,13 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 		
 		int  structural = stack.getTagCompound().getInteger("structural");
-		byte storage    = stack.getTagCompound().getByte("storage");
+		int  storage    = stack.getTagCompound().getInteger("storage");
 		int  barrelID   = stack.getTagCompound().getInteger("tuneID");
 		boolean hasVoid = stack.getTagCompound().getBoolean("void");
-		
-		if (coreUpgrades.levelStructural != structural || coreUpgrades.nStorageUpg != storage || coreUpgrades.hasVoid != hasVoid){
-	      BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSAPCE_STRUCTURE);
+		boolean hasCreative = stack.getTagCompound().getBoolean("creative");
+
+		if (coreUpgrades.levelStructural != structural || coreUpgrades.nStorageUpg != storage || coreUpgrades.hasVoid != hasVoid || coreUpgrades.hasCreative != hasCreative){
+			BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSAPCE_STRUCTURE);
 			return;			
 		}
 
@@ -266,6 +282,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			if (this.sideMetadata[side.ordinal()] > UpgradeSide.RS_PROP)
 				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
 			
+			this.skipUpdatePacket = false;
 			this.markDirty();
 			BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x03SideupgradeUpdate(this), this.worldObj.provider.dimensionId);
 		}
@@ -354,15 +371,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	private void switchLocked(){
 		this.getStorage().switchGhosting();
+		this.skipUpdatePacket = false;
 		this.markDirty();
-		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
+		//BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x02GhostUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	public void setLocked(boolean locked){
 		this.getStorage().setGhosting(locked);
+		this.skipUpdatePacket = false;
 		this.markDirty();
-		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
+		//BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x02GhostUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
@@ -387,8 +406,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		BetterBarrels.proxy.updatePlayerInventory(player);
 		this.clickTime = this.worldObj.getTotalWorldTime();	
 		
+		this.skipUpdatePacket = false;
 		this.markDirty();
-		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
+		//BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
 	}
 	
 	/* SAVING AND LOADING OF DATA */
@@ -509,14 +529,19 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     }	
 	
     /* OTHER */
+    private boolean skipUpdatePacket = false;
 
     @Override
     public void markDirty() {
+    	if (skipUpdatePacket) {
+    		skipUpdatePacket = false;
+    		//BetterBarrels.log.log(Level.INFO, "Skipping the barrel content update and related packet; was previously called.");
+    		return;
+    	}
        super.markDirty();
-
        if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlock(this.xCoord, this.yCoord, this.zCoord));
-
        if (coreUpgrades.hasEnder && !this.worldObj.isRemote) BSpaceStorageHandler.instance().updateAllBarrels(this.id);
+       this.sendContentSyncPacket();
     }
 
     /*/////////////////////////////////////*/
@@ -524,24 +549,26 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     /*/////////////////////////////////////*/
     
 	private void sendContentSyncPacket(){
-		long currTime = System.currentTimeMillis();
-		if (currTime - this.timeSinceLastUpd > 1000){
+		//long currTime = System.currentTimeMillis();
+		//if (currTime - this.timeSinceLastUpd > 1000){
 			BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(this), this.worldObj.provider.dimensionId);
-    		this.timeSinceLastUpd = currTime;
-    	}    	
+    	//	this.timeSinceLastUpd = currTime;
+    	//}    	
     }    
     
 	@Override
 	public int getSizeInventory() {return this.getStorage().getSizeInventory();}
 	@Override
 	public ItemStack getStackInSlot(int islot) {
+		this.skipUpdatePacket = false;
 		ItemStack stack = this.getStorage().getStackInSlot(islot);
-		this.markDirty();
-		this.sendContentSyncPacket();
+		//this.markDirty();
+		//this.sendContentSyncPacket();
 		return stack; 
 	}
 	@Override
 	public ItemStack decrStackSize(int islot, int quantity) {
+		this.skipUpdatePacket = false;
 		TileEntity ent = this.worldObj.getTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
 		ItemStack stack;
 		if (ent instanceof TileEntityHopper)
@@ -549,15 +576,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		else
 			stack = this.getStorage().decrStackSize(islot, quantity);
 		
-		this.markDirty();
-		this.sendContentSyncPacket();
+		//this.markDirty();
+		//this.sendContentSyncPacket();
 		return stack;
 	}
 	@Override
-	public void setInventorySlotContents(int islot, ItemStack stack) { 
+	public void setInventorySlotContents(int islot, ItemStack stack) {
+		this.skipUpdatePacket = false;
 		this.getStorage().setInventorySlotContents(islot, stack);
 		this.markDirty();
-		this.sendContentSyncPacket();
+		this.skipUpdatePacket = true;
+		//this.sendContentSyncPacket();
 	}
 	@Override
 	public ItemStack getStackInSlotOnClosing(int var1) {return null;}	
@@ -586,16 +615,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 	@Override
 	public void setStoredItemCount(int amount) {
+		this.skipUpdatePacket = false;
 		this.getStorage().setStoredItemCount(amount);
-		this.markDirty();
-		this.sendContentSyncPacket();
+		//this.markDirty();
+		//this.sendContentSyncPacket();
 	}
 
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
 		this.getStorage().setStoredItemType(type, amount);
-		this.markDirty();
-		this.sendContentSyncPacket();
+		//this.markDirty();
+		//this.sendContentSyncPacket();
 	}
 
 	@Override

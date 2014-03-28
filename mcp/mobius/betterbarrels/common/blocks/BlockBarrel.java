@@ -5,10 +5,12 @@ import java.util.Random;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,10 +28,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockBarrel extends BlockContainer{
 
-	public static IIcon[] text_side     = new IIcon[16];
-	public static IIcon[] text_top      = new IIcon[16];
-	public static IIcon[] text_label    = new IIcon[16];
-	public static IIcon[] text_labeltop = new IIcon[16];
 	public static IIcon   text_sidehopper = null;
 	public static IIcon   text_siders     = null;
 	public static IIcon   text_lock       = null;
@@ -37,7 +35,12 @@ public class BlockBarrel extends BlockContainer{
 	public static IIcon   text_locklinked = null;
 	
     public BlockBarrel(){
-        super(Material.wood);
+    	super(new Material(MapColor.woodColor) {
+    		{
+    			this.setBurning();
+    			this.setAdventureModeExempt();
+    		}
+    	});
         this.setHardness(2.0F);
         this.setResistance(5.0F);
         this.setBlockName("blockbarrel");
@@ -51,18 +54,14 @@ public class BlockBarrel extends BlockContainer{
 	
     @Override    
     public void registerBlockIcons(IIconRegister iconRegister){
-    	for (int i=0; i<8; i++)
-    	{
-    		BlockBarrel.text_side[i]     = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_side_"     + String.valueOf(i));
-    		BlockBarrel.text_top[i]      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_top_"      + String.valueOf(i));
-    		BlockBarrel.text_label[i]    = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_label_"    + String.valueOf(i));
-    		BlockBarrel.text_labeltop[i] = iconRegister.registerIcon(BetterBarrels.modid + ":" + "barrel_labeltop_" + String.valueOf(i));
-    	}
 		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_hopper");
 		BlockBarrel.text_siders      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_redstone");
 		BlockBarrel.text_lock        = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_locked");
 		BlockBarrel.text_linked      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_linked");
-		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");    	
+		BlockBarrel.text_locklinked  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "overlay_lockedlinked");
+		if (StructuralLevel.LEVELS == null) StructuralLevel.createLevelArray();
+		for (int i = 0; i < StructuralLevel.LEVELS.length; i++)
+			StructuralLevel.LEVELS[i].registerBlockIcons(iconRegister, i);
     }
 
     @Override
@@ -92,6 +91,16 @@ public class BlockBarrel extends BlockContainer{
         }
     }
     
+    @Override
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+    	if (player.capabilities.isCreativeMode && !player.isSneaking() ) {
+    		this.onBlockClicked(world, x, y, z, player);
+    		return false;
+    	} else {
+    		return super.removedByPlayer(world, player, x, y, z);
+    	}
+    }
+
     @Override
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player){
         if (!world.isRemote){
@@ -140,12 +149,11 @@ public class BlockBarrel extends BlockContainer{
 	}
 	
 	@Override
-    public void breakBlock(World world, int x, int y, int z, Block par5, int par6){
+	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int par5) {
+		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);		
 
-    	TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
-    	
-    	// We drop the structural upgrades
-    	if ((barrelEntity != null) && (barrelEntity.coreUpgrades.levelStructural > 0)){
+		// We drop the structural upgrades
+		if ((barrelEntity != null) && (barrelEntity.coreUpgrades.levelStructural > 0)){
     		int currentUpgrade = barrelEntity.coreUpgrades.levelStructural;
     		while (currentUpgrade > 0){
     			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
@@ -187,12 +195,22 @@ public class BlockBarrel extends BlockContainer{
 
         		droppedstack    = barrelEntity.getStorage().getStack();
         	}
-        }
+        }		
 
-        BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
-        super.breakBlock(world, x, y, z, par5, par6);        
-        
-    }
+        try{
+        	BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
+        } catch (Exception e){
+        	BetterBarrels.log.info("Tried to remove the barrel from the index without a valid entity");
+        }
+	}
+
+	@Override
+	public void onBlockHarvested(World world, int x, int y, int z, int par5, EntityPlayer par6EntityPlayer){
+		// Note: the part after the OR can be excluded if you wish for instant block destruction with no item drop in creative
+		if (!par6EntityPlayer.capabilities.isCreativeMode || (par6EntityPlayer.capabilities.isCreativeMode && par6EntityPlayer.isSneaking())) {
+			this.onBlockDestroyedByPlayer(world, x, y, z, par5);
+		}
+	}
 
 	/* REDSTONE HANDLING */
 

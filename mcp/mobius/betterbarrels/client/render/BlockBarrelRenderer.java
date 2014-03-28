@@ -3,10 +3,13 @@ package mcp.mobius.betterbarrels.client.render;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
+import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -23,11 +26,11 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		Tessellator tessellator = Tessellator.instance;
 		
 		IIcon iconSide, iconTop, iconLabel, iconLabelTop;
-		iconSide     = BlockBarrel.text_side[0];
-		iconTop      = BlockBarrel.text_top[0];
-		iconLabel    = BlockBarrel.text_label[0];
-		iconLabelTop = BlockBarrel.text_labeltop[0];
-		
+		iconSide     = StructuralLevel.LEVELS[0].getIconSide();
+		iconTop      = StructuralLevel.LEVELS[0].getIconTop();
+		iconLabel    = StructuralLevel.LEVELS[0].getIconLabel();
+		iconLabelTop = StructuralLevel.LEVELS[0].getIconLabelTop();		
+
 		double minXSide = iconSide.getMinU();
 		double maxXSide = iconSide.getMaxU();
 		double minYSide = iconSide.getMinV();
@@ -125,10 +128,10 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		IIcon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
 		IIcon iconStack = null;
 		int  levelStructural = barrel.coreUpgrades.levelStructural;
-		iconSide       = BlockBarrel.text_side[levelStructural];
-		iconTop        = BlockBarrel.text_top[levelStructural];
-		iconLabel      = BlockBarrel.text_label[levelStructural];
-		iconLabelTop   = BlockBarrel.text_labeltop[levelStructural];
+		iconSide       = StructuralLevel.LEVELS[levelStructural].getIconSide();
+		iconTop        = StructuralLevel.LEVELS[levelStructural].getIconTop();
+		iconLabel      = StructuralLevel.LEVELS[levelStructural].getIconLabel();
+		iconLabelTop   = StructuralLevel.LEVELS[levelStructural].getIconLabelTop();
 		iconSideHopper = BlockBarrel.text_sidehopper;
 		iconSideRS     = BlockBarrel.text_siders;
 		iconLock       = BlockBarrel.text_lock;

@@ -12,11 +12,12 @@ import net.minecraft.client.Minecraft;
 
 public class Message0x05CoreUpdate extends SimpleChannelInboundHandler<Message0x05CoreUpdate> implements IBarrelMessage {
 	public int  x,y,z;
-	public byte  nStorageUpg = 0;
+	public int  nStorageUpg = 0;
 	public boolean hasRedstone = false;
 	public boolean hasHopper   = false;
 	public boolean hasEnder    = false;
 	public boolean hasVoid     = false;
+	public boolean hasCreative = false;
 	public ArrayList<UpgradeCore> upgrades = new ArrayList<UpgradeCore>();
 
 	public Message0x05CoreUpdate() {}
@@ -29,6 +30,7 @@ public class Message0x05CoreUpdate extends SimpleChannelInboundHandler<Message0x
 		this.hasHopper = barrel.coreUpgrades.hasHopper;
 		this.hasEnder = barrel.coreUpgrades.hasEnder;
 		this.hasVoid = barrel.coreUpgrades.hasVoid;
+		this.hasCreative = barrel.coreUpgrades.hasCreative;
 
 		for (UpgradeCore i : barrel.coreUpgrades.upgradeList)
 			upgrades.add(i);
@@ -65,6 +67,8 @@ public class Message0x05CoreUpdate extends SimpleChannelInboundHandler<Message0x
 				msg.hasRedstone = true;
 			else if (i == UpgradeCore.VOID)
 				msg.hasVoid = true;
+			else if (i == UpgradeCore.CREATIVE)
+				msg.hasCreative = true;
 		}
 	}
 
@@ -78,6 +82,7 @@ public class Message0x05CoreUpdate extends SimpleChannelInboundHandler<Message0x
 			barrel.coreUpgrades.hasEnder     = msg.hasEnder;
 			barrel.coreUpgrades.nStorageUpg  = msg.nStorageUpg;
 			barrel.setVoid(msg.hasVoid);
+			barrel.setCreative(msg.hasCreative);
 		}
 	}
 }

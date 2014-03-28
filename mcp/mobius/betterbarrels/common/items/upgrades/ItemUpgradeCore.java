@@ -23,7 +23,7 @@ public class ItemUpgradeCore extends ItemUpgrade {
 
    @Override
    public String getUnlocalizedName(ItemStack stack) {
-      return UpgradeCore.values()[stack.getItemDamage()].translationKey;
+	   return UpgradeCore.values()[Math.min(stack.getItemDamage(),UpgradeCore.values().length-1)].translationKey;
    }
 
    @Override
@@ -34,16 +34,18 @@ public class ItemUpgradeCore extends ItemUpgrade {
 
    @Override
    public IIcon getIconFromDamage(int i) {
-      return UpgradeCore.values()[i].icon;
+	   return UpgradeCore.values()[Math.min(i,UpgradeCore.values().length-1)].icon;
    }
 
+   @SuppressWarnings({ "unchecked", "rawtypes" })
    @Override
    public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
       super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
       
-      par3List.add(UpgradeCore.values()[par1ItemStack.getItemDamage()].description());
+      par3List.add(UpgradeCore.values()[Math.min(par1ItemStack.getItemDamage(),UpgradeCore.values().length-1)].description());
    }
    
+   @SuppressWarnings({ "unchecked", "rawtypes" })
    @Override
    @SideOnly(Side.CLIENT)
    public void getSubItems(Item item, CreativeTabs tabs, List list) {
