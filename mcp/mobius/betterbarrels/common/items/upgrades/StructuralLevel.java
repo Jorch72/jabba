@@ -197,7 +197,7 @@ public class StructuralLevel {
          this.setFramesTextureData(Lists.newArrayList());
          this.framesTextureData.add(pixels);
          BetterBarrels.debug("38 - Calling Minecraft Texture upload utility method");
-         TextureUtil.uploadTextureSub(pixels, this.width, this.height, this.originX, this.originY, false, false);
+         TextureUtil.uploadTextureSub(this.getFrameTextureData(0), this.width, this.height, this.originX, this.originY, false, false);
          this.clearFramesTextureData();
       }
    }
@@ -349,7 +349,7 @@ public class StructuralLevel {
          if (pix.A == 0)
             pixels[i] = 0;
          else
-            pixels[i] = (new PixelARGB(Math.max(0, (Math.min(255, pix.A + color.A - 128))), Math.max(0, (Math.min(255, pix.R + color.R - 128))), Math.max(0, (Math.min(255, pix.G + color.G - 128))), Math.max(0, (Math.min(255, pix.B + color.B - 128))))).combined;
+            pixels[i] = (new PixelARGB(255, Math.max(0, (Math.min(255, pix.R + color.R - 128))), Math.max(0, (Math.min(255, pix.G + color.G - 128))), Math.max(0, (Math.min(255, pix.B + color.B - 128))))).combined;
       }
       BetterBarrels.debug("36 - sanity check, pixels.length:" + pixels.length);
    }

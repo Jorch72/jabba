@@ -80,11 +80,18 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}
 	
 	public IBarrelStorage getStorage(){
+	   IBarrelStorage ret;
 		// If I'm enderish, I should request the storage from the Manager. Otherwise, do the usual stuff
 		if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote)
-			return BSpaceStorageHandler.instance().getStorage(this.id);
+			ret = BSpaceStorageHandler.instance().getStorage(this.id);
 		else
-			return this.storage;
+			ret = this.storage;
+		
+		if (ret == null) {
+		   BetterBarrels.log.severe("Barrel at X: " + this.xCoord + " Y: " + this.yCoord + " Z: " + this.zCoord + " has no storage." + (this.coreUpgrades.hasEnder ? " It thinks it is a BSpace barrel with ID: " + this.id: ""));
+		}
+
+		return ret;
 	}
 	
 	public void setStorage(IBarrelStorage storage){
@@ -117,8 +124,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	   this.nTicks += 1;
 		if (this.nTicks % 8 == 0){
 			if (this.logicHopper.run(this)){
+		      this.skipUpdatePacket = false;
 				this.onInventoryChanged();
-				PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+				//PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 			}
 			this.nTicks = 0;
 		}
@@ -174,8 +182,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if ((droppedStack != null) && (droppedStack.stackSize > 0))
 			Utils.dropItemInWorld(this, player, droppedStack, 0.02);
 		
+      this.skipUpdatePacket = false;
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);		
+		//PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
 	public void rightClick(EntityPlayer player, int side){
@@ -282,6 +291,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			if (this.sideMetadata[side.ordinal()] > UpgradeSide.RS_PROP)
 				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
 			
+         this.skipUpdatePacket = false;
 			this.onInventoryChanged();
 			PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);			
 		}
@@ -351,7 +361,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}			
 		
 		stack.stackSize -= 1;
-		this.onInventoryChanged();
+      this.skipUpdatePacket = false;
+      this.onInventoryChanged();
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x03SideUpgradeUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	
@@ -370,15 +381,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	private void switchLocked(){
 		this.getStorage().switchGhosting();
-		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
+      this.skipUpdatePacket = false;
+      this.onInventoryChanged();
+		//PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
 	public void setLocked(boolean locked){
 		this.getStorage().setGhosting(locked);
+      this.skipUpdatePacket = false;
 		this.onInventoryChanged();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
+		//PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);	
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
@@ -403,7 +416,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		BetterBarrels.proxy.updatePlayerInventory(player);
 		this.clickTime = this.worldObj.getTotalWorldTime();	
 		
-		this.onInventoryChanged();
+      this.skipUpdatePacket = false;
+      this.onInventoryChanged();
 		//PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 	}
 	

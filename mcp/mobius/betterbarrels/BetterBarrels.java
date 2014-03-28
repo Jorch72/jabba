@@ -33,7 +33,7 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.2b", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.2c", dependencies="after:Waila;after:NotEnoughItems")
 @NetworkMod(channels = {BetterBarrels.modid}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 public class BetterBarrels {
    
