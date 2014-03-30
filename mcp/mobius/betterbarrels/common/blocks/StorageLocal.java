@@ -446,7 +446,7 @@ public class StorageLocal implements IBarrelStorage{
 	@Override
 	public int getMaxStoredCount() {
 		if (this.hasItem())
-			return this.maxstacks * this.getItem().getMaxStackSize();
+			return this.deleteExcess ? (this.maxstacks + 1) * this.getItem().getMaxStackSize() : this.maxstacks * this.getItem().getMaxStackSize();
 		else
 			return this.maxstacks * 64;
 	}	
