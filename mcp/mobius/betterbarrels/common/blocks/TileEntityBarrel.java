@@ -636,16 +636,19 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 	@Override
 	public void setStoredItemCount(int amount) {
-      this.skipUpdatePacket = false;
+		this.skipUpdatePacket = false;
 		this.getStorage().setStoredItemCount(amount);
-		//this.onInventoryChanged();
+		this.onInventoryChanged();
+		this.skipUpdatePacket = true;
 		//this.sendContentSyncPacket();
 	}
 
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
+		this.skipUpdatePacket = false;
 		this.getStorage().setStoredItemType(type, amount);
-		//this.onInventoryChanged();
+		this.onInventoryChanged();
+		this.skipUpdatePacket = true;
 		//this.sendContentSyncPacket();
 	}
 
