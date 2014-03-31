@@ -417,7 +417,7 @@ public class StorageLocal implements IBarrelStorage{
 	public ItemStack getStoredItemType() {
 		if (this.hasItem()){
 			ItemStack stack = this.getItem().copy();
-			stack.stackSize = this.alwaysProvide ? this.getItem().getMaxStackSize() : this.totalAmount;
+			stack.stackSize = this.alwaysProvide ? this.getItem().getMaxStackSize() * this.maxstacks : this.totalAmount;
 			return stack;
 		} 
 		else if (!this.hasItem() && this.isGhosting()){
@@ -430,6 +430,8 @@ public class StorageLocal implements IBarrelStorage{
 	
 	@Override
 	public void setStoredItemCount(int amount) {
+		int totalcapacity = this.getItem().getMaxStackSize() * this.maxstacks;
+		if (amount > totalcapacity) amount = totalcapacity;
 		this.totalAmount = amount;
 		this.onInventoryChanged();
 	}
@@ -437,6 +439,8 @@ public class StorageLocal implements IBarrelStorage{
 	@Override
 	public void setStoredItemType(ItemStack type, int amount) {
 		this.setItem(type);
+		int totalcapacity = this.getItem().getMaxStackSize() * this.maxstacks;
+		if (amount > totalcapacity) amount = totalcapacity;
 		this.totalAmount = amount;
 		this.onInventoryChanged();
 	}
