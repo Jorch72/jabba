@@ -529,6 +529,7 @@ public class StructuralLevel {
                mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
                mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
 
+               GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
                GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
                this.iconBlockLabel.replaceTextureData(labelBorderPixels);
                this.iconBlockTop.replaceTextureData(topBorderPixels);
@@ -538,6 +539,7 @@ public class StructuralLevel {
                GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
                this.iconItem.replaceTextureData(itemBasePixels);
                GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+               GL11.glPopAttrib();
             } catch(Exception e) {
                BetterBarrels.log.severe("" + e.getMessage());
             }
