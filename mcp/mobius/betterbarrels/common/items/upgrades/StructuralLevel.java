@@ -1,5 +1,7 @@
 package mcp.mobius.betterbarrels.common.items.upgrades;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -10,7 +12,6 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -190,80 +191,64 @@ public class StructuralLevel {
 			super(par1Str);
 		}
 
-		/* next two methods are almost carbon copies of vanilla MC code... didn't feel like making an AT or using reflection */
-		private void fixTransparentPixels(int[][] p_147961_1_) {
-			int[] aint1 = p_147961_1_[0];
-			int i = 0;
-			int j = 0;
-			int k = 0;
-			int l = 0;
-			int i1;
+		private static Method fixPixels = null;
+		private static Method setupAnisotropic = null;
+		private static Field useAnisotropic = null;
 
-			for (i1 = 0; i1 < aint1.length; ++i1)
-			{
-				if ((aint1[i1] & -16777216) != 0)
-				{
-					j += aint1[i1] >> 16 & 255;
-			k += aint1[i1] >> 8 & 255;
-			l += aint1[i1] >> 0 & 255;
-			++i;
-				}
+		static {
+			for(String fieldName : new String[]{"k", "field_147966_k", "useAnisotropicFiltering"}) {
+				try {
+					AccessibleTextureAtlasSprite.useAnisotropic = TextureAtlasSprite.class.getDeclaredField(fieldName);
+					if(AccessibleTextureAtlasSprite.useAnisotropic != null) {
+						AccessibleTextureAtlasSprite.useAnisotropic.setAccessible(true);
+						break;
+					}
+				} catch (Throwable t) {}
+			}
+			if(AccessibleTextureAtlasSprite.useAnisotropic == null) {
+				BetterBarrels.log.severe("Unable to locate required field 'useAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
 			}
 
-			if (i != 0)
-			{
-				j /= i;
-				k /= i;
-				l /= i;
-
-				for (i1 = 0; i1 < aint1.length; ++i1)
-				{
-					if ((aint1[i1] & -16777216) == 0)
-					{
-						aint1[i1] = j << 16 | k << 8 | l;
+			for(String methodName : new String[]{"a", "func_147961_a", "fixTransparentPixels"}) {
+				try {
+					AccessibleTextureAtlasSprite.fixPixels = TextureAtlasSprite.class.getDeclaredMethod(methodName, new Class[]{int[][].class});
+					if(AccessibleTextureAtlasSprite.fixPixels != null) {
+						AccessibleTextureAtlasSprite.fixPixels.setAccessible(true);
+						break;
 					}
-				}
+				} catch (Throwable t) {}
+			}
+			if(AccessibleTextureAtlasSprite.fixPixels == null) {
+				BetterBarrels.log.severe("Unable to locate required method 'fixTransparentPixels' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
+			}
+
+			for(String methodName : new String[]{"a", "func_147960_a", "prepareAnisotropicFiltering"}) {
+				try {
+					AccessibleTextureAtlasSprite.setupAnisotropic = TextureAtlasSprite.class.getDeclaredMethod(methodName, new Class[]{ int[][].class, int.class, int.class });
+					if(AccessibleTextureAtlasSprite.setupAnisotropic != null) {
+						AccessibleTextureAtlasSprite.setupAnisotropic.setAccessible(true);
+						break;
+					}
+				} catch (Throwable t) {}
+			}
+			if(AccessibleTextureAtlasSprite.setupAnisotropic == null) {
+				BetterBarrels.log.severe("Unable to locate required method 'prepareAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
 			}
 		}
-
-		private int[][] prepareAnisotropicFiltering(int[][] p_147960_1_, int width, int height) {
-			if (!((float)Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1.0F))
-			{
-				return p_147960_1_;
-			}
-			else
-			{
-				int[][] aint1 = new int[p_147960_1_.length][];
-
-				for (int k = 0; k < p_147960_1_.length; ++k)
-				{
-					int[] aint2 = p_147960_1_[k];
-
-					if (aint2 != null)
-					{
-						int[] aint3 = new int[(width + 16 >> k) * (height + 16 >> k)];
-						System.arraycopy(aint2, 0, aint3, 0, aint2.length);
-						aint1[k] = TextureUtil.prepareAnisotropicData(aint3, width >> k, height >> k, 8 >> k);
-					}
-				}
-
-				return aint1;
-			}
-		}
-
+		
 		@SuppressWarnings("unchecked")
 		public void replaceTextureData(int[] pixels, int mipmapLevels) throws Exception {
-			BetterBarrels.debug("37 - Attempting to replace texture for ["+this.getIconName()+"] with an array of ["+(pixels!=null?pixels.length:"(null)")+"] pixels, current texture dims are ["+this.width+"x"+this.height+"] for a total size of "+(this.width*this.height));
-			BetterBarrels.debug(this.toString());
-			if (pixels.length != (this.height * this.width)) {
-				throw new Exception("Attempting to replace texture image data with too much or too little data.");
-			}
 			this.setFramesTextureData(Lists.newArrayList());
 			int[][] aint = new int [1 + mipmapLevels][];
 			aint[0] = pixels;
-			this.fixTransparentPixels(aint);
-			this.framesTextureData.add(this.prepareAnisotropicFiltering(aint, this.width, this.height));
+			AccessibleTextureAtlasSprite.fixPixels.invoke(this, (Object)aint);
+			this.framesTextureData.add((int[][])AccessibleTextureAtlasSprite.setupAnisotropic.invoke(this, (Object)aint, (Object)(AccessibleTextureAtlasSprite.useAnisotropic.getBoolean(this) ? this.width - 16: this.width), (Object)(AccessibleTextureAtlasSprite.useAnisotropic.getBoolean(this) ? this.height - 16: this.height)));
 			this.generateMipmaps(mipmapLevels);
+			BetterBarrels.debug("37 - Attempting to replace texture for ["+this.getIconName()+"] with an array of ["+(this.getFrameTextureData(0)!=null?this.getFrameTextureData(0)[0].length:"(null)")+"] pixels, current texture dims are ["+this.width+"x"+this.height+"] for a total size of "+(this.width*this.height));
+			BetterBarrels.debug(this.toString());
+			if (this.getFrameTextureData(0)[0].length != (this.height * this.width)) {
+				throw new Exception("Attempting to replace texture image data with too much or too little data.");
+			}
 			BetterBarrels.debug("38 - Calling Minecraft Texture upload utility method");
 			TextureUtil.uploadTextureMipmap(this.getFrameTextureData(0), this.width, this.height, this.originX, this.originY, false, false);
 			this.clearFramesTextureData();
@@ -568,6 +553,7 @@ public class StructuralLevel {
 					mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
 					mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
 
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
 					this.iconBlockLabel.replaceTextureData(labelBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
 					this.iconBlockTop.replaceTextureData(topBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
@@ -577,6 +563,7 @@ public class StructuralLevel {
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
 					this.iconItem.replaceTextureData(itemBasePixels, 0);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+					GL11.glPopAttrib();
 				} catch(Exception e) {
 					BetterBarrels.log.severe("" + e.getMessage());
 				}
