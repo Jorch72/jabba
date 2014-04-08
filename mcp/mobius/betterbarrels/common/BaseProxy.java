@@ -26,4 +26,5 @@ public class BaseProxy {
 	
     public void postInit(){}
     
+    public void checkRenderers() {}
 }
