@@ -2,6 +2,7 @@ package mcp.mobius.betterbarrels.client;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
+import java.util.Map;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.bspace.BBEventHandler;
@@ -18,24 +19,44 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.util.StringTranslate;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends BaseProxy {
 
+	public static Map<Integer, ISimpleBlockRenderingHandler> blockRenderers;
+	
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public void registerRenderers() {
-		//MinecraftForgeClient.preloadTexture(BLOCK_PNG);
-		//MinecraftForgeClient.preloadTexture(ITEMS_PNG);		
+		// Grab a static reference to the block renderers list for later use
+		try {
+			Field blockRendererField = RenderingRegistry.class.getDeclaredField("blockRenderers");
+			blockRendererField.setAccessible(true);
+			ClientProxy.blockRenderers = (Map<Integer, ISimpleBlockRenderingHandler>)blockRendererField.get(RenderingRegistry.instance());
+		} catch (Throwable t) {}
 
+		// Get the next "available" ID, and make sure it's really available
 		BetterBarrels.blockBarrelRendererID = RenderingRegistry.getNextAvailableRenderId();
+		while(blockRenderers.containsKey(BetterBarrels.blockBarrelRendererID)) {
+			BetterBarrels.blockBarrelRendererID = RenderingRegistry.getNextAvailableRenderId();
+		}
+
 		RenderingRegistry.registerBlockHandler(BetterBarrels.blockBarrelRendererID, new BlockBarrelRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBarrel.class, new TileEntityBarrelRenderer());
-
-
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMiniBarrel.class,  new TileEntityMiniBarrelRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBarrelShelf.class,  new TileEntityBarrelShelfRenderer());
 		//mod_BetterBarrels.RENDER_SHELF = RenderingRegistry.getNextAvailableRenderId();
+	}
+
+	@Override
+	public void checkRenderers() {
+		ISimpleBlockRenderingHandler renderer = ClientProxy.blockRenderers.get(BetterBarrels.blockBarrelRendererID);
+
+		if(!(renderer instanceof BlockBarrelRenderer)) {
+			throw new RuntimeException(String.format("Wrong renderer found ! %s found while looking up the Jabba Barrel renderer.",  renderer.getClass().getCanonicalName()));
+		}
 	}
 
 	@Override
