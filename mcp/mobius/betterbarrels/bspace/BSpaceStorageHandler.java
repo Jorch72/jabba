@@ -5,25 +5,17 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.logging.Level;
 import java.util.zip.ZipException;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
@@ -35,8 +27,6 @@ import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
 import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
-import mcp.mobius.betterbarrels.network.Packet0x01ContentUpdate;
-import mcp.mobius.betterbarrels.network.Packet0x02GhostUpdate;
 
 public class BSpaceStorageHandler {
 	private int version = 1;
@@ -209,13 +199,16 @@ public class BSpaceStorageHandler {
 		
 		TileEntityBarrel source = this.getBarrel(sourceID);
 		if (source == null) return;
-		
+
+		boolean updateRequiredContent = source.sendContentSyncPacket(false);
+		boolean updateRequiredGhost = source.sendGhostSyncPacket(false);
+
 		for (Integer targetID : this.links.get(sourceID)){
 			TileEntityBarrel target = this.getBarrel(targetID);
 			if (target != null){
 				target.getStorage().setGhosting(source.getStorage().isGhosting());
-				PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(target), target.worldObj.provider.dimensionId);
-				PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(target), target.worldObj.provider.dimensionId);
+				target.sendContentSyncPacket(updateRequiredContent);
+				target.sendGhostSyncPacket(updateRequiredGhost);
 			}
 		}
 	}
