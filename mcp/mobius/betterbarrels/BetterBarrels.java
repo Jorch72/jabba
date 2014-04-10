@@ -32,6 +32,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.2c", dependencies="after:Waila;after:NotEnoughItems")
 @NetworkMod(channels = {BetterBarrels.modid}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
@@ -166,15 +168,19 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-      StructuralLevel.createLevelArray();
+		TickRegistry.registerTickHandler(ServerTickHandler.INSTANCE, Side.SERVER);
+		
+		StructuralLevel.createLevelArray();
 
-      RecipeHandler.instance().registerRecipes();
+		RecipeHandler.instance().registerRecipes();
 
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
 
 		proxy.registerRenderers();
 
-		FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
+		FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");     
+		
+		
 	}
  
 	
