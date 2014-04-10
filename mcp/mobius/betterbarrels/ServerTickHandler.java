@@ -36,8 +36,12 @@ public enum ServerTickHandler implements ITickHandler {
 	}
 
 	public void markDirty(TileEntityBarrel barrel){
+		this.markDirty(barrel, true);
+	}
+	public void markDirty(TileEntityBarrel barrel, boolean bspace){
 		this.dirtyBarrels.put(barrel, true);
-	    if (barrel.coreUpgrades.hasEnder && !barrel.worldObj.isRemote) BSpaceStorageHandler.instance().markAllDirty(barrel.id);		
+		if (bspace)
+			if (barrel.coreUpgrades.hasEnder && !barrel.worldObj.isRemote) BSpaceStorageHandler.instance().markAllDirty(barrel.id);		
 	}
 	
 	@Override

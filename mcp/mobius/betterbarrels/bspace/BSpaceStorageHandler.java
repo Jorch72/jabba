@@ -229,7 +229,7 @@ public class BSpaceStorageHandler {
 		for (Integer targetID : this.links.get(sourceID)){
 			TileEntityBarrel target = this.getBarrel(targetID);
 			if (target != null){
-				ServerTickHandler.INSTANCE.markDirty(target);
+				ServerTickHandler.INSTANCE.markDirty(target, false);
 			}
 		}		
 	}
