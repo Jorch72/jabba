@@ -30,6 +30,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.DimensionManager;
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.ServerTickHandler;
 import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
 import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
@@ -217,6 +218,20 @@ public class BSpaceStorageHandler {
 				PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(target), target.worldObj.provider.dimensionId);
 			}
 		}
+	}
+	
+	public void markAllDirty(int sourceID){
+		if (!this.links.containsKey(sourceID)) return;
+		
+		TileEntityBarrel source = this.getBarrel(sourceID);
+		if (source == null) return;
+		
+		for (Integer targetID : this.links.get(sourceID)){
+			TileEntityBarrel target = this.getBarrel(targetID);
+			if (target != null){
+				ServerTickHandler.INSTANCE.markDirty(target);
+			}
+		}		
 	}
 	
 	/*====================================*/

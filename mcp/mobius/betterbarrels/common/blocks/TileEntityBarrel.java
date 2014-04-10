@@ -559,7 +559,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     public void onInventoryChangedExec() {
        super.onInventoryChanged();
        if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
-       if (coreUpgrades.hasEnder && !this.worldObj.isRemote) BSpaceStorageHandler.instance().updateAllBarrels(this.id);
+       if (coreUpgrades.hasEnder && !this.worldObj.isRemote)
+    	   PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);
 	   this.sendContentSyncPacket();     
     }    
     
@@ -568,12 +569,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     /*/////////////////////////////////////*/
     
     public void sendContentSyncPacket(){
-		//long currTime = System.currentTimeMillis();
-		//if (currTime - this.timeSinceLastUpd > 1000){
-			PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
-			//PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 200, this.worldObj.provider.dimensionId, Packet0x01ContentUpdate.create(this));
-		//	this.timeSinceLastUpd = currTime;
-		//}    	
+		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
     }
     
 	@Override

@@ -3,6 +3,7 @@ package mcp.mobius.betterbarrels;
 import java.util.EnumSet;
 import java.util.WeakHashMap;
 
+import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -36,6 +37,7 @@ public enum ServerTickHandler implements ITickHandler {
 
 	public void markDirty(TileEntityBarrel barrel){
 		this.dirtyBarrels.put(barrel, true);
+	    if (barrel.coreUpgrades.hasEnder && !barrel.worldObj.isRemote) BSpaceStorageHandler.instance().markAllDirty(barrel.id);		
 	}
 	
 	@Override
