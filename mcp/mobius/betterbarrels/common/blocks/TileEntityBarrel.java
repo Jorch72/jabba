@@ -560,7 +560,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
        super.onInventoryChanged();
        if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
        if (coreUpgrades.hasEnder && !this.worldObj.isRemote)
-    	   PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);
+       	   PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 500.0, this.worldObj.provider.dimensionId, Packet0x02GhostUpdate.create(this));
 	   this.sendContentSyncPacket();     
     }    
     
@@ -569,7 +569,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     /*/////////////////////////////////////*/
     
     public void sendContentSyncPacket(){
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
+    	PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 500.0, this.worldObj.provider.dimensionId, Packet0x01ContentUpdate.create(this));
     }
     
 	@Override
@@ -598,8 +598,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public void setInventorySlotContents(int islot, ItemStack stack) { 
 		this.getStorage().setInventorySlotContents(islot, stack);
 		this.onInventoryChanged();
-		this.skipUpdatePacket = true;
-		this.sendContentSyncPacket();
 	}
 	
 	@Override
