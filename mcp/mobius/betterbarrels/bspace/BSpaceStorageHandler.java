@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.zip.ZipException;
 
@@ -46,13 +47,13 @@ public class BSpaceStorageHandler {
 	private HashMap<Integer, Coordinates>     barrels = new HashMap<Integer, Coordinates>();
 	
 	// This variable should store a map between barrels and what storage to access.
-	private HashMap<Integer, IBarrelStorage>  storageMap         = new HashMap<Integer, IBarrelStorage>();
+	private HashMap<Integer, IBarrelStorage>  storageMap = new HashMap<Integer, IBarrelStorage>();
 	
 	// This is the original storage map, established prior to linkage (used to restore barrels when the upgrade is removed)
 	private HashMap<Integer, IBarrelStorage>  storageMapOriginal = new HashMap<Integer, IBarrelStorage>();	
 	
 	// Table of links to restore proper object sharing on load and transmit signals between barrels
-	private HashMap<Integer, HashSet<Integer>>         links    = new HashMap<Integer, HashSet<Integer>>(); 
+	private HashMap<Integer, HashSet<Integer>> links = new HashMap<Integer, HashSet<Integer>>(); 
 	
 	private int maxBarrelID   = 0;
 
