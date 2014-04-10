@@ -542,7 +542,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		super.onInventoryChanged();
 		if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
 		if (!this.worldObj.isRemote) {
-			if (coreUpgrades.hasEnder)
+			if (coreUpgrades.hasEnder && BSpaceStorageHandler.instance().hasLinks(this.id))
 				BSpaceStorageHandler.instance().updateAllBarrels(this.id);
 			else {
 				this.sendContentSyncPacket(false);
