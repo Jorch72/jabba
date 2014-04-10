@@ -168,7 +168,7 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		TickRegistry.registerTickHandler(ServerTickHandler.INSTANCE, Side.SERVER);
+		//TickRegistry.registerTickHandler(ServerTickHandler.INSTANCE, Side.SERVER);
 		
 		StructuralLevel.createLevelArray();
 

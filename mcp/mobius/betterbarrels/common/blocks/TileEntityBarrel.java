@@ -1,9 +1,6 @@
 package mcp.mobius.betterbarrels.common.blocks;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
 
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -17,7 +14,6 @@ import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.blocks.logic.LogicHopper;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
 import mcp.mobius.betterbarrels.common.items.ItemTuningFork;
-import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer.HammerMode;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
@@ -31,19 +27,17 @@ import mcp.mobius.betterbarrels.network.Packet0x04StructuralUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x05CoreUpdate;
 import mcp.mobius.betterbarrels.network.Packet0x06FullStorage;
 import mcp.mobius.betterbarrels.network.Packet0x08LinkUpdate;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet132TileEntityData;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
 import net.minecraftforge.common.ForgeDirection;
 
 
@@ -62,6 +56,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public  int     id                 = -1;
 	public  long    timeSinceLastUpd   = System.currentTimeMillis();
 	
+	private Packet0x01ContentUpdate lastContentPacket;
+	private Packet0x02GhostUpdate lastGhostPacket;
 	
 	public BarrelCoreUpgrades coreUpgrades;
 
@@ -125,9 +121,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	   this.nTicks += 1;
 		if (this.nTicks % 8 == 0){
 			if (this.logicHopper.run(this)){
-		      this.skipUpdatePacket = false;
 				this.onInventoryChanged();
-				//PacketDispatcher.sendPacketToAllInDimension(Packet0x01ContentUpdate.create(this), this.worldObj.provider.dimensionId);
 			}
 			this.nTicks = 0;
 		}
@@ -277,7 +271,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		stack.setTagCompound(new NBTTagCompound());
 		
 		BSpaceStorageHandler.instance().linkStorages(barrelID, this.id);
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);	
+		this.sendGhostSyncPacket(false);
 		PacketDispatcher.sendPacketToAllInDimension(Packet0x06FullStorage.create(this), this.worldObj.provider.dimensionId);		
 	}	
 	
@@ -380,16 +374,12 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	private void switchLocked(){
 		this.getStorage().switchGhosting();
-		this.skipUpdatePacket = false;
 		this.onInventoryChangedExec();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
 	public void setLocked(boolean locked){
 		this.getStorage().setGhosting(locked);
-		this.skipUpdatePacket = false;
 		this.onInventoryChangedExec();
-		PacketDispatcher.sendPacketToAllInDimension(Packet0x02GhostUpdate.create(this), this.worldObj.provider.dimensionId);		
 	}
 	
 	private void manualStackAdd(EntityPlayer player){
@@ -541,37 +531,54 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     }	
 	
     /* OTHER */
-    private boolean skipUpdatePacket = false;
+	@Override
+	public void onInventoryChanged() {
+		// super.onInventoryChanged();
+		// ServerTickHandler.INSTANCE.markDirty(this);
+		this.onInventoryChangedExec();
+	}
 
-    @Override
-    public void onInventoryChanged() {
-    	/*
-       	if (skipUpdatePacket) {
-          	skipUpdatePacket = false;
-          	//BetterBarrels.log.log(Level.INFO, "Skipping the barrel content update and related packet; was previously called.");
-          	return;
+	public void onInventoryChangedExec() {
+		super.onInventoryChanged();
+		if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
+		if (!this.worldObj.isRemote) {
+			if (coreUpgrades.hasEnder)
+				BSpaceStorageHandler.instance().updateAllBarrels(this.id);
+			else {
+				this.sendContentSyncPacket(false);
+				this.sendGhostSyncPacket(false);
+			}
 		}
-    	 */
-       super.onInventoryChanged();
-       ServerTickHandler.INSTANCE.markDirty(this);
-    }
+	}
 
-    public void onInventoryChangedExec() {
-       super.onInventoryChanged();
-       if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
-       if (coreUpgrades.hasEnder && !this.worldObj.isRemote)
-       	   PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 500.0, this.worldObj.provider.dimensionId, Packet0x02GhostUpdate.create(this));
-	   this.sendContentSyncPacket();     
-    }    
-    
+	public boolean sendContentSyncPacket(boolean force) {
+		Packet250CustomPayload packet250 = Packet0x01ContentUpdate.create(this);
+
+		if (force || lastContentPacket == null || !this.getStorage().hasItem() || lastContentPacket.amount != this.getStorage().getAmount() || !lastContentPacket.stack.isItemEqual(this.getStorage().getItem())) {
+			lastContentPacket = new Packet0x01ContentUpdate(packet250);
+			PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 500.0, this.worldObj.provider.dimensionId, packet250);
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean sendGhostSyncPacket(boolean force) {
+		Packet250CustomPayload packet250 = Packet0x02GhostUpdate.create(this);
+
+		if (force || lastGhostPacket == null || lastGhostPacket.locked != this.getStorage().isGhosting()) {
+			lastGhostPacket = new Packet0x02GhostUpdate(packet250);
+			PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 500.0, this.worldObj.provider.dimensionId, packet250);
+			return true;
+		}
+
+		return false;
+	}
+
     /*/////////////////////////////////////*/
     /* IInventory Interface Implementation */
     /*/////////////////////////////////////*/
-    
-    public void sendContentSyncPacket(){
-    	PacketDispatcher.sendPacketToAllAround(this.xCoord, this.yCoord, this.zCoord, 500.0, this.worldObj.provider.dimensionId, Packet0x01ContentUpdate.create(this));
-    }
-    
+
 	@Override
 	public int getSizeInventory() {return this.getStorage().getSizeInventory();}
 	@Override
