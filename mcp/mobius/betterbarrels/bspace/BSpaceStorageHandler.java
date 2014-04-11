@@ -203,12 +203,15 @@ public class BSpaceStorageHandler {
 		TileEntityBarrel source = this.getBarrel(sourceID);
 		if (source == null) return;
 		
+		boolean updateRequiredContent = source.sendContentSyncPacket(false);
+		boolean updateRequiredGhost = source.sendGhostSyncPacket(false);
+
 		for (Integer targetID : this.links.get(sourceID)){
 			TileEntityBarrel target = this.getBarrel(targetID);
 			if (target != null){
 				target.getStorage().setGhosting(source.getStorage().isGhosting());
-				BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x01ContentUpdate(target), target.getWorldObj().provider.dimensionId);
-				BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x02GhostUpdate(target), target.getWorldObj().provider.dimensionId);
+				target.sendContentSyncPacket(updateRequiredContent);
+				target.sendGhostSyncPacket(updateRequiredGhost);
 			}
 		}
 	}
