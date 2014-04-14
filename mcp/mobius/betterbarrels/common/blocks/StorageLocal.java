@@ -28,8 +28,8 @@ public class StorageLocal implements IBarrelStorage{
 	private int totalAmount   = 0;	//Total number of items
 	private int stackAmount   = 0;	//Number of items in a stack
 	
-	private int basestacks    = 64;				//Base amount of stacks in the barrel, before upgrades
-	private int maxstacks     = 64;				//Maximum amount of stacks in the barrel (post upgrade)
+	private int basestacks    = BetterBarrels.stacksSize;				//Base amount of stacks in the barrel, before upgrades
+	private int maxstacks     = BetterBarrels.stacksSize;				//Maximum amount of stacks in the barrel (post upgrade)
 	private int upgCapacity   = 0;				//Current capacity upgrade level
 	private boolean keepLastItem = false;	//Ghosting mod. If true, we don't reset the item type when the barrel is empty
 	private boolean deleteExcess = false;  // Void mod, when true, extra added items are deleted
@@ -108,12 +108,14 @@ public class StorageLocal implements IBarrelStorage{
     	if (!oreDictCache.containsKey(orePair)){
 	    	int oreIDBarrel = OreDictionary.getOreID(this.getItem());
 	    	int oreIDStack  = OreDictionary.getOreID(stack);
-			boolean stackIsMetal =  OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
-									OreDictionary.getOreName(oreIDBarrel).startsWith("ore")   ||
-									OreDictionary.getOreName(oreIDBarrel).startsWith("dust")  ||
-									OreDictionary.getOreName(oreIDBarrel).startsWith("block") ||
-									OreDictionary.getOreName(oreIDBarrel).startsWith("nugget") ;
-			
+			boolean stackIsMetal =  false;
+			for (String prefix : BetterBarrels.oreDictPrefixes) {
+				if (OreDictionary.getOreName(oreIDBarrel).startsWith(prefix)) {
+					stackIsMetal = true;
+					break;
+				}
+			}
+
 			oreDictCache.put(orePair, (oreIDStack != -1) && (oreIDBarrel != -1) && (oreIDBarrel == oreIDStack) && (stackIsMetal));
 			//System.out.printf("Added ore pair for %d:%d | %d:%d = %s\n", this.getItem().itemID, this.getItem().getItemDamage(), stack.itemID, stack.getItemDamage(), oreDictCache.get(orePair));
     	}
