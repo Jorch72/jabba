@@ -2,6 +2,7 @@ package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import mcp.mobius.betterbarrels.BetterBarrels;
 import net.minecraft.util.Icon;
 import net.minecraft.util.StatCollector;
 
@@ -40,7 +41,7 @@ public enum UpgradeCore {
       String key = "text.jabba.ubgrade.core." + this.type.name().toLowerCase();
 
       if (this.type == Type.STORAGE) {
-         return StatCollector.translateToLocalFormatted(key, this.slotsUsed * 64);
+         return StatCollector.translateToLocalFormatted(key, this.slotsUsed * BetterBarrels.stacksSize);
       } else {
          return StatCollector.translateToLocal(key);
       }

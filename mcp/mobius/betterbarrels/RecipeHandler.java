@@ -29,9 +29,17 @@ public class RecipeHandler {
 		OreDictionary.registerOre("whiteStone", Block.whiteStone);
 		OreDictionary.registerOre("transdimBlock", Block.enderChest);
 	}
+
+	private ItemStack upgradeItem = null;
 	
 	public void registerRecipes(){
-		
+		try {
+			upgradeItem = new ItemStack(Item.itemsList[BetterBarrels.upgradeItemID]);
+		} catch (Throwable t) {
+			BetterBarrels.log.severe("Requested item with id " + BetterBarrels.upgradeItemID + " for tier upgrade recipes was not found, using the default of vanilla fence");
+			upgradeItem = new ItemStack(Block.fence);
+		}
+
 		for (int i = 0; i < Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i++)
 			this.addStructuralUpgrade(i, StructuralLevel.upgradeMaterialsList[i]);
 		
@@ -133,21 +141,21 @@ public class RecipeHandler {
 	private void addStructuralUpgrade_(int level, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				'P', Block.fence, 
+				'P', upgradeItem, 
 				'B', variableComponent});		
 	}
 
 	private void addStructuralUpgrade_(int level, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				'P', Block.fence, 
+				'P', upgradeItem, 
 				'B', new ItemStack(variableComponent,1)});		
 	}	
 	
 	private void addStructuralUpgrade_(int level, String variableComponent){
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				Character.valueOf('P'), Block.fence, 
+				Character.valueOf('P'), upgradeItem, 
 				Character.valueOf('B'), variableComponent}));		
 	}	
 	
