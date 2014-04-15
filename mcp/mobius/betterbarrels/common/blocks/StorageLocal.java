@@ -108,13 +108,10 @@ public class StorageLocal implements IBarrelStorage{
     	if (!oreDictCache.containsKey(orePair)){
 	    	int oreIDBarrel = OreDictionary.getOreID(this.getItem());
 	    	int oreIDStack  = OreDictionary.getOreID(stack);
-			boolean stackIsMetal =  false;
-			for (String prefix : BetterBarrels.oreDictPrefixes) {
-				if (OreDictionary.getOreName(oreIDBarrel).startsWith(prefix)) {
-					stackIsMetal = true;
-					break;
-				}
-			}
+	    	boolean stackIsMetal =  OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
+	    			OreDictionary.getOreName(oreIDBarrel).startsWith("ore") ||
+	    			OreDictionary.getOreName(oreIDBarrel).startsWith("dust") ||
+	    			OreDictionary.getOreName(oreIDBarrel).startsWith("nugget");
 
 			oreDictCache.put(orePair, (oreIDStack != -1) && (oreIDBarrel != -1) && (oreIDBarrel == oreIDStack) && (stackIsMetal));
 			//System.out.printf("Added ore pair for %d:%d | %d:%d = %s\n", this.getItem().itemID, this.getItem().getItemDamage(), stack.itemID, stack.getItemDamage(), oreDictCache.get(orePair));

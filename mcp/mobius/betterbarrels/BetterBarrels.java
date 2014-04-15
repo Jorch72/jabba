@@ -80,7 +80,6 @@ public class BetterBarrels {
 
 	public static int[] colorOverrides     = new int[]{0, 0};
 	public static int stacksSize           = 64;
-	public static String[] oreDictPrefixes = new String[]{"ingot", "ore", "dust", "block", "nugget"};
 	public static int upgradeItemID        = 85;
 
 	public static Block blockBarrel      = null;
@@ -144,7 +143,6 @@ public class BetterBarrels {
          	}
          }
          stacksSize = config.get(Configuration.CATEGORY_GENERAL, "stacksSize", BetterBarrels.stacksSize, "How many stacks the base barrel and each upgrade will provide").getInt();
-         oreDictPrefixes = config.get(Configuration.CATEGORY_GENERAL, "oreDictPrefixes", BetterBarrels.oreDictPrefixes, "Barrels will accept matching items with these prefixes in the Ore Dictionary").getStringList();
          upgradeItemID = config.get(Configuration.CATEGORY_GENERAL, "tierUpgradeItemID", BetterBarrels.upgradeItemID, "The ID of the item to use for the strutural tier upgrade recipes. Default is 85 for Vanilla Fence").getInt();
 
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
