@@ -136,7 +136,11 @@ public class BetterBarrels {
          			StructuralLevel.structuralColorOverrides[i] = -1;
          		for(int i = 0; i < colorOverrides.length; i += 2) {
          			if(colorOverrides[i] == 0) continue;
-         			StructuralLevel.structuralColorOverrides[colorOverrides[i]-1] = (0xFF << 24) | colorOverrides[i+1];
+         			if(colorOverrides[i] > 0 && colorOverrides[i] < StructuralLevel.structuralColorOverrides.length) {
+         				StructuralLevel.structuralColorOverrides[colorOverrides[i]-1] = (0xFF << 24) | colorOverrides[i+1];
+         			} else {
+         				BetterBarrels.log.warning("Attempting to override the structural tier color for non existant tier: " + colorOverrides[i]);
+         			}
          		}
          	} else {
          		BetterBarrels.log.warning("Color override list is not formatted in pairs, ignoring");
