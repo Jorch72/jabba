@@ -46,6 +46,7 @@ public class StructuralLevel {
 	private int textColor;
 	private int maxCoreSlots;
 	private boolean needsMaterialInitialization = false;
+	private int level = 0;
 
 	private StructuralLevel() {
 		// Special case for base barrel with no upgrade
@@ -54,6 +55,7 @@ public class StructuralLevel {
 	}
 
 	private StructuralLevel(String oreDictMaterial, final int level) {
+		this.level = level;
 		this.oreDictName = oreDictMaterial.split("\\.")[1];
 		this.needsMaterialInitialization = true;
 
@@ -317,6 +319,8 @@ public class StructuralLevel {
 		return result;
 	}
 
+	public static int[] structuralColorOverrides = null;
+
 	private class PixelARGB {
 		int A, R, G, B;
 		int combined;
@@ -504,30 +508,36 @@ public class StructuralLevel {
 
 			int[] materialPixels = null;
 			boolean foundSourceMaterial = false;
-			try {
-				Block materialBlock = Block.getBlockFromItem(materialStack.getItem());
-				Item materialItem = materialStack.getItem();
+			if (StructuralLevel.structuralColorOverrides[this.level-1] == -1) {
+				try {
+					Block materialBlock = Block.getBlockFromItem(materialStack.getItem());
+					Item materialItem = materialStack.getItem();
 
-				if (materialBlock != Blocks.air && !materialBlock.getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
-					BetterBarrels.debug("32 - Block found");
-					materialPixels = this.getPixelsForTexture(false, (TextureAtlasSprite)materialBlock.getIcon(0, materialStack.getItemDamage()));
-					foundSourceMaterial = true;
-					BetterBarrels.debug("33 - Loaded texture data for [" + this.name + "]: read an array of length: " + (materialPixels != null ? materialPixels.length: "(null)"));
-				} else if (materialItem != null){
-					BetterBarrels.debug("30 - Item found, attempting to load");
-					materialPixels = this.getPixelsForTexture(true, (TextureAtlasSprite)materialItem.getIconFromDamage(materialStack.getItemDamage()));
-					foundSourceMaterial = true;
-					BetterBarrels.debug("30 - Loaded texture data for [" + this.name + "]: read an array of length: " + (materialPixels != null ? materialPixels.length: "(null)"));
+					if (materialBlock != Blocks.air && !materialBlock.getUnlocalizedName().equalsIgnoreCase("tile.ForgeFiller")) {
+						BetterBarrels.debug("32 - Block found");
+						materialPixels = this.getPixelsForTexture(false, (TextureAtlasSprite)materialBlock.getIcon(0, materialStack.getItemDamage()));
+						foundSourceMaterial = true;
+						BetterBarrels.debug("33 - Loaded texture data for [" + this.name + "]: read an array of length: " + (materialPixels != null ? materialPixels.length: "(null)"));
+					} else if (materialItem != null){
+						BetterBarrels.debug("30 - Item found, attempting to load");
+						materialPixels = this.getPixelsForTexture(true, (TextureAtlasSprite)materialItem.getIconFromDamage(materialStack.getItemDamage()));
+						foundSourceMaterial = true;
+						BetterBarrels.debug("30 - Loaded texture data for [" + this.name + "]: read an array of length: " + (materialPixels != null ? materialPixels.length: "(null)"));
+					}
+				} catch (Throwable t) {
+					BetterBarrels.debug("34 - MATERIAL LOOKUP ERROR");
+					BetterBarrels.log.severe("Error loading resource material texture: " + t.getMessage());
+					t.printStackTrace();
+				} finally {
+					// nothing found, skip out
+					if (!foundSourceMaterial) {
+						BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + this.oreDictName + "].  Ore Dictionary returned " + materialStack.getUnlocalizedName() + " as the first itemStack for that request.");
+					}
 				}
-			} catch (Throwable t) {
-				BetterBarrels.debug("34 - MATERIAL LOOKUP ERROR");
-				BetterBarrels.log.severe("Error loading resource material texture: " + t.getMessage());
-				t.printStackTrace();
-			} finally {
-				// nothing found, skip out
-				if (!foundSourceMaterial) {
-					BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + this.oreDictName + "].  Ore Dictionary returned " + materialStack.getUnlocalizedName() + " as the first itemStack for that request.");
-				}
+			} else {
+				materialPixels = new int[1];
+				materialPixels[0] = StructuralLevel.structuralColorOverrides[this.level-1];
+				foundSourceMaterial = true;
 			}
 
 			if (foundSourceMaterial) {

@@ -187,6 +187,8 @@ public class BlockBarrel extends BlockContainer{
         	barrelEntity.updateEntity();
         	int ndroppedstacks = 0;
         	ItemStack droppedstack = barrelEntity.getStorage().getStack();
+        	// TODO : is this just an amount limiter to prevent too many items spawning into the world?
+        	// limits max number of dropped stacks to 64, perhaps should be limited to 64 * storage upgrade count?
         	while ((droppedstack != null) && (ndroppedstacks <= 64)){ //TODO: shouldn't this be the max stack size of the barrel, not 64?
         		ndroppedstacks += 1;
         		

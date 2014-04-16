@@ -30,9 +30,30 @@ public class RecipeHandler {
 		OreDictionary.registerOre("whiteStone", Blocks.end_stone);
 		OreDictionary.registerOre("transdimBlock", Blocks.ender_chest);
 	}
-	
+
+	private ItemStack upgradeItem = null;
+
 	public void registerRecipes(){
-		
+		try {
+			// Following code shamelessly borrowed from net.minecraft.util.ResourceLocation, to maintain case on the domain
+			String domain = "minecraft";
+			String name = BetterBarrels.upgradeItemName;
+			int i = BetterBarrels.upgradeItemName.indexOf(58);
+
+			if (i >= 0) {
+				name = BetterBarrels.upgradeItemName.substring(i + 1, BetterBarrels.upgradeItemName.length());
+
+				if (i > 1) {
+					domain = BetterBarrels.upgradeItemName.substring(0, i);
+				}
+			}
+
+			upgradeItem = new ItemStack(GameRegistry.findItem(domain, name));
+		} catch (Throwable t) {
+			BetterBarrels.log.severe("Requested item with name " + BetterBarrels.upgradeItemName + " for tier upgrade recipes was not found, using the default of vanilla fence");
+			upgradeItem = new ItemStack(Blocks.fence);
+		}
+
 		for (int i = 0; i < Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i++)
 			this.addStructuralUpgrade(i, StructuralLevel.upgradeMaterialsList[i]);
 		
@@ -134,21 +155,21 @@ public class RecipeHandler {
 	private void addStructuralUpgrade_(int level, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				'P', Blocks.fence, 
+				'P', upgradeItem, 
 				'B', variableComponent});		
 	}
 
 	private void addStructuralUpgrade_(int level, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				'P', Blocks.fence, 
+				'P', upgradeItem, 
 				'B', new ItemStack(variableComponent,1)});		
 	}	
 	
 	private void addStructuralUpgrade_(int level, String variableComponent){
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
-				Character.valueOf('P'), Blocks.fence, 
+				Character.valueOf('P'), upgradeItem, 
 				Character.valueOf('B'), variableComponent}));		
 	}	
 	
