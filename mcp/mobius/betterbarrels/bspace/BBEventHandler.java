@@ -24,7 +24,7 @@ public class BBEventHandler {
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event){
 		if (event.itemStack.getItem() instanceof ItemUpgradeCore){
-			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots") + UpgradeCore.values()[event.itemStack.getItemDamage()].slotsUsed);
+			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots.used") + UpgradeCore.values()[event.itemStack.getItemDamage()].slotsUsed);
 		}
 		
 		if (event.itemStack.getItem() instanceof ItemUpgradeStructural){
@@ -32,7 +32,7 @@ public class BBEventHandler {
 			for (int i = 0; i < event.itemStack.getItemDamage() + 1; i++)
 				nslots += MathHelper.floor_double(Math.pow(2, i));			
 			
-			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots") + nslots);
+			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots.provided") + nslots);
 		}
 
 		if (event.itemStack.getItem() instanceof ItemBarrelMover){
