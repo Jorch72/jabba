@@ -11,10 +11,29 @@ import cpw.mods.fml.common.TickType;
 public enum ServerTickHandler implements ITickHandler {
 	INSTANCE;
 	
+	class Timer{
+		private long interval;
+		private long lastTick = System.nanoTime();
+		
+		public Timer(long interval){
+			this.interval = interval * 1000L * 1000L; //Interval is passed in millisecond but stored in nanosecond.
+		}
+		
+		public boolean isDone(){
+			long    time  = System.nanoTime();
+			long    delta = (time - this.lastTick) - this.interval;
+			boolean done  = delta >= 0;
+			if (!done) return false;
+			
+			this.lastTick = time - delta;
+			return true;
+		}
+	}
+	
 	// Hash map of dirty barrels for automatic cleanup
 	// The boolean is never used and is just there to be able to have a WeakHashMap with automatic key handling
 	private WeakHashMap<TileEntityBarrel, Boolean> dirtyBarrels = new WeakHashMap<TileEntityBarrel, Boolean>();
-	public long timer1000 = System.nanoTime();
+	public Timer timer = new Timer(BetterBarrels.limiterDelay);
 	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
@@ -22,10 +41,7 @@ public enum ServerTickHandler implements ITickHandler {
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if(type.contains(TickType.SERVER)){
-			// One second timer
-			if (System.nanoTime() - timer1000 > 1000000000L){
-				timer1000 = System.nanoTime();
-				
+			if (timer.isDone()){
 				for (TileEntityBarrel barrel : dirtyBarrels.keySet()){
 					barrel.onInventoryChangedExec();
 				}

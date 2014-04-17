@@ -94,6 +94,8 @@ public class BetterBarrels {
 	public static Item itemLockingPlanks = null;
 	public static Item itemHammer = null;
 	
+	public static long limiterDelay = 500;
+	
 	public static int blockBarrelRendererID = -1;
 
 	@EventHandler
@@ -116,6 +118,9 @@ public class BetterBarrels {
 			itemMoverDiamondID  = config.get("item",   "DiamondMover",    3509).getInt();				
 			
 			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
+			limiterDelay        = config.get(Configuration.CATEGORY_GENERAL, "packetLimiterDelay", 500, "Controls the minimum delay (in ms) between two server/client sync. Lower values mean closer to realtime, and more network usage.").getInt();
+			
+			
          StructuralLevel.upgradeMaterialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.upgradeMaterialsList, "A structural tier will be created for each material in this list, even if not craftable").getStringList();
          if(StructuralLevel.upgradeMaterialsList.length > 18) {
             String[] trimedList = new String[18];
