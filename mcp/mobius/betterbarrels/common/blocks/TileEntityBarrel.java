@@ -533,21 +533,21 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     /* OTHER */
 	@Override
 	public void onInventoryChanged() {
-		// super.onInventoryChanged();
-		// ServerTickHandler.INSTANCE.markDirty(this);
-		this.onInventoryChangedExec();
+		super.onInventoryChanged();
+		ServerTickHandler.INSTANCE.markDirty(this);
+		//this.onInventoryChangedExec();
 	}
 
 	public void onInventoryChangedExec() {
 		super.onInventoryChanged();
 		if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord));
 		if (!this.worldObj.isRemote) {
-			if (coreUpgrades.hasEnder && this.isLinked)
-				BSpaceStorageHandler.instance().updateAllBarrels(this.id);
-			else {
+			//if (coreUpgrades.hasEnder && this.isLinked)
+			//	BSpaceStorageHandler.instance().updateAllBarrels(this.id);
+			//else {
 				this.sendContentSyncPacket(false);
 				this.sendGhostSyncPacket(false);
-			}
+			//}
 		}
 	}
 
