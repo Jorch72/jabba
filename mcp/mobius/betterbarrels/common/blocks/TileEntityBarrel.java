@@ -3,6 +3,7 @@ package mcp.mobius.betterbarrels.common.blocks;
 import java.util.ArrayList;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.ServerTickHandler;
 import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
@@ -520,6 +521,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     }	
 	
     /* OTHER */
+    /*
     @Override
     public void markDirty() {
        super.markDirty();
@@ -533,7 +535,24 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	   }
        }
     }
+	*/
 
+	@Override
+	public void markDirty() {
+		super.markDirty();
+		ServerTickHandler.INSTANCE.markDirty(this);
+		//this.onInventoryChangedExec();
+	}
+
+	public void markDirtyExec() {
+		super.markDirty();
+		if (coreUpgrades.hasRedstone || coreUpgrades.hasHopper) this.worldObj.notifyBlockChange(this.xCoord, this.yCoord, this.zCoord, this.worldObj.getBlock(this.xCoord, this.yCoord, this.zCoord));
+		if (!this.worldObj.isRemote) {
+			this.sendContentSyncPacket(false);
+			this.sendGhostSyncPacket(false);
+		}
+	}    
+    
 	public boolean sendContentSyncPacket(boolean force) {
 		if (force || lastContentMessage == null || !this.getStorage().hasItem() || lastContentMessage.amount != this.getStorage().getAmount() || !lastContentMessage.stack.isItemEqual(this.getStorage().getItem())) {
 			lastContentMessage = new Message0x01ContentUpdate(this);
