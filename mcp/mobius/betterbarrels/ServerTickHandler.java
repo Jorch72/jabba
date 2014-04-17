@@ -31,7 +31,6 @@ public enum ServerTickHandler implements ITickHandler {
 				}
 				dirtyBarrels.clear();
 			}
-			
 		}
 	}
 
