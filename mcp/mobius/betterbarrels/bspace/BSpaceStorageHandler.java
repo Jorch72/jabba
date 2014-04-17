@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.zip.ZipException;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.ServerTickHandler;
 import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
 import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
@@ -215,6 +216,20 @@ public class BSpaceStorageHandler {
 			}
 		}
 	}
+	
+	public void markAllDirty(int sourceID){
+		if (!this.links.containsKey(sourceID)) return;
+		
+		TileEntityBarrel source = this.getBarrel(sourceID);
+		if (source == null) return;
+		
+		for (Integer targetID : this.links.get(sourceID)){
+			TileEntityBarrel target = this.getBarrel(targetID);
+			if (target != null){
+				ServerTickHandler.INSTANCE.markDirty(target, false);
+			}
+		}		
+	}	
 	
 	/*====================================*/
 	/*            NBT HANDLING            */

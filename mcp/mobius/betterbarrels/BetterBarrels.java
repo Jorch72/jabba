@@ -20,6 +20,7 @@ import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.config.Configuration;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -76,6 +77,8 @@ public class BetterBarrels {
 	public static Item itemLockingPlanks = null;
 	public static Item itemHammer = null;
 	
+	public static long limiterDelay = 500;	
+	
 	public static int blockBarrelRendererID = -1;
 
 	@EventHandler
@@ -86,6 +89,8 @@ public class BetterBarrels {
 			config.load();
 
 			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
+			limiterDelay        = config.get(Configuration.CATEGORY_GENERAL, "packetLimiterDelay", 500, "Controls the minimum delay (in ms) between two server/client sync. Lower values mean closer to realtime, and more network usage.").getInt();			
+			
 			StructuralLevel.upgradeMaterialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.upgradeMaterialsList, "A structural tier will be created for each material in this list, even if not craftable").getStringList();
 			if(StructuralLevel.upgradeMaterialsList.length > 18) {
 				String[] trimedList = new String[18];
@@ -168,7 +173,7 @@ public class BetterBarrels {
 		RecipeHandler.instance().registerRecipes();
 
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
-
+		FMLCommonHandler.instance().bus().register(ServerTickHandler.INSTANCE); 
 		proxy.registerRenderers();
 
         FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
