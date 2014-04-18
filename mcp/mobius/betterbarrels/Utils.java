@@ -62,13 +62,13 @@ public class Utils {
    }
 
 	public static class Material {
-		public String oreName;
-		public int id;
-		public int meta;
+		public String name;
+		public int id = -1;
+		public int meta = -1;
 
 		public Material(String in) {
 			if (in.contains("Ore.")) {
-				oreName = in.split("\\.")[1];
+				name = in.split("\\.")[1];
 			} else if (in.contains("<")) {
 				String itemStr = in.substring(in.indexOf('<') + 1, in.indexOf('>'));
 
@@ -92,15 +92,19 @@ public class Utils {
 			}
 		}
 
+		public boolean isOreDict() {
+			return this.name != null && this.id == -1;
+		}
+
 		public ItemStack getStack() {
 			ItemStack ret = new ItemStack(Block.portal);
-			if (this.oreName != null) {
-				ArrayList<ItemStack> ores = OreDictionary.getOres(this.oreName);
+			if (this.isOreDict()) {
+				ArrayList<ItemStack> ores = OreDictionary.getOres(this.name);
 
 				if (ores.size() > 0) {
 					ret = ores.get(0);
 				}
-				BetterBarrels.debug("05 - Looking up [" + this.oreName + "] and found: " + ret.getDisplayName());
+				BetterBarrels.debug("05 - Looking up [" + this.name + "] and found: " + ret.getDisplayName());
 			} else {
 				try {
 					ret = new ItemStack(Item.itemsList[this.id], 1, this.meta);
