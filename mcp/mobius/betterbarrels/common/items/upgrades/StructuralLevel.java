@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -36,7 +37,7 @@ public class StructuralLevel {
 	private static boolean structureArrayInitialized = false;
 
 	public String name;
-	public String oreDictName;
+	public Utils.Material material;
 	public ItemStack materialStack;
 	private AccessibleTextureAtlasSprite iconBlockSide;
 	private AccessibleTextureAtlasSprite iconBlockLabel;
@@ -54,29 +55,22 @@ public class StructuralLevel {
 		this.maxCoreSlots = 0;
 	}
 
-	private StructuralLevel(String oreDictMaterial, final int level) {
+	private StructuralLevel(String materialin, final int level) {
 		this.level = level;
-		this.oreDictName = oreDictMaterial.split("\\.")[1];
+		this.material = new Utils.Material(materialin);
+
 		this.needsMaterialInitialization = true;
 
 		this.maxCoreSlots = 0;
 		for (int i = 0; i < level; i++)
 			this.maxCoreSlots += MathHelper.floor_double(Math.pow(2, i));
 
-		BetterBarrels.debug("03 - Created structural entry for [" + this.oreDictName + "] with " + this.maxCoreSlots + " slots.");
+		BetterBarrels.debug("03 - Created structural entry for [" + (this.material.isOreDict() ? this.material.name : (this.material.modDomain + ":" + this.material.name + ":" + this.material.meta)) + "] with " + this.maxCoreSlots + " slots.");
 	}
 
 	public void initializeMaterial() {
 		if(this.needsMaterialInitialization) {
-			ArrayList<ItemStack> ores = OreDictionary.getOres(this.oreDictName);
-
-			if (ores.size() > 0) {
-				this.materialStack = ores.get(0);
-			} else {
-				this.materialStack = new ItemStack(Blocks.portal);
-			}
-			this.name = materialStack.getDisplayName();
-			BetterBarrels.debug("05 - Looking up [" + this.oreDictName + "] and found: " + this.materialStack.getDisplayName());
+			this.materialStack = this.material.getStack();
 		}
 	}
 
@@ -88,7 +82,7 @@ public class StructuralLevel {
 	}
 
 	public void discoverMaterialName() {
-		BetterBarrels.debug("15 - Looking up user friendly name for " + this.oreDictName);
+		BetterBarrels.debug("15 - Looking up user friendly name for " + (this.material.isOreDict() ? this.material.name : (this.material.modDomain + ":" + this.material.name + ":" + this.material.meta)));
 		this.name = materialStack.getDisplayName();
 
 		if (this.name.indexOf(".name") > 0) {
@@ -531,7 +525,7 @@ public class StructuralLevel {
 				} finally {
 					// nothing found, skip out
 					if (!foundSourceMaterial) {
-						BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + this.oreDictName + "].  Ore Dictionary returned " + materialStack.getUnlocalizedName() + " as the first itemStack for that request.");
+						BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + (this.material.isOreDict() ? this.material.name : (this.material.modDomain + ":" + this.material.name + ":" + this.material.meta)) + "].  Ore Dictionary returned " + materialStack.getUnlocalizedName() + " as the first itemStack for that request.");
 					}
 				}
 			} else {

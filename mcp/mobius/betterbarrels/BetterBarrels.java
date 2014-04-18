@@ -63,7 +63,7 @@ public class BetterBarrels {
 	public static boolean  diamondDollyActive = true;	
 	public static int[] colorOverrides        = new int[]{0, 0};
 	public static int stacksSize              = 64;
-	public static String upgradeItemName      = "minecraft:fence";
+	public static String upgradeItemStr       = "minecraft:fence";
 
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
@@ -123,7 +123,7 @@ public class BetterBarrels {
 				}
 			}
 			stacksSize = config.get(Configuration.CATEGORY_GENERAL, "stacksSize", BetterBarrels.stacksSize, "How many stacks the base barrel and each upgrade will provide").getInt();
-			upgradeItemName = config.get(Configuration.CATEGORY_GENERAL, "tierUpgradeItemID", BetterBarrels.upgradeItemName, "The name of the item to use for the strutural tier upgrade recipes. Default is \"minecraft:fence\" for Vanilla Fence").getString();
+			upgradeItemStr = config.get(Configuration.CATEGORY_GENERAL, "tierUpgradeItem", BetterBarrels.upgradeItemStr, "The name of the item to use for the strutural tier upgrade recipes. Default is \"minecraft:fence\" for Vanilla Fence. The format is Ore.name for an ore dictionary lookup, or itemDomain:itemname[:meta] for a direct item, not this is case-sensitive.").getString();
 
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			//highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
@@ -169,20 +169,17 @@ public class BetterBarrels {
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		StructuralLevel.createLevelArray();
-
 		RecipeHandler.instance().registerRecipes();
-
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
 		FMLCommonHandler.instance().bus().register(ServerTickHandler.INSTANCE); 
 		proxy.registerRenderers();
-
         FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		RecipeHandler.instance().registerLateRecipes();
 		StructuralLevel.initializeStructuralMaterials();
-
 		proxy.postInit();
 	}	
 
