@@ -114,8 +114,8 @@ public class RecipeHandler {
 	private void addStructuralUpgrade(int level, String variableComponent){
 		Utils.Material mat = new Utils.Material(variableComponent);
 
-		if (mat.oreName != null) {
-			this.addStructuralUpgrade_(level, mat.oreName);
+		if (mat.isOreDict()) {
+			this.addStructuralUpgrade_(level, mat.name);
 		} else {
 			try {
 				this.addStructuralUpgrade_(level, mat.getStack());

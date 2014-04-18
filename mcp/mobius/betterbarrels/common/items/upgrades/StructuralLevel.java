@@ -62,7 +62,7 @@ public class StructuralLevel {
       for (int i = 0; i < level; i++)
          this.maxCoreSlots += MathHelper.floor_double(Math.pow(2, i));
       
-      BetterBarrels.debug("03 - Created structural entry for [" + (this.material.oreName != null ? this.material.oreName : (this.material.id + ":" + this.material.meta)) + "] with " + this.maxCoreSlots + " slots.");
+      BetterBarrels.debug("03 - Created structural entry for [" + (this.material.isOreDict() ? this.material.name : (this.material.id + ":" + this.material.meta)) + "] with " + this.maxCoreSlots + " slots.");
    }
 
    public void initializeMaterial() {
@@ -79,7 +79,7 @@ public class StructuralLevel {
    }
 
    public void discoverMaterialName() {
-      BetterBarrels.debug("15 - Looking up user friendly name for " + (this.material.oreName != null ? this.material.oreName : (this.material.id + ":" + this.material.meta)));
+      BetterBarrels.debug("15 - Looking up user friendly name for " + (this.material.isOreDict() ? this.material.name : (this.material.id + ":" + this.material.meta)));
       this.name = materialStack.getDisplayName();
 
       if (this.name.indexOf(".name") > 0) {
@@ -502,7 +502,7 @@ public class StructuralLevel {
          	} finally {
          		// nothing found, skip out
          		if (!foundSourceMaterial) {
-         			BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + (this.material.oreName != null ? this.material.oreName : (this.material.id + ":" + this.material.meta)) + "].  Ore Dictionary returned IDNumber " + materialStack.itemID + " for the first itemStack for that request.");
+         			BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + (this.material.isOreDict() ? this.material.name : (this.material.id + ":" + this.material.meta)) + "].  Ore Dictionary returned IDNumber " + materialStack.itemID + " for the first itemStack for that request.");
          		}
          	}
          } else {
