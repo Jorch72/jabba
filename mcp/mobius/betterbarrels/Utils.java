@@ -93,14 +93,12 @@ public class Utils {
 		}
 
 		public ItemStack getStack() {
-			ItemStack ret = null;
+			ItemStack ret = new ItemStack(Block.portal);
 			if (this.oreName != null) {
 				ArrayList<ItemStack> ores = OreDictionary.getOres(this.oreName);
 
 				if (ores.size() > 0) {
 					ret = ores.get(0);
-				} else {
-					ret = new ItemStack(Block.portal);
 				}
 				BetterBarrels.debug("05 - Looking up [" + this.oreName + "] and found: " + ret.getDisplayName());
 			} else {
