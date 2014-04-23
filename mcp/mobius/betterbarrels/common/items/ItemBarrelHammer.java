@@ -5,7 +5,9 @@ import java.util.List;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
+import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -100,6 +102,24 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
        
        return par1ItemStack;
    }
+
+	@Override
+	public boolean func_150897_b(Block blockHit) {
+		if (blockHit instanceof BlockBarrel) {
+			return true;
+		} else {
+			return super.func_150897_b(blockHit);
+		}
+	}
+
+	@Override
+	public float func_150893_a(ItemStack hammerStack, Block blockHit) {
+		if (hammerStack.getItem() instanceof ItemBarrelHammer && (blockHit instanceof BlockBarrel)) {
+			return ToolMaterial.IRON.getEfficiencyOnProperMaterial();
+		} else {
+			return super.func_150893_a(hammerStack, blockHit);
+		}
+	}
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
