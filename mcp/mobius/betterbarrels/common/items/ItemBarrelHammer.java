@@ -7,10 +7,13 @@ import cpw.mods.fml.relauncher.SideOnly;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
+import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -100,6 +103,15 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
        
        return par1ItemStack;
    }
+
+ 	@Override
+ 	public float getStrVsBlock(ItemStack hammerStack, Block blockHit) {
+ 		if (hammerStack.getItem() instanceof ItemBarrelHammer && (blockHit instanceof BlockBarrel)) {
+ 			return EnumToolMaterial.IRON.getEfficiencyOnProperMaterial();
+ 		} else {
+ 			return super.getStrVsBlock(hammerStack, blockHit);
+ 		}
+ 	}
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
