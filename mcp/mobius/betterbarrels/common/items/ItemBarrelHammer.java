@@ -104,6 +104,15 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
        return par1ItemStack;
    }
 
+	@Override
+	public boolean canHarvestBlock(Block blockHit) {
+		if (blockHit instanceof BlockBarrel) {
+			return true;
+		} else {
+			return super.canHarvestBlock(blockHit);
+		}
+	}
+
  	@Override
  	public float getStrVsBlock(ItemStack hammerStack, Block blockHit) {
  		if (hammerStack.getItem() instanceof ItemBarrelHammer && (blockHit instanceof BlockBarrel)) {
