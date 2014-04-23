@@ -43,6 +43,7 @@ public class BlockBarrel extends BlockContainer{
     	});
         this.setHardness(2.0F);
         this.setResistance(5.0F);
+        this.setHarvestLevel("axe", 1);
         this.setBlockName("blockbarrel");
 		this.setCreativeTab(JabbaCreativeTab.tab);
     }
