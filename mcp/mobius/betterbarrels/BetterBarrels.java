@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.MinecraftForge;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
@@ -192,6 +193,8 @@ public class BetterBarrels {
       GameRegistry.registerItem(itemMoverDiamond, "moverDiamond");
       GameRegistry.registerItem(itemHammer, "hammer");
       GameRegistry.registerItem(itemTuningFork, "tuningFork");
+
+      MinecraftForge.setBlockHarvestLevel(blockBarrel, "axe", 1);
 	}
 	
 	@EventHandler
