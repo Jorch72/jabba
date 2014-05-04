@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.MinecraftForge;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.BaseProxy;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
@@ -80,7 +81,7 @@ public class BetterBarrels {
 
 	public static int[] colorOverrides     = new int[]{0, 0};
 	public static int stacksSize           = 64;
-	public static int upgradeItemID        = 85;
+	public static String upgradeItemStr    = "\"<85>\"";
 
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
@@ -152,12 +153,11 @@ public class BetterBarrels {
          	}
          }
          stacksSize = config.get(Configuration.CATEGORY_GENERAL, "stacksSize", BetterBarrels.stacksSize, "How many stacks the base barrel and each upgrade will provide").getInt();
-         upgradeItemID = config.get(Configuration.CATEGORY_GENERAL, "tierUpgradeItemID", BetterBarrels.upgradeItemID, "The ID of the item to use for the strutural tier upgrade recipes. Default is 85 for Vanilla Fence").getInt();
+         upgradeItemStr = config.get(Configuration.CATEGORY_GENERAL, "tierUpgradeItem", BetterBarrels.upgradeItemStr, "The ID of the item to use for the strutural tier upgrade recipes. Default is \"<85>\" for Vanilla Fence. the format is Ore.name for an ore dictionary lookup, or \"<ItemID[:meta]>\" for a direct item").getString();
 
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			//highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
 			//showUpgradeSymbols = config.get(Configuration.CATEGORY_GENERAL, "showUpgradeSymbols", false).getBoolean(false);
-			
 		} catch (Exception e) {
 			FMLLog.log(Level.SEVERE, e, "BlockBarrel has a problem loading it's configuration");
 			FMLLog.severe(e.getMessage());	
@@ -193,6 +193,8 @@ public class BetterBarrels {
       GameRegistry.registerItem(itemMoverDiamond, "moverDiamond");
       GameRegistry.registerItem(itemHammer, "hammer");
       GameRegistry.registerItem(itemTuningFork, "tuningFork");
+
+      MinecraftForge.setBlockHarvestLevel(blockBarrel, "axe", 1);
 	}
 	
 	@EventHandler
@@ -203,16 +205,14 @@ public class BetterBarrels {
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
 		proxy.registerRenderers();
 		FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");     
-		
-		
 	}
  
 	
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		RecipeHandler.instance().registerLateRecipes();
       StructuralLevel.initializeStructuralMaterials();
-
       proxy.postInit();
 	}	
 
