@@ -108,16 +108,22 @@ public class StorageLocal implements IBarrelStorage{
     	);
     	
     	if (!oreDictCache.containsKey(orePair)){
-	    	int oreIDBarrel = OreDictionary.getOreID(this.getItem());
-	    	int oreIDStack  = OreDictionary.getOreID(stack);
-			boolean stackIsMetal =  OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
-									OreDictionary.getOreName(oreIDBarrel).startsWith("ore")   ||
-									OreDictionary.getOreName(oreIDBarrel).startsWith("dust")  ||
-									OreDictionary.getOreName(oreIDBarrel).startsWith("nugget") ;
-			
-			oreDictCache.put(orePair, (oreIDStack != -1) && (oreIDBarrel != -1) && (oreIDBarrel == oreIDStack) && (stackIsMetal));
-			//System.out.printf("Added ore pair for %d:%d | %d:%d = %s\n", this.getItem().itemID, this.getItem().getItemDamage(), stack.itemID, stack.getItemDamage(), oreDictCache.get(orePair));
-    	}
+            int[] oreIDBarrels = OreDictionary.getOreIDs(this.getItem());
+            int oreIDBarrel = oreIDBarrels.length > 0 ? oreIDBarrels[0] : -1;
+
+            int[] oreIDStacks = OreDictionary.getOreIDs(stack);
+            int oreIDStack = oreIDStacks.length > 0 ? oreIDStacks[0] : -1;
+
+            if (oreIDStack != -1 && oreIDBarrel != -1){
+                boolean stackIsMetal = OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
+                    OreDictionary.getOreName(oreIDBarrel).startsWith("ore") ||
+                    OreDictionary.getOreName(oreIDBarrel).startsWith("dust") ||
+                    OreDictionary.getOreName(oreIDBarrel).startsWith("nugget");
+
+                oreDictCache.put(orePair, (oreIDBarrel == oreIDStack) && (stackIsMetal));
+                //System.out.printf("Added ore pair for %d:%d | %d:%d = %s\n", this.getItem().itemID, this.getItem().getItemDamage(), stack.itemID, stack.getItemDamage(), oreDictCache.get(orePair));
+            }
+        }
 		return oreDictCache.get(orePair);
 	}    
     
