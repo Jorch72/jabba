@@ -122,6 +122,8 @@ public class StorageLocal implements IBarrelStorage{
 
                 oreDictCache.put(orePair, (oreIDBarrel == oreIDStack) && (stackIsMetal));
                 //System.out.printf("Added ore pair for %d:%d | %d:%d = %s\n", this.getItem().itemID, this.getItem().getItemDamage(), stack.itemID, stack.getItemDamage(), oreDictCache.get(orePair));
+            } else {
+                oreDictCache.put(orePair, false);
             }
         }
 		return oreDictCache.get(orePair);
