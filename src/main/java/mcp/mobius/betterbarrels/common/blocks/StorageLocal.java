@@ -114,6 +114,8 @@ public class StorageLocal implements IBarrelStorage{
             int[] oreIDStacks = OreDictionary.getOreIDs(stack);
             int oreIDStack = oreIDStacks.length > 0 ? oreIDStacks[0] : -1;
 
+            //TODO : Looks like a stack can have multiple values now. It might be wise to setup a loop to check all IDs
+            
             if (oreIDStack != -1 && oreIDBarrel != -1){
                 boolean stackIsMetal = OreDictionary.getOreName(oreIDBarrel).startsWith("ingot") ||
                     OreDictionary.getOreName(oreIDBarrel).startsWith("ore") ||
