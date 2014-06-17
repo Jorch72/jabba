@@ -36,7 +36,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.3", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.4", dependencies="after:Waila;after:NotEnoughItems")
 @NetworkMod(channels = {BetterBarrels.modid}, clientSideRequired=true, serverSideRequired=false, packetHandler=BarrelPacketHandler.class)
 public class BetterBarrels {
    
