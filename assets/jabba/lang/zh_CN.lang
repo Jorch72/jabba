@@ -69,5 +69,5 @@ text.jabba.waila.key.content=桶内物品
 text.jabba.waila.key.quantity=物品数量
 text.jabba.waila.key.stacks=最大堆叠数
 text.jabba.tooltip.slots.used=占用插槽 :
-text.jabba.tooltip.slots.provided=提供插槽 ：
+text.jabba.tooltip.slots.provided=提供插槽 :
 text.jabba.tooltip.empty=<空白>
