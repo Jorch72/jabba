@@ -61,10 +61,7 @@ public class ItemBarrelHammer extends Item implements IOverlayItem{
    @Override
     public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player)
     {
-      if (world.getBlock(x, y, z) == BetterBarrels.blockBarrel) {
-        return true;
-      }
-      return false;
+        return world.getBlock(x, y, z) == BetterBarrels.blockBarrel;
     }
    
     @Override    

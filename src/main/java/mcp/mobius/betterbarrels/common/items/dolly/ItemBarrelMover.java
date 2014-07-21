@@ -391,8 +391,8 @@ public class ItemBarrelMover extends Item {
 	}
 	
 	protected boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z){
-		Block storedBlock = world.getBlock(x, y, z);;
-		int blockMeta          = world.getBlockMetadata(x, y, z);
+		Block storedBlock = world.getBlock(x, y, z);
+        int blockMeta          = world.getBlockMetadata(x, y, z);
 		TileEntity containerTE = world.getTileEntity(x, y, z);
 		NBTTagCompound nbtContainer = new NBTTagCompound();
 		NBTTagCompound nbtTarget    = new NBTTagCompound();

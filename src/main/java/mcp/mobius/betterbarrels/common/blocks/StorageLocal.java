@@ -60,7 +60,7 @@ public class StorageLocal implements IBarrelStorage{
 	
 	// IBarrelStorage Interface //
     @Override	
-	public boolean   hasItem(){ return this.itemTemplate == null ? false : true; }
+	public boolean   hasItem(){ return this.itemTemplate != null; }
     @Override    
 	public ItemStack getItem(){ return this.itemTemplate; }
     @Override

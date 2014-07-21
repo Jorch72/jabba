@@ -16,7 +16,8 @@ public class ItemDiamondMover extends ItemBarrelMover {
         this.setCreativeTab(JabbaCreativeTab.tab);
 	}
 	
-	protected boolean canPickSpawners(){
+	@Override
+    protected boolean canPickSpawners(){
 		return true;
 	}	
 	
