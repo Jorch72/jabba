@@ -78,13 +78,39 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public IBarrelStorage getStorage(){
 		IBarrelStorage ret;
 		// If I'm enderish, I should request the storage from the Manager. Otherwise, do the usual stuff
-		if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote)
+		if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote){
 			ret = BSpaceStorageHandler.instance().getStorage(this.id);
-		else
+		} else {
 			ret = this.storage;
+		}
 
 		if (ret == null) {
-			BetterBarrels.log.severe("Barrel at X: " + this.xCoord + " Y: " + this.yCoord + " Z: " + this.zCoord + " has no storage." + (this.coreUpgrades.hasEnder ? " It thinks it is a BSpace barrel with ID: " + this.id: ""));
+			BetterBarrels.log.severe(String.format("This is the most unusual case. Storage appears to be null for [%d %d %d %d] with id [%d]", this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, this.id));
+			
+			if (this.storage == null){
+				this.storage = new StorageLocal();
+				BetterBarrels.log.severe("Local storage was null. Created a new one.");	
+			}
+			
+			if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote){
+				this.id = BSpaceStorageHandler.instance().getNextBarrelID();
+
+				BetterBarrels.log.severe(String.format("Barrel is BSpaced. Generating new ID for it and registering the storage with the main handler."));
+
+				BSpaceStorageHandler.instance().registerEnderBarrel(this.id, this.storage);
+			}
+			
+			if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote){
+				ret = BSpaceStorageHandler.instance().getStorage(this.id);
+			} else {
+				ret = this.storage;
+			}			
+			
+		}
+		
+		if (ret == null) {
+			//BetterBarrels.log.severe("Barrel at X: " + this.xCoord + " Y: " + this.yCoord + " Z: " + this.zCoord + " has no storage." + (this.coreUpgrades.hasEnder ? " It thinks it is a BSpace barrel with ID: " + this.id: ""));
+			throw new RuntimeException(String.format("Attempts to salvage [%d %d %d %d] with id [%d] have failed ! Please contact your closest modder to bitch at him.", this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, this.id));
 		}
 
 		return ret;
@@ -580,7 +606,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     /*/////////////////////////////////////*/
     
 	@Override
-	public int getSizeInventory() {return this.getStorage().getSizeInventory();}
+	public int getSizeInventory() {
+		return this.getStorage().getSizeInventory();
+	}
+	
 	@Override
 	public ItemStack getStackInSlot(int islot) {
 		ItemStack stack = this.getStorage().getStackInSlot(islot);

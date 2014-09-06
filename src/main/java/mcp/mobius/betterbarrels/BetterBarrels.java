@@ -33,7 +33,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.4", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.4a", dependencies="after:Waila;after:NotEnoughItems")
 public class BetterBarrels {
 
 	private static boolean DEBUG_TEXTURES = false || Boolean.parseBoolean(System.getProperty("mcp.mobius.debugJabbaTextures","false"));
