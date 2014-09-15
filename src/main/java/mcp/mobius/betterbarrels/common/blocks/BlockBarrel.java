@@ -151,6 +151,8 @@ public class BlockBarrel extends BlockContainer{
 	
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int par5) {
+		if (world.isRemote) return;
+		
 		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);		
 
 		// We drop the structural upgrades
