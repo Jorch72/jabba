@@ -62,7 +62,10 @@ public class ItemBarrelMover extends Item {
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityWeaponRack");
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityGenericShelf");
     	classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityArmorStand");
-    	//classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityWeaponCase");    	
+    	//classExtensionsNames.add("jds.bibliocraft.tileentities.TileEntityWeaponCase");
+
+        classExtensionsNames.add("com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityDrawers");
+        classExtensionsNames.add("com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityCompDrawers");
     	
     	
     	for (String s : classExtensionsNames){
@@ -247,6 +250,10 @@ public class ItemBarrelMover extends Item {
 		/* Factorization barrel */
 		//if (TEClassName.contains("factorization.common.TileEntityBarrel") && nbtContainer.hasKey("facing"))
 		//	nbtContainer.setByte("facing", (byte)this.getBarrelOrientationOnPlacement(player).ordinal());
+
+        /* Storage Drawers Orientation Correction */
+        if (TEClassName.contains("com.jaquadro.minecraft.storagedrawers.block.tile") && nbtContainer.hasKey("Dir"))
+            nbtContainer.setInteger("Dir", (short)this.getBarrelOrientationOnPlacement(player).ordinal());
 
 		/* Thermal Expension */
 		if (TEClassName.contains("thermalexpansion.block.machine") && nbtContainer.hasKey("side.facing")){
@@ -565,5 +572,5 @@ public class ItemBarrelMover extends Item {
 		default:	
 			return (short)-1;
 		}
-	}		
+	}
 }
