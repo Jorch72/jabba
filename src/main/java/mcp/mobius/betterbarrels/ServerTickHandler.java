@@ -1,6 +1,7 @@
 package mcp.mobius.betterbarrels;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -39,10 +40,11 @@ public enum ServerTickHandler {
 	@SubscribeEvent
 	public synchronized void tickServer(TickEvent.ServerTickEvent event) {
 		if (timer.isDone()) {
-			for (TileEntityBarrel barrel : dirtyBarrels.keySet()) {
-				barrel.markDirtyExec();
+			Iterator<TileEntityBarrel> dirtyKeysIter = dirtyBarrels.keySet().iterator();
+			while (dirtyKeysIter.hasNext()) {
+				dirtyKeysIter.next().markDirtyExec();
+				dirtyKeysIter.remove();
 			}
-			dirtyBarrels.clear();
 		}
 	}
 
