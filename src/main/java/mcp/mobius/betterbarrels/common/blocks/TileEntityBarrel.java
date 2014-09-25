@@ -582,7 +582,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public boolean sendContentSyncPacket(boolean force) {
 		IBarrelStorage tempStore = this.getStorage();
 
-		if (force || lastContentMessage == null || !tempStore.hasItem() || lastContentMessage.amount != tempStore.getAmount() || (tempStore.hasItem() && !tempStore.getItem().isItemEqual(lastContentMessage.stack))) {
+		// send if: forced, no previous sent packet, no item(emptying barrel), if the amount differs, or if the item differs
+		if (force || lastContentMessage == null || !tempStore.hasItem() || lastContentMessage.amount != tempStore.getAmount() || !tempStore.sameItem(lastContentMessage.stack)) {
 			lastContentMessage = new Message0x01ContentUpdate(this);
 
 			BarrelPacketHandler.INSTANCE.sendToAllAround(lastContentMessage, new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 500));
