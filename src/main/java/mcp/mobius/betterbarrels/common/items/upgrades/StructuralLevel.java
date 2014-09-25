@@ -549,6 +549,24 @@ public class StructuralLevel {
 
 				this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
 
+				int mipmapLevels = 0;
+
+				Field mipmapLevelsField = null;
+				for(String fieldName : new String[]{"j", "field_147636_j", "mipmapLevels"}) {
+					try {
+						mipmapLevelsField = TextureMap.class.getDeclaredField(fieldName);
+						if(mipmapLevelsField != null) {
+							mipmapLevelsField.setAccessible(true);
+							mipmapLevels = mipmapLevelsField.getInt(Minecraft.getMinecraft().getTextureMapBlocks());
+							break;
+						}
+					} catch (Throwable t) {}
+				}
+				if(mipmapLevelsField == null) {
+					mipmapLevels = Minecraft.getMinecraft().gameSettings.mipmapLevels;
+					BetterBarrels.log.warning("Unable to reflect Block TextureMap mipmapLevels. Defaulting to GameSettings mipmapLevels");
+				}
+
 				try {
 					mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
 					mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
@@ -559,10 +577,10 @@ public class StructuralLevel {
 
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-					this.iconBlockLabel.replaceTextureData(labelBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
-					this.iconBlockTop.replaceTextureData(topBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
-					this.iconBlockTopLabel.replaceTextureData(topLabelBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
-					this.iconBlockSide.replaceTextureData(sideBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
+					this.iconBlockLabel.replaceTextureData(labelBorderPixels, mipmapLevels);
+					this.iconBlockTop.replaceTextureData(topBorderPixels, mipmapLevels);
+					this.iconBlockTopLabel.replaceTextureData(topLabelBorderPixels, mipmapLevels);
+					this.iconBlockSide.replaceTextureData(sideBorderPixels, mipmapLevels);
 
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
 					this.iconItem.replaceTextureData(itemBasePixels, 0);
