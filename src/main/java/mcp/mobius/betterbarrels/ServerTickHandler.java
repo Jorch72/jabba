@@ -1,5 +1,7 @@
 package mcp.mobius.betterbarrels;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -14,11 +16,11 @@ public enum ServerTickHandler {
 		private long interval;
 		private long lastTick = System.nanoTime();
 		
-		public Timer(long interval){
+		public Timer(long interval) {
 			this.interval = interval * 1000L * 1000L; //Interval is passed in millisecond but stored in nanosecond.
 		}
 		
-		public boolean isDone(){
+		public boolean isDone() {
 			long    time  = System.nanoTime();
 			long    delta = (time - this.lastTick) - this.interval;
 			boolean done  = delta >= 0;
@@ -31,23 +33,23 @@ public enum ServerTickHandler {
 	
 	// Hash map of dirty barrels for automatic cleanup
 	// The boolean is never used and is just there to be able to have a WeakHashMap with automatic key handling
-	private WeakHashMap<TileEntityBarrel, Boolean> dirtyBarrels = new WeakHashMap<TileEntityBarrel, Boolean>();
+	private Map<TileEntityBarrel, Boolean> dirtyBarrels = Collections.synchronizedMap(new WeakHashMap<TileEntityBarrel, Boolean>());
 	public Timer timer = new Timer(BetterBarrels.limiterDelay);
 	
 	@SubscribeEvent
-	public void tickServer(TickEvent.ServerTickEvent event) {
-		if (timer.isDone()){
-			for (TileEntityBarrel barrel : dirtyBarrels.keySet()){
+	public synchronized void tickServer(TickEvent.ServerTickEvent event) {
+		if (timer.isDone()) {
+			for (TileEntityBarrel barrel : dirtyBarrels.keySet()) {
 				barrel.markDirtyExec();
 			}
 			dirtyBarrels.clear();
 		}
 	}
 
-	public void markDirty(TileEntityBarrel barrel){
+	public synchronized void markDirty(TileEntityBarrel barrel) {
 		this.markDirty(barrel, true);
 	}
-	public void markDirty(TileEntityBarrel barrel, boolean bspace){
+	public synchronized void markDirty(TileEntityBarrel barrel, boolean bspace) {
 		this.dirtyBarrels.put(barrel, true);
 		if (bspace)
 			if (barrel.coreUpgrades.hasEnder && !barrel.getWorldObj().isRemote) BSpaceStorageHandler.instance().markAllDirty(barrel.id);		
