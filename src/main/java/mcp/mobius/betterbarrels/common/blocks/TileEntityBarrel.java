@@ -54,6 +54,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public  byte    nTicks             = 0;
 	public  int     id                 = -1;
 	public  long    timeSinceLastUpd   = System.currentTimeMillis();
+	public  boolean overlaying			   = false;
 	
 	private Message0x01ContentUpdate lastContentMessage;
 	private Message0x02GhostUpdate lastGhostMessage;

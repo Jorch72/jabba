@@ -8,7 +8,6 @@ import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -25,6 +24,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockBarrel extends BlockContainer{
 
@@ -240,7 +241,82 @@ public class BlockBarrel extends BlockContainer{
 		BetterBarrels.proxy.checkRenderers();
 
 		return BetterBarrels.blockBarrelRendererID;
-	}    
+	}   
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
+
+		IIcon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
+		int levelStructural = barrel.coreUpgrades.levelStructural;
+		iconSide = StructuralLevel.LEVELS[levelStructural].getIconSide();
+		iconTop = StructuralLevel.LEVELS[levelStructural].getIconTop();
+		iconLabel = StructuralLevel.LEVELS[levelStructural].getIconLabel();
+		iconLabelTop = StructuralLevel.LEVELS[levelStructural].getIconLabelTop();
+		iconSideHopper = BlockBarrel.text_sidehopper;
+		iconSideRS = BlockBarrel.text_siders;
+		iconLock = BlockBarrel.text_lock;
+		iconLinked = BlockBarrel.text_linked;
+		iconLockLinked = BlockBarrel.text_locklinked;
+
+		IIcon icon, overlay = null;
+
+		if ((side == 0 || side == 1) && (barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
+			icon = iconLabelTop;
+		} else if ((side == 0 || side == 1) && (barrel.sideUpgrades[side] != UpgradeSide.STICKER)) {
+			icon = iconTop;
+		} else if (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER) {
+			icon = iconLabel;
+		} else {
+			icon = iconSide;
+		}
+
+		if (barrel.sideUpgrades[side] == UpgradeSide.HOPPER) {
+			overlay = iconSideHopper;
+		} else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE) {
+			overlay = iconSideRS;
+		} else if (barrel.getStorage().isGhosting() && barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
+			overlay = iconLockLinked;
+		} else if (barrel.getStorage().isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
+			overlay = iconLock;
+		} else if (barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
+			overlay = iconLinked;
+		}
+
+		if (barrel.overlaying && overlay != null)
+			return overlay;
+		if (!barrel.overlaying && icon != null)
+			return icon;
+
+		return iconTop;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
+		int xx = x - dir.offsetX;
+		int yy = y - dir.offsetY;
+		int zz = z - dir.offsetZ;
+
+		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(xx, yy, zz);
+		if (barrel == null || !barrel.overlaying)
+			return super.shouldSideBeRendered(world, x, y, z, side);
+
+		if (barrel.sideUpgrades[side] == UpgradeSide.HOPPER) {
+			return true;
+		} else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE) {
+			return true;
+		} else if (barrel.getStorage().isGhosting() && barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
+			return true;
+		} else if (barrel.getStorage().isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
+			return true;
+		} else if (barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
+			return true;
+		}
+
+		return false;
+	}
     
     /*
     @Override
