@@ -122,6 +122,9 @@ public class Utils {
 	}
 
 	public static class ReflectionHelper {
+		static public Method getMethod(Class targetClass, String[] targetNames, Class[] targetParams) {
+			return getMethod(targetClass, targetNames, targetParams, Level.SEVERE, "Unable to reflect requested method[" + targetNames.toString() + "] with a paramter signature of [" + targetParams.toString() + "] in class[" + targetClass.getCanonicalName() + "]");
+		}
 		static public Method getMethod(Class targetClass, String[] targetNames, Class[] targetParams, Level errorLevel, String errorMessage) {
 			Method foundMethod = null;
 			for (String methodName : targetNames) {
@@ -140,6 +143,9 @@ public class Utils {
 			return foundMethod;
 		}
 
+		static public Field getField(Class targetClass, String[] targetNames) {
+			return getField(targetClass, targetNames, Level.SEVERE, "Unable to reflect requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "]");
+		}
 		static public Field getField(Class targetClass, String[] targetNames, Level errorLevel, String errorMessage) {
 			Field foundField = null;
 			for (String fieldName : targetNames) {
@@ -158,8 +164,16 @@ public class Utils {
 			return foundField;
 		}
 
+		static public <T> T getFieldValue(Class<T> returnType, Object targetObject, Class targetClass, String[] targetNames) {
+			return getFieldValue(returnType, null, targetObject, targetClass, targetNames, Level.SEVERE, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
+		}
 		static public <T> T getFieldValue(Class<T> returnType, T errorValue, Object targetObject, Class targetClass, String[] targetNames, Level errorLevel, String errorMessage) {
-			T returnValue = errorValue;
+			T returnValue;
+			if (!returnType.isPrimitive()) {
+				returnValue = errorValue;
+			} else {
+				returnValue = returnType.cast(0);
+			}
 			Field foundField = getField(targetClass, targetNames, errorLevel, errorMessage);
 			if (foundField != null) {
 				try {
