@@ -1,8 +1,5 @@
 package mcp.mobius.betterbarrels;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -34,24 +31,23 @@ public enum ServerTickHandler {
 	
 	// Hash map of dirty barrels for automatic cleanup
 	// The boolean is never used and is just there to be able to have a WeakHashMap with automatic key handling
-	private Map<TileEntityBarrel, Boolean> dirtyBarrels = Collections.synchronizedMap(new WeakHashMap<TileEntityBarrel, Boolean>());
+	private WeakHashMap<TileEntityBarrel, Boolean> dirtyBarrels = new WeakHashMap<TileEntityBarrel, Boolean>();
 	public Timer timer = new Timer(BetterBarrels.limiterDelay);
 	
 	@SubscribeEvent
-	public synchronized void tickServer(TickEvent.ServerTickEvent event) {
+	public void tickServer(TickEvent.ServerTickEvent event) {
 		if (timer.isDone()) {
-			Iterator<TileEntityBarrel> dirtyKeysIter = dirtyBarrels.keySet().iterator();
-			while (dirtyKeysIter.hasNext()) {
-				dirtyKeysIter.next().markDirtyExec();
-				dirtyKeysIter.remove();
+			for (TileEntityBarrel barrel : dirtyBarrels.keySet()) {
+				barrel.markDirtyExec();
 			}
+			dirtyBarrels.clear();
 		}
 	}
 
-	public synchronized void markDirty(TileEntityBarrel barrel) {
+	public void markDirty(TileEntityBarrel barrel) {
 		this.markDirty(barrel, true);
 	}
-	public synchronized void markDirty(TileEntityBarrel barrel, boolean bspace) {
+	public void markDirty(TileEntityBarrel barrel, boolean bspace) {
 		this.dirtyBarrels.put(barrel, true);
 		if (bspace)
 			if (barrel.coreUpgrades.hasEnder && !barrel.getWorldObj().isRemote) BSpaceStorageHandler.instance().markAllDirty(barrel.id);		
