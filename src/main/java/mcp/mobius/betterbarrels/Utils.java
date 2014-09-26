@@ -165,15 +165,14 @@ public class Utils {
 		}
 
 		static public <T> T getFieldValue(Class<T> returnType, Object targetObject, Class targetClass, String[] targetNames) {
-			return getFieldValue(returnType, null, targetObject, targetClass, targetNames, Level.SEVERE, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
+			if (!returnType.isPrimitive()) {
+				return getFieldValue(returnType, null, targetObject, targetClass, targetNames, Level.SEVERE, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
+			} else {
+				return getFieldValue(returnType, returnType.cast(0), targetObject, targetClass, targetNames, Level.SEVERE, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
+			}
 		}
 		static public <T> T getFieldValue(Class<T> returnType, T errorValue, Object targetObject, Class targetClass, String[] targetNames, Level errorLevel, String errorMessage) {
-			T returnValue;
-			if (!returnType.isPrimitive()) {
-				returnValue = errorValue;
-			} else {
-				returnValue = returnType.cast(0);
-			}
+			T returnValue = errorValue;
 			Field foundField = getField(targetClass, targetNames, errorLevel, errorMessage);
 			if (foundField != null) {
 				try {
