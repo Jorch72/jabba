@@ -3,7 +3,8 @@ package mcp.mobius.betterbarrels;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.Level;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -92,7 +93,7 @@ public class Utils {
 					meta = 0;
 				}
 			} else {
-				BetterBarrels.log.severe("Unable to parse input string into oreDict or item:" + in);
+				BetterBarrels.log.error("Unable to parse input string into oreDict or item:" + in);
 			}
 		}
 
@@ -114,7 +115,7 @@ public class Utils {
 					ret = new ItemStack((Item)Item.itemRegistry.getObject(modDomain + ":" + name), 1, this.meta);
 					BetterBarrels.debug("05 - Looking up [" + (this.modDomain + ":" + this.name + ":" + this.meta) + "] and found: " + ret.getDisplayName());
 				} catch (Throwable t) {
-					BetterBarrels.log.severe("Error while trying to initialize material with name " + (this.modDomain + ":" + this.name + ":" + this.meta));
+					BetterBarrels.log.error("Error while trying to initialize material with name " + (this.modDomain + ":" + this.name + ":" + this.meta));
 				}
 			}
 			return ret;
@@ -123,7 +124,7 @@ public class Utils {
 
 	public static class ReflectionHelper {
 		static public Method getMethod(Class targetClass, String[] targetNames, Class[] targetParams) {
-			return getMethod(targetClass, targetNames, targetParams, Level.SEVERE, "Unable to reflect requested method[" + targetNames.toString() + "] with a paramter signature of [" + targetParams.toString() + "] in class[" + targetClass.getCanonicalName() + "]");
+			return getMethod(targetClass, targetNames, targetParams, Level.ERROR, "Unable to reflect requested method[" + targetNames.toString() + "] with a paramter signature of [" + targetParams.toString() + "] in class[" + targetClass.getCanonicalName() + "]");
 		}
 		static public Method getMethod(Class targetClass, String[] targetNames, Class[] targetParams, Level errorLevel, String errorMessage) {
 			Method foundMethod = null;
@@ -144,7 +145,7 @@ public class Utils {
 		}
 
 		static public Field getField(Class targetClass, String[] targetNames) {
-			return getField(targetClass, targetNames, Level.SEVERE, "Unable to reflect requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "]");
+			return getField(targetClass, targetNames, Level.ERROR, "Unable to reflect requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "]");
 		}
 		static public Field getField(Class targetClass, String[] targetNames, Level errorLevel, String errorMessage) {
 			Field foundField = null;
@@ -166,9 +167,9 @@ public class Utils {
 
 		static public <T> T getFieldValue(Class<T> returnType, Object targetObject, Class targetClass, String[] targetNames) {
 			if (!returnType.isPrimitive()) {
-				return getFieldValue(returnType, null, targetObject, targetClass, targetNames, Level.SEVERE, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
+				return getFieldValue(returnType, null, targetObject, targetClass, targetNames, Level.ERROR, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
 			} else {
-				return getFieldValue(returnType, returnType.cast(0), targetObject, targetClass, targetNames, Level.SEVERE, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
+				return getFieldValue(returnType, returnType.cast(0), targetObject, targetClass, targetNames, Level.ERROR, "Unable to reflect and return value for requested field[" + targetNames.toString() + "] in class[" + targetClass.getCanonicalName() + "], defaulting to null or 0");
 			}
 		}
 		static public <T> T getFieldValue(Class<T> returnType, T errorValue, Object targetObject, Class targetClass, String[] targetNames, Level errorLevel, String errorMessage) {
