@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.zip.ZipException;
+
+import org.apache.logging.log4j.Level;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.ServerTickHandler;
@@ -18,13 +19,8 @@ import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
 import mcp.mobius.betterbarrels.common.blocks.StorageLocal;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.blocks.logic.Coordinates;
-import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
-import mcp.mobius.betterbarrels.network.Message0x01ContentUpdate;
-import mcp.mobius.betterbarrels.network.Message0x02GhostUpdate;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
@@ -378,7 +374,7 @@ public class BSpaceStorageHandler {
         catch(Exception e)
         {
            if (e instanceof ZipException) {
-              BetterBarrels.log.log(Level.SEVERE, "Primary and Backup JABBA data files have been corrupted.");
+              BetterBarrels.log.log(Level.ERROR, "Primary and Backup JABBA data files have been corrupted.");
            }
            throw new RuntimeException(e);
         }
