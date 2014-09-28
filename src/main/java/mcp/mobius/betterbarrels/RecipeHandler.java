@@ -93,7 +93,7 @@ public class RecipeHandler {
 			Utils.Material mat = new Utils.Material(BetterBarrels.upgradeItemStr);
 			upgradeItem = mat.getStack();
 		} catch (Throwable t) {
-			BetterBarrels.log.severe("Requested item with id " + BetterBarrels.upgradeItemStr + " for tier upgrade recipes was not found, using the default of vanilla fence");
+			BetterBarrels.log.error("Requested item with id " + BetterBarrels.upgradeItemStr + " for tier upgrade recipes was not found, using the default of vanilla fence");
 			upgradeItem = new ItemStack(Blocks.fence);
 		}
 
