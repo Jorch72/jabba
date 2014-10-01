@@ -13,6 +13,7 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -269,6 +270,31 @@ public class BlockBarrel extends BlockContainer{
 
 	/* End Redstone Stuff */
 
+	// Will allow for torches to be placed on non-labeled sides
+	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
+
+		if (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.FRONT || barrel.sideUpgrades[side.ordinal()] == UpgradeSide.STICKER) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z) {
+		return false;
+		// this method may be useful for certain planned upgrades ;)
+		//return super.canCreatureSpawn(type, world, x, y, z);
+	}
+
+	@Override
+	public boolean canPlaceTorchOnTop(World world, int x, int y, int z) {
+		return isSideSolid(world, x, y, z, ForgeDirection.UP);
+	}
+
+	/* Rendering stuff */
 	@Override
 	public int getRenderType() {
 		BetterBarrels.proxy.checkRenderers();
@@ -339,19 +365,4 @@ public class BlockBarrel extends BlockContainer{
 
 		return false;
 	}
-
-	/*
-    @Override
-    public boolean isBlockNormalCube(World world, int x, int y, int z){
-    	return false;
-    }
-	 */
-
-	/*
-    private boolean isIndirectlyPowered(World par1World, int par2, int par3, int par4)
-    {
-        int l = par1World.getBlockMetadata(par2, par3, par4);
-        return l == 5 && par1World.getIndirectPowerOutput(par2, par3 - 1, par4, 0) ? true : (l == 3 && par1World.getIndirectPowerOutput(par2, par3, par4 - 1, 2) ? true : (l == 4 && par1World.getIndirectPowerOutput(par2, par3, par4 + 1, 3) ? true : (l == 1 && par1World.getIndirectPowerOutput(par2 - 1, par3, par4, 4) ? true : l == 2 && par1World.getIndirectPowerOutput(par2 + 1, par3, par4, 5))));
-    }
-	 */    
 }
