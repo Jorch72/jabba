@@ -1,5 +1,6 @@
 package mcp.mobius.betterbarrels;
 
+import java.util.Arrays;
 import java.util.WeakHashMap;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -14,11 +15,11 @@ public enum ServerTickHandler {
 		private long interval;
 		private long lastTick = System.nanoTime();
 		
-		public Timer(long interval){
+		public Timer(long interval) {
 			this.interval = interval * 1000L * 1000L; //Interval is passed in millisecond but stored in nanosecond.
 		}
 		
-		public boolean isDone(){
+		public boolean isDone() {
 			long    time  = System.nanoTime();
 			long    delta = (time - this.lastTick) - this.interval;
 			boolean done  = delta >= 0;
@@ -36,18 +37,21 @@ public enum ServerTickHandler {
 	
 	@SubscribeEvent
 	public void tickServer(TickEvent.ServerTickEvent event) {
-		if (timer.isDone()){
-			for (TileEntityBarrel barrel : dirtyBarrels.keySet()){
-				barrel.markDirtyExec();
+		if (timer.isDone()) {
+			if (dirtyBarrels.size() > 0) {
+				for (TileEntityBarrel barrel : Arrays.copyOf(dirtyBarrels.keySet().toArray(), dirtyBarrels.size(), TileEntityBarrel[].class) ) {
+					if (barrel != null)
+						barrel.markDirtyExec();
+				}
+				dirtyBarrels.clear();
 			}
-			dirtyBarrels.clear();
 		}
 	}
 
-	public void markDirty(TileEntityBarrel barrel){
+	public void markDirty(TileEntityBarrel barrel) {
 		this.markDirty(barrel, true);
 	}
-	public void markDirty(TileEntityBarrel barrel, boolean bspace){
+	public void markDirty(TileEntityBarrel barrel, boolean bspace) {
 		this.dirtyBarrels.put(barrel, true);
 		if (bspace)
 			if (barrel.coreUpgrades.hasEnder && !barrel.getWorldObj().isRemote) BSpaceStorageHandler.instance().markAllDirty(barrel.id);		

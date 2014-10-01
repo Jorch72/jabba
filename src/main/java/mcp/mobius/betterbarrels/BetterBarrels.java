@@ -1,8 +1,10 @@
 package mcp.mobius.betterbarrels;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.BaseProxy;
@@ -39,12 +41,12 @@ public class BetterBarrels {
 	private static boolean DEBUG_TEXTURES = false || Boolean.parseBoolean(System.getProperty("mcp.mobius.debugJabbaTextures","false"));
 	public static void debug(String msg) {
 		if (DEBUG_TEXTURES)
-			log.log(Level.WARNING, msg);
+			log.log(Level.WARN, msg);
 	}
 
 	public static final String modid = "JABBA";
 	
-	public static Logger log = Logger.getLogger(modid);	
+	public static Logger log = LogManager.getLogger(modid);
 
     // The instance of your mod that Forge uses.
 	@Instance(modid)
@@ -115,11 +117,11 @@ public class BetterBarrels {
 						if(colorOverrides[i] > 0 && colorOverrides[i] < StructuralLevel.structuralColorOverrides.length) {
 							StructuralLevel.structuralColorOverrides[colorOverrides[i]-1] = (0xFF << 24) | colorOverrides[i+1];
 						} else {
-							BetterBarrels.log.warning("Attempting to override the structural tier color for non existant tier: " + colorOverrides[i]);
+							BetterBarrels.log.warn("Attempting to override the structural tier color for non existant tier: " + colorOverrides[i]);
 						}
 					}
 				} else {
-					BetterBarrels.log.warning("Color override list is not formatted in pairs, ignoring");
+					BetterBarrels.log.warn("Color override list is not formatted in pairs, ignoring");
 				}
 			}
 			stacksSize = config.get(Configuration.CATEGORY_GENERAL, "stacksSize", BetterBarrels.stacksSize, "How many stacks the base barrel and each upgrade will provide").getInt();
