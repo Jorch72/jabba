@@ -86,17 +86,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 
 		if (ret == null) {
-			BetterBarrels.log.severe(String.format("This is the most unusual case. Storage appears to be null for [%d %d %d %d] with id [%d]", this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, this.id));
+			BetterBarrels.log.error(String.format("This is the most unusual case. Storage appears to be null for [%d %d %d %d] with id [%d]", this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, this.id));
 			
 			if (this.storage == null){
 				this.storage = new StorageLocal();
-				BetterBarrels.log.severe("Local storage was null. Created a new one.");	
+				BetterBarrels.log.error("Local storage was null. Created a new one.");
 			}
 			
 			if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote){
 				this.id = BSpaceStorageHandler.instance().getNextBarrelID();
 
-				BetterBarrels.log.severe(String.format("Barrel is BSpaced. Generating new ID for it and registering the storage with the main handler."));
+				BetterBarrels.log.error(String.format("Barrel is BSpaced. Generating new ID for it and registering the storage with the main handler."));
 
 				BSpaceStorageHandler.instance().registerEnderBarrel(this.id, this.storage);
 			}
