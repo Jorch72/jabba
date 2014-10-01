@@ -94,12 +94,12 @@ public class BlockBarrel extends BlockContainer{
     }
     
     @Override
-    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
     	if (player.capabilities.isCreativeMode && !player.isSneaking() ) {
     		this.onBlockClicked(world, x, y, z, player);
     		return false;
     	} else {
-    		return super.removedByPlayer(world, player, x, y, z);
+    		return super.removedByPlayer(world, player, x, y, z, willHarvest);
     	}
     }
 

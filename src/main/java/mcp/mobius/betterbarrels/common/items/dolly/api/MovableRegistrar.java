@@ -13,16 +13,16 @@ public enum MovableRegistrar {
         try {
             Class clazz = Class.forName(name);
             if (handlers.containsKey(clazz))
-                BetterBarrels.log.warning(String.format("Handler already found for target %s. Overwritting %s with %s", clazz, handlers.get(clazz), handler));
+                BetterBarrels.log.warn(String.format("Handler already found for target %s. Overwritting %s with %s", clazz, handlers.get(clazz), handler));
             handlers.put(clazz, handler);
         } catch (ClassNotFoundException e){
-            BetterBarrels.log.warning(String.format("Didn't find class %s to add to the dolly.", name));
+            BetterBarrels.log.warn(String.format("Didn't find class %s to add to the dolly.", name));
         }
     }
 
     public void registerHandler(Class clazz, IDollyHandler handler){
         if (handlers.containsKey(clazz))
-            BetterBarrels.log.warning(String.format("Handler already found for target %s. Overwritting %s with %s", clazz, handlers.get(clazz), handler));
+            BetterBarrels.log.warn(String.format("Handler already found for target %s. Overwritting %s with %s", clazz, handlers.get(clazz), handler));
         handlers.put(clazz, handler);
     }
 
