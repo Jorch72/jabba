@@ -241,6 +241,34 @@ public class BlockBarrel extends BlockContainer{
 		return barrel.getRedstonePower(side);
 	}
 
+	private int redstoneToMC(int redSide) {
+		switch (redSide) {
+		default:
+		case -1:
+			return 1;
+		case 0:
+			return 2;
+		case 1:
+			return 5;
+		case 2:
+			return 3;
+		case 3:
+			return 4;
+		}
+	}
+
+	@Override
+	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
+		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
+
+		if (barrel.sideUpgrades[redstoneToMC(side)] == UpgradeSide.REDSTONE) {
+			return true;
+		}
+		return false;
+	}
+
+	/* End Redstone Stuff */
+
 	@Override
 	public int getRenderType() {
 		BetterBarrels.proxy.checkRenderers();
