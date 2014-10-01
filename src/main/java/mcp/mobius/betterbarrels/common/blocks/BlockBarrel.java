@@ -248,71 +248,60 @@ public class BlockBarrel extends BlockContainer{
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
 		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
 
-		IIcon iconSide, iconTop, iconLabel, iconLabelTop, iconSideHopper, iconSideRS, iconLock, iconLinked, iconLockLinked;
 		int levelStructural = barrel.coreUpgrades.levelStructural;
-		iconSide = StructuralLevel.LEVELS[levelStructural].getIconSide();
-		iconTop = StructuralLevel.LEVELS[levelStructural].getIconTop();
-		iconLabel = StructuralLevel.LEVELS[levelStructural].getIconLabel();
-		iconLabelTop = StructuralLevel.LEVELS[levelStructural].getIconLabelTop();
-		iconSideHopper = BlockBarrel.text_sidehopper;
-		iconSideRS = BlockBarrel.text_siders;
-		iconLock = BlockBarrel.text_lock;
-		iconLinked = BlockBarrel.text_linked;
-		iconLockLinked = BlockBarrel.text_locklinked;
 
-		IIcon icon, overlay = null;
+		boolean ghosting = barrel.getStorage().isGhosting();
+		boolean linked = barrel.getLinked();
+		boolean sideIsLabel = (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER);
 
-		if ((side == 0 || side == 1) && (barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
-			icon = iconLabelTop;
-		} else if ((side == 0 || side == 1) && (barrel.sideUpgrades[side] != UpgradeSide.STICKER)) {
-			icon = iconTop;
-		} else if (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER) {
-			icon = iconLabel;
+		if (barrel.overlaying) {
+			if (barrel.sideUpgrades[side] == UpgradeSide.HOPPER) {
+				return BlockBarrel.text_sidehopper;
+			} else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE) {
+				return BlockBarrel.text_siders;
+			} else if (sideIsLabel) {
+				if (ghosting && linked) {
+					return BlockBarrel.text_locklinked;
+				} else if (ghosting) {
+					return BlockBarrel.text_lock;
+				} else if (linked) {
+					return BlockBarrel.text_linked;
+				}
+			}
 		} else {
-			icon = iconSide;
+			if ((side == 0 || side == 1) && sideIsLabel) {
+				return StructuralLevel.LEVELS[levelStructural].getIconLabelTop();
+			} else if ((side == 0 || side == 1) && !sideIsLabel) {
+				return StructuralLevel.LEVELS[levelStructural].getIconTop();
+			} else if (sideIsLabel) {
+				return StructuralLevel.LEVELS[levelStructural].getIconLabel();
+			} else {
+				return StructuralLevel.LEVELS[levelStructural].getIconSide();
+			}
 		}
 
-		if (barrel.sideUpgrades[side] == UpgradeSide.HOPPER) {
-			overlay = iconSideHopper;
-		} else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE) {
-			overlay = iconSideRS;
-		} else if (barrel.getStorage().isGhosting() && barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
-			overlay = iconLockLinked;
-		} else if (barrel.getStorage().isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
-			overlay = iconLock;
-		} else if (barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
-			overlay = iconLinked;
-		}
-
-		if (barrel.overlaying && overlay != null)
-			return overlay;
-		if (!barrel.overlaying && icon != null)
-			return icon;
-
-		return iconTop;
+		// note: this point should never be reached, however returning a side so we have no possibel NPE's
+		return StructuralLevel.LEVELS[levelStructural].getIconLabel();
 	}
 
 	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
-		int xx = x - dir.offsetX;
-		int yy = y - dir.offsetY;
-		int zz = z - dir.offsetZ;
 
-		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(xx, yy, zz);
+		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(dir.offsetX, dir.offsetY, dir.offsetZ);
 		if (barrel == null || !barrel.overlaying)
 			return super.shouldSideBeRendered(world, x, y, z, side);
+
+		boolean ghosting = barrel.getStorage().isGhosting();
+		boolean linked = barrel.getLinked();
+		boolean sideIsLabel = (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER);
 
 		if (barrel.sideUpgrades[side] == UpgradeSide.HOPPER) {
 			return true;
 		} else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE) {
 			return true;
-		} else if (barrel.getStorage().isGhosting() && barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
-			return true;
-		} else if (barrel.getStorage().isGhosting() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
-			return true;
-		} else if (barrel.getLinked() && (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER)) {
-			return true;
+		} else if (sideIsLabel) { 
+			return ghosting || linked;
 		}
 
 		return false;
