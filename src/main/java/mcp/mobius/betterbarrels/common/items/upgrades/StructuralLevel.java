@@ -2,7 +2,6 @@ package mcp.mobius.betterbarrels.common.items.upgrades;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
@@ -19,8 +18,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.oredict.OreDictionary;
 
+import org.apache.logging.log4j.Level;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
@@ -187,50 +186,9 @@ public class StructuralLevel {
 			super(par1Str);
 		}
 
-		private static Method fixPixels = null;
-		private static Method setupAnisotropic = null;
-		private static Field useAnisotropic = null;
-
-		static {
-			for(String fieldName : new String[]{"k", "field_147966_k", "useAnisotropicFiltering"}) {
-				try {
-					AccessibleTextureAtlasSprite.useAnisotropic = TextureAtlasSprite.class.getDeclaredField(fieldName);
-					if(AccessibleTextureAtlasSprite.useAnisotropic != null) {
-						AccessibleTextureAtlasSprite.useAnisotropic.setAccessible(true);
-						break;
-					}
-				} catch (Throwable t) {}
-			}
-			if(AccessibleTextureAtlasSprite.useAnisotropic == null) {
-				BetterBarrels.log.severe("Unable to locate required field 'useAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
-			}
-
-			for(String methodName : new String[]{"a", "func_147961_a", "fixTransparentPixels"}) {
-				try {
-					AccessibleTextureAtlasSprite.fixPixels = TextureAtlasSprite.class.getDeclaredMethod(methodName, new Class[]{int[][].class});
-					if(AccessibleTextureAtlasSprite.fixPixels != null) {
-						AccessibleTextureAtlasSprite.fixPixels.setAccessible(true);
-						break;
-					}
-				} catch (Throwable t) {}
-			}
-			if(AccessibleTextureAtlasSprite.fixPixels == null) {
-				BetterBarrels.log.severe("Unable to locate required method 'fixTransparentPixels' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
-			}
-
-			for(String methodName : new String[]{"a", "func_147960_a", "prepareAnisotropicFiltering"}) {
-				try {
-					AccessibleTextureAtlasSprite.setupAnisotropic = TextureAtlasSprite.class.getDeclaredMethod(methodName, new Class[]{ int[][].class, int.class, int.class });
-					if(AccessibleTextureAtlasSprite.setupAnisotropic != null) {
-						AccessibleTextureAtlasSprite.setupAnisotropic.setAccessible(true);
-						break;
-					}
-				} catch (Throwable t) {}
-			}
-			if(AccessibleTextureAtlasSprite.setupAnisotropic == null) {
-				BetterBarrels.log.severe("Unable to locate required method 'prepareAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
-			}
-		}
+		private static Method fixPixels = Utils.ReflectionHelper.getMethod(TextureAtlasSprite.class, new String[]{"a", "func_147961_a", "fixTransparentPixels"}, new Class[]{int[][].class}, Level.ERROR, "Unable to locate required method 'fixTransparentPixels' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
+		private static Method setupAnisotropic = Utils.ReflectionHelper.getMethod(TextureAtlasSprite.class, new String[]{"a", "func_147960_a", "prepareAnisotropicFiltering"}, new Class[]{int[][].class, int.class, int.class}, Level.ERROR, "Unable to locate required method 'prepareAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
+		private static Field useAnisotropic = Utils.ReflectionHelper.getField(TextureAtlasSprite.class, new String[]{"k", "field_147966_k", "useAnisotropicFiltering"}, Level.ERROR, "Unable to locate required field 'useAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
 		
 		@SuppressWarnings("unchecked")
 		public void replaceTextureData(int[] pixels, int mipmapLevels) throws Exception {
@@ -444,7 +402,7 @@ public class StructuralLevel {
 		try {
 			pixels = TextureUtil.readImageData(Minecraft.getMinecraft().getResourceManager(), resourcelocation1);
 		} catch (Throwable t) {
-			BetterBarrels.log.severe("JABBA-Debug Problem loading texture: " + resourcelocation);
+			BetterBarrels.log.error("JABBA-Debug Problem loading texture: " + resourcelocation);
 		}
 		BetterBarrels.debug("12 - read texture data of length : " + (pixels != null ? pixels.length : "(null)"));
 		return pixels;
@@ -520,12 +478,12 @@ public class StructuralLevel {
 					}
 				} catch (Throwable t) {
 					BetterBarrels.debug("34 - MATERIAL LOOKUP ERROR");
-					BetterBarrels.log.severe("Error loading resource material texture: " + t.getMessage());
+					BetterBarrels.log.error("Error loading resource material texture: " + t.getMessage());
 					t.printStackTrace();
 				} finally {
 					// nothing found, skip out
 					if (!foundSourceMaterial) {
-						BetterBarrels.log.severe("Encountered an issue while locating the requested source material[" + (this.material.isOreDict() ? this.material.name : (this.material.modDomain + ":" + this.material.name + ":" + this.material.meta)) + "].  Ore Dictionary returned " + materialStack.getUnlocalizedName() + " as the first itemStack for that request.");
+						BetterBarrels.log.error("Encountered an issue while locating the requested source material[" + (this.material.isOreDict() ? this.material.name : (this.material.modDomain + ":" + this.material.name + ":" + this.material.meta)) + "].  Ore Dictionary returned " + materialStack.getUnlocalizedName() + " as the first itemStack for that request.");
 					}
 				}
 			} else {
@@ -549,6 +507,8 @@ public class StructuralLevel {
 
 				this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
 
+				int mipmapLevels = Utils.ReflectionHelper.getFieldValue(int.class, Minecraft.getMinecraft().gameSettings.mipmapLevels, Minecraft.getMinecraft().getTextureMapBlocks(), TextureMap.class, new String[]{"j", "field_147636_j", "mipmapLevels"}, Level.WARN, "Unable to reflect Block TextureMap mipmapLevels. Defaulting to GameSettings mipmapLevels");
+
 				try {
 					mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
 					mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
@@ -559,17 +519,17 @@ public class StructuralLevel {
 
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-					this.iconBlockLabel.replaceTextureData(labelBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
-					this.iconBlockTop.replaceTextureData(topBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
-					this.iconBlockTopLabel.replaceTextureData(topLabelBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
-					this.iconBlockSide.replaceTextureData(sideBorderPixels, Minecraft.getMinecraft().gameSettings.mipmapLevels);
+					this.iconBlockLabel.replaceTextureData(labelBorderPixels, mipmapLevels);
+					this.iconBlockTop.replaceTextureData(topBorderPixels, mipmapLevels);
+					this.iconBlockTopLabel.replaceTextureData(topLabelBorderPixels, mipmapLevels);
+					this.iconBlockSide.replaceTextureData(sideBorderPixels, mipmapLevels);
 
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
 					this.iconItem.replaceTextureData(itemBasePixels, 0);
 					GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
 					GL11.glPopAttrib();
 				} catch(Exception e) {
-					BetterBarrels.log.severe("" + e.getMessage());
+					BetterBarrels.log.error(e.getMessage());
 				}
 			}
 		}

@@ -54,6 +54,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public  byte    nTicks             = 0;
 	public  int     id                 = -1;
 	public  long    timeSinceLastUpd   = System.currentTimeMillis();
+	public  boolean overlaying			   = false;
 	
 	private Message0x01ContentUpdate lastContentMessage;
 	private Message0x02GhostUpdate lastGhostMessage;
@@ -85,17 +86,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 
 		if (ret == null) {
-			BetterBarrels.log.severe(String.format("This is the most unusual case. Storage appears to be null for [%d %d %d %d] with id [%d]", this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, this.id));
+			BetterBarrels.log.error(String.format("This is the most unusual case. Storage appears to be null for [%d %d %d %d] with id [%d]", this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, this.id));
 			
 			if (this.storage == null){
 				this.storage = new StorageLocal();
-				BetterBarrels.log.severe("Local storage was null. Created a new one.");	
+				BetterBarrels.log.error("Local storage was null. Created a new one.");
 			}
 			
 			if (this.coreUpgrades.hasEnder && !this.worldObj.isRemote){
 				this.id = BSpaceStorageHandler.instance().getNextBarrelID();
 
-				BetterBarrels.log.severe(String.format("Barrel is BSpaced. Generating new ID for it and registering the storage with the main handler."));
+				BetterBarrels.log.error(String.format("Barrel is BSpaced. Generating new ID for it and registering the storage with the main handler."));
 
 				BSpaceStorageHandler.instance().registerEnderBarrel(this.id, this.storage);
 			}
@@ -580,7 +581,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}    
     
 	public boolean sendContentSyncPacket(boolean force) {
-		if (force || lastContentMessage == null || !this.getStorage().hasItem() || lastContentMessage.amount != this.getStorage().getAmount() || !lastContentMessage.stack.isItemEqual(this.getStorage().getItem())) {
+		IBarrelStorage tempStore = this.getStorage();
+
+		// send if: forced, no previous sent packet, no item(emptying barrel), if the amount differs, or if the item differs
+		if (force || lastContentMessage == null || !tempStore.hasItem() || lastContentMessage.amount != tempStore.getAmount() || !tempStore.sameItem(lastContentMessage.stack)) {
 			lastContentMessage = new Message0x01ContentUpdate(this);
 
 			BarrelPacketHandler.INSTANCE.sendToAllAround(lastContentMessage, new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 500));
