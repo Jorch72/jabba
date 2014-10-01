@@ -1,5 +1,6 @@
 package mcp.mobius.betterbarrels;
 
+import java.util.Arrays;
 import java.util.WeakHashMap;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -37,10 +38,13 @@ public enum ServerTickHandler {
 	@SubscribeEvent
 	public void tickServer(TickEvent.ServerTickEvent event) {
 		if (timer.isDone()) {
-			for (TileEntityBarrel barrel : dirtyBarrels.keySet()) {
-				barrel.markDirtyExec();
+			if (dirtyBarrels.size() > 0) {
+				for (TileEntityBarrel barrel : Arrays.copyOf(dirtyBarrels.keySet().toArray(), dirtyBarrels.size(), TileEntityBarrel[].class) ) {
+					if (barrel != null)
+						barrel.markDirtyExec();
+				}
+				dirtyBarrels.clear();
 			}
-			dirtyBarrels.clear();
 		}
 	}
 
