@@ -347,7 +347,7 @@ public class BlockBarrel extends BlockContainer{
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
 
-		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(dir.offsetX, dir.offsetY, dir.offsetZ);
+		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x - dir.offsetX, y - dir.offsetY, z - dir.offsetZ);
 		if (barrel == null || !barrel.overlaying)
 			return super.shouldSideBeRendered(world, x, y, z, side);
 
