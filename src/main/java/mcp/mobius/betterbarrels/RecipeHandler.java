@@ -97,8 +97,8 @@ public class RecipeHandler {
 			upgradeItem = new ItemStack(Blocks.fence);
 		}
 
-		for (int i = 0; i < Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i++)
-			this.addStructuralUpgrade(i, StructuralLevel.upgradeMaterialsList[i]);
+		for (int i = 0, max = Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i < max; i++)
+			this.addStructuralUpgrade_(i, StructuralLevel.LEVELS[i+1].material.getStack());
 	}
 
 	private void addCoreUpgradeUpgrade(int resultMeta, int sourceMeta) {
@@ -111,70 +111,26 @@ public class RecipeHandler {
                                                     new Object[]{new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta)}
       ));
 	}
-	
-	private void addStructuralUpgrade(int level, String variableComponent){
-		String type     = variableComponent.split("\\.")[0];
-		String compoStr = variableComponent.split("\\.")[1];
-		this.addStructuralUpgrade_(level, compoStr);
-		
-		/*
-		if (type.equals("Ore"))
-			this.addStructuralUpgrade_(level, compoStr);
 
-		if (type.equals("Block")){
-			try {
-				Block compo = (Block)Class.forName("net.minecraft.block.Block").getField(compoStr).get(null);
-				this.addStructuralUpgrade_(level, compo);
-			} catch (Exception e) {
-				BetterBarrels.log.severe("Error while trying to register recipe with material " + variableComponent);
-			}
-		}
-
-		if (type.equals("Item")){
-			try {
-				Item compo = (Item)Class.forName("net.minecraft.item.Item").getField(compoStr).get(null);
-				this.addStructuralUpgrade_(level, compo);
-			} catch (Exception e) {
-				BetterBarrels.log.severe("Error while trying to register recipe with material " + variableComponent);
-			}
-		}
-		*/		
-		
-	}
-	
-	private void addStructuralUpgrade_(int level, Item variableComponent){
+	private void addStructuralUpgrade_(int level, Object variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
-				{"PBP", "B B", "PBP",
-				'P', upgradeItem, 
-				'B', variableComponent});		
-	}
-
-	private void addStructuralUpgrade_(int level, Block variableComponent){
-		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
-				{"PBP", "B B", "PBP",
-				'P', upgradeItem, 
-				'B', new ItemStack(variableComponent,1)});		
-	}	
-	
-	private void addStructuralUpgrade_(int level, String variableComponent){
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
 				{"PBP", "B B", "PBP",
 				Character.valueOf('P'), upgradeItem, 
-				Character.valueOf('B'), variableComponent}));		
-	}	
-	
+				Character.valueOf('B'), variableComponent});		
+	}
+
 	private void addCoreUpgrade(int meta, Item variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
 				{" P ", " B ", " P ",
-				'P', Blocks.piston, 
-				'B', variableComponent});		
+				Character.valueOf('P'), Blocks.piston, 
+				Character.valueOf('B'), variableComponent});		
 	}
 
 	private void addCoreUpgrade(int meta, Block variableComponent){
 		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
 				{" P ", " B ", " P ",
-				'P', Blocks.piston, 
-				'B', new ItemStack(variableComponent,1)});		
+				Character.valueOf('P'), Blocks.piston, 
+				Character.valueOf('B'), new ItemStack(variableComponent,1)});		
 	}	
 	
 	private void addCoreUpgrade(int meta, String variableComponent){
