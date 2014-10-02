@@ -167,26 +167,31 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
 	/* REDSTONE HANDLING */
 	public int getRedstonePower(int side){
+		if (!this.coreUpgrades.hasRedstone) 
+			return 0;
+
 		int[] sideSwitch = {1,0,3,2,5,4};
 		side = sideSwitch[side];
 
-		if (!this.coreUpgrades.hasRedstone) 
-			return 0;
-		else
-			if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_FULL && this.getStorage().getAmount() == this.getStorage().getMaxStoredCount())
-				return 15;
-			else if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_EMPT && this.getStorage().getAmount() == 0)
-				return 15;
-			else if  (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_PROP)
-				
-				if (this.getStorage().getAmount() == 0)
-					return 0;
-				else if (this.getStorage().getAmount() == this.getStorage().getMaxStoredCount())
-					return 15;
-				else
-					return MathHelper.floor_float(((float)this.getStorage().getAmount() / (float)this.getStorage().getMaxStoredCount()) * 14) + 1;
-			else
+		IBarrelStorage store = this.getStorage();
+		int currentAmount = store.getAmount();
+		int maxStorable = store.getMaxStoredCount();
+
+		if (this.coreUpgrades.hasVoid && store.hasItem()) maxStorable -= store.getItem().getMaxStackSize();
+
+		if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_FULL && currentAmount == maxStorable)
+			return 15;
+		else if (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_EMPT && currentAmount == 0)
+			return 15;
+		else if  (this.sideUpgrades[side] == UpgradeSide.REDSTONE && this.sideMetadata[side] == UpgradeSide.RS_PROP)
+			if (currentAmount == 0)
 				return 0;
+			else if (currentAmount == maxStorable)
+				return 15;
+			else
+				return MathHelper.floor_float(((float)currentAmount / (float)maxStorable) * 14) + 1;
+		else
+			return 0;
 	}
 	
 	/* PLAYER INTERACTIONS */
