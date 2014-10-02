@@ -2,10 +2,8 @@ package mcp.mobius.betterbarrels;
 
 import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -13,12 +11,11 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class RecipeHandler {
-
 	public static RecipeHandler _instance = new RecipeHandler();
-	private RecipeHandler(){}
+	private RecipeHandler() {}
 	public static RecipeHandler instance() { return RecipeHandler._instance; }	
-	
-	public void registerOres(){
+
+	public void registerOres() {
 		OreDictionary.registerOre("ingotIron",  Items.iron_ingot);
 		OreDictionary.registerOre("ingotGold",  Items.gold_ingot);
 		OreDictionary.registerOre("slimeball",  Items.slime_ball);
@@ -33,50 +30,49 @@ public class RecipeHandler {
 
 	private ItemStack upgradeItem = null;
 
-	public void registerRecipes(){
-		this.addCoreUpgrade(0, BetterBarrels.blockBarrel);
-		this.addCoreUpgrade(1, "transdimBlock");
-		this.addCoreUpgrade(2, Blocks.redstone_block);
-		this.addCoreUpgrade(3, Blocks.hopper);
-		this.addCoreUpgrade(UpgradeCore.VOID.ordinal(), Blocks.obsidian);
-		
-		this.addSideUpgrade(1, Blocks.hopper);
-		this.addSideUpgrade(2, Items.redstone);
-		
+	public void registerRecipes() {
+		// Unique Items
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.blockBarrel), new Object[]
-				 {"W-W", "WCW", "WWW", 
-			     Character.valueOf('C'), "chestWood", 
-				 Character.valueOf('W'), "logWood",
-				 Character.valueOf('-'), "slabWood"}));
-		
+			{"W-W", "WCW", "WWW", 
+			Character.valueOf('C'), "chestWood", 
+			Character.valueOf('W'), "logWood",
+			Character.valueOf('-'), "slabWood"}));
+
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemMover,1,0), new Object[] 
-				{"  X", " PX", "XXX",
-		     Character.valueOf('X'), "ingotIron", 
-			 Character.valueOf('P'), "plankWood"}));
-		
+			{"  X", " PX", "XXX",
+			Character.valueOf('X'), "ingotIron", 
+			Character.valueOf('P'), "plankWood"}));
+
 		if (BetterBarrels.diamondDollyActive){
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemMoverDiamond,1,0), new Object[] 
-					{"   ", " P ", "XXX",
-			     Character.valueOf('X'), "gemDiamond", 
-				 Character.valueOf('P'), BetterBarrels.itemMover}));
+				{"   ", " P ", "XXX",
+				Character.valueOf('X'), "gemDiamond", 
+				Character.valueOf('P'), BetterBarrels.itemMover}));
 		}
-		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide, 4, 0), new Object[]
-				{" P ","PXP", " P ", 
-			 Character.valueOf('P'), Items.paper, 
-			 Character.valueOf('X'), "slimeball"}));		
-		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemHammer, 1, 0), new Object[]
-				{"III","ISI", " S ", 
-			 Character.valueOf('I'), "ingotIron", 
-			 Character.valueOf('S'), "stickWood"}));	
-		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemTuningFork, 1, 0), new Object[]
-				{" P "," EP", "P  ", 
-			Character.valueOf('P'), "ingotIron",
-			Character.valueOf('E'), Items.ender_pearl
-				}));		
 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemHammer, 1, 0), new Object[]
+			{"III","ISI", " S ", 
+			Character.valueOf('I'), "ingotIron", 
+			Character.valueOf('S'), "stickWood"}));	
+
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemTuningFork, 1, 0), new Object[]
+			{" P "," EP", "P  ", 
+			Character.valueOf('P'), "ingotIron",
+			Character.valueOf('E'), Items.ender_pearl}));		
+
+		// Core Upgrades
+		addCoreUpgrade(0, BetterBarrels.blockBarrel);
+		addCoreUpgrade(1, "transdimBlock");
+		addCoreUpgrade(2, Blocks.redstone_block);
+		addCoreUpgrade(3, Blocks.hopper);
+		addCoreUpgrade(UpgradeCore.VOID.ordinal(), Blocks.obsidian);
+
+		// Side Upgrades
+		addSideUpgrade(0, "slimeball", Items.paper);
+		addSideUpgrade(1, Blocks.hopper, "plankWood");
+		addSideUpgrade(2, Items.redstone, "plankWood");
+
+		// Storage upgrades
 		UpgradeCore prevStorage = UpgradeCore.STORAGE;
 		for (UpgradeCore core : UpgradeCore.values()) {
 			if(core.type == UpgradeCore.Type.STORAGE && core.slotsUsed > 1) {
@@ -97,67 +93,38 @@ public class RecipeHandler {
 			upgradeItem = new ItemStack(Blocks.fence);
 		}
 
-		for (int i = 0, max = Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i < max; i++)
-			this.addStructuralUpgrade_(i, StructuralLevel.LEVELS[i+1].material.getStack());
+		for (int i = 0, max = Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i < max; i++) {
+			this.addStructuralUpgrade(i, StructuralLevel.LEVELS[i+1].material.getStack());
+		}
 	}
 
 	private void addCoreUpgradeUpgrade(int resultMeta, int sourceMeta) {
-      GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta),
-                                                    new Object[]{new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
-                                                                 new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
-                                                                 new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta)}
-      ));
-      GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 3, sourceMeta),
-                                                    new Object[]{new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta)}
-      ));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta), new Object[]
+			{new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
+			new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
+			new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta)}));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 3, sourceMeta), new Object[]
+			{new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta)}));
 	}
 
-	private void addStructuralUpgrade_(int level, Object variableComponent){
-		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural,1,level), new Object[] 
-				{"PBP", "B B", "PBP",
-				Character.valueOf('P'), upgradeItem, 
-				Character.valueOf('B'), variableComponent});		
+	private void addStructuralUpgrade(int level, Object variableComponent) {
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeStructural, 1, level), new Object[] 
+			{"PBP", "B B", "PBP",
+			Character.valueOf('P'), upgradeItem, 
+			Character.valueOf('B'), variableComponent}));		
 	}
 
-	private void addCoreUpgrade(int meta, Item variableComponent){
-		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
-				{" P ", " B ", " P ",
-				Character.valueOf('P'), Blocks.piston, 
-				Character.valueOf('B'), variableComponent});		
+	private void addCoreUpgrade(int meta, Object variableComponent) {
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 1, meta), new Object[] 
+			{" P ", " B ", " P ",
+			Character.valueOf('P'), Blocks.piston, 
+			Character.valueOf('B'), variableComponent}));		
 	}
 
-	private void addCoreUpgrade(int meta, Block variableComponent){
-		GameRegistry.addRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
-				{" P ", " B ", " P ",
-				Character.valueOf('P'), Blocks.piston, 
-				Character.valueOf('B'), new ItemStack(variableComponent,1)});		
-	}	
-	
-	private void addCoreUpgrade(int meta, String variableComponent){
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore,1,meta), new Object[] 
-				{" P ", " B ", " P ",
-				Character.valueOf('P'), Blocks.piston,
-				Character.valueOf('B'), variableComponent}));		
-	}	
-	
-	private void addSideUpgrade(int meta, Item variableComponent){
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide,4,meta), new Object[] 
-				{" P ", "PBP", " P ",
-				Character.valueOf('P'), "plankWood", 
-				Character.valueOf('B'), variableComponent}));		
-	}
-
-	private void addSideUpgrade(int meta, Block variableComponent){
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide,4,meta), new Object[] 
-				{" P ", "PBP", " P ",
-				Character.valueOf('P'), "plankWood",
-				Character.valueOf('B'), new ItemStack(variableComponent,1)}));		
-	}	
-	
-	private void addSideUpgrade(int meta, String variableComponent){
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide,4,meta), new Object[] 
-				{" P ", "PBP", " P ",
-				Character.valueOf('P'), "plankWood",
-				Character.valueOf('B'), variableComponent}));		
+	private void addSideUpgrade(int meta, Object center, Object border) {
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BetterBarrels.itemUpgradeSide, 4, meta), new Object[] 
+			{" P ", "PBP", " P ",
+			Character.valueOf('P'), border,
+			Character.valueOf('B'), center}));		
 	}	
 }
