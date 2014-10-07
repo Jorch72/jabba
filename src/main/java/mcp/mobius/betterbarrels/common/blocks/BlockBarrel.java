@@ -3,6 +3,7 @@ package mcp.mobius.betterbarrels.common.blocks;
 import java.util.Random;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
@@ -11,6 +12,7 @@ import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.IconFlipped;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
@@ -72,24 +74,12 @@ public class BlockBarrel extends BlockContainer{
 		// We get the orientation and check if the TE is already properly created.
 		// If so we set the entity value to the correct orientation and set the block meta to 1 to kill the normal block rendering.
 
-		int barrelOrientation = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
 
 		if (barrelEntity != null){
-			switch (barrelOrientation){
-			case 0:
-				barrelEntity.orientation = ForgeDirection.NORTH;
-				break;
-			case 1:
-				barrelEntity.orientation = ForgeDirection.EAST;	        		
-				break;
-			case 2:
-				barrelEntity.orientation = ForgeDirection.SOUTH;	        		
-				break;
-			case 3:
-				barrelEntity.orientation = ForgeDirection.WEST;	        		
-				break;        		
-			}
+			barrelEntity.orientation = Utils.getDirectionFacingEntity(entity, BetterBarrels.allowVerticalPlacement);
+			barrelEntity.rotation = Utils.getDirectionFacingEntity(entity, false);
+
 			barrelEntity.sideUpgrades[barrelEntity.orientation.ordinal()] = UpgradeSide.FRONT;
 		}
 	}
@@ -313,34 +303,36 @@ public class BlockBarrel extends BlockContainer{
 		boolean linked = barrel.getLinked();
 		boolean sideIsLabel = (barrel.sideUpgrades[side] == UpgradeSide.FRONT || barrel.sideUpgrades[side] == UpgradeSide.STICKER);
 
+		// note, this default should always be overwritten, just setting a default to prevent NPE's
+		IIcon ret = StructuralLevel.LEVELS[levelStructural].getIconLabel();
+
 		if (barrel.overlaying) {
 			if (barrel.sideUpgrades[side] == UpgradeSide.HOPPER) {
-				return BlockBarrel.text_sidehopper;
+				ret = BlockBarrel.text_sidehopper;
 			} else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE) {
-				return BlockBarrel.text_siders;
+				ret = BlockBarrel.text_siders;
 			} else if (sideIsLabel) {
 				if (ghosting && linked) {
-					return BlockBarrel.text_locklinked;
+					ret = BlockBarrel.text_locklinked;
 				} else if (ghosting) {
-					return BlockBarrel.text_lock;
+					ret = BlockBarrel.text_lock;
 				} else if (linked) {
-					return BlockBarrel.text_linked;
+					ret = BlockBarrel.text_linked;
 				}
 			}
 		} else {
 			if ((side == 0 || side == 1) && sideIsLabel) {
-				return StructuralLevel.LEVELS[levelStructural].getIconLabelTop();
+				ret = StructuralLevel.LEVELS[levelStructural].getIconLabelTop();
 			} else if ((side == 0 || side == 1) && !sideIsLabel) {
-				return StructuralLevel.LEVELS[levelStructural].getIconTop();
+				ret = StructuralLevel.LEVELS[levelStructural].getIconTop();
 			} else if (sideIsLabel) {
-				return StructuralLevel.LEVELS[levelStructural].getIconLabel();
+				ret = StructuralLevel.LEVELS[levelStructural].getIconLabel();
 			} else {
-				return StructuralLevel.LEVELS[levelStructural].getIconSide();
+				ret = StructuralLevel.LEVELS[levelStructural].getIconSide();
 			}
 		}
 
-		// note: this point should never be reached, however returning a side so we have no possibel NPE's
-		return StructuralLevel.LEVELS[levelStructural].getIconLabel();
+		return side == 0 ? new IconFlipped(ret, true, false): ret;
 	}
 
 	@SideOnly(Side.CLIENT)

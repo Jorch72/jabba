@@ -47,6 +47,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	
     IBarrelStorage storage     = new StorageLocal();
 	public  ForgeDirection orientation = ForgeDirection.UNKNOWN;
+	public  ForgeDirection rotation    = ForgeDirection.UNKNOWN;
 	public  int[] sideUpgrades         = {UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE, UpgradeSide.NONE};
 	public  int[] sideMetadata         = {0, 0, 0, 0, 0, 0};
 	public  boolean isTicking          = false;
@@ -448,6 +449,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
         super.writeToNBT(NBTTag);
         NBTTag.setInteger("version",       TileEntityBarrel.version);        
         NBTTag.setInteger("orientation",   this.orientation.ordinal());
+        NBTTag.setInteger("rotation",      this.rotation.ordinal());
         NBTTag.setIntArray("sideUpgrades", this.sideUpgrades);
         this.coreUpgrades.writeToNBT(NBTTag);
         NBTTag.setIntArray("sideMeta",     this.sideMetadata);
@@ -472,6 +474,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
       }
     	    	
     	this.orientation     = ForgeDirection.getOrientation(NBTTag.getInteger("orientation"));
+    	this.rotation        = NBTTag.hasKey("rotation") ? ForgeDirection.getOrientation(NBTTag.getInteger("rotation")): this.orientation;
     	this.sideUpgrades    = NBTTag.getIntArray("sideUpgrades");
     	this.sideMetadata    = NBTTag.getIntArray("sideMeta");
     	this.coreUpgrades    = new BarrelCoreUpgrades(this);
@@ -506,6 +509,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
     	
     	// We fix the labels and orientation
     	this.orientation = this.convertOrientationFlagToForge(blockOriginalOrient).get(0);
+    	this.rotation = this.orientation;
     	
     	ArrayList<ForgeDirection> stickers = this.convertOrientationFlagToForge(blockOrientation);
     	for (ForgeDirection s : stickers)
