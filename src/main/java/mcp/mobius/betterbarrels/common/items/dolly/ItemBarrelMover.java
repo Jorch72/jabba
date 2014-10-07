@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import net.minecraft.block.Block;
@@ -283,27 +284,64 @@ public class ItemBarrelMover extends Item {
 		/* Better barrel craziness */
 		
 		if (nbtContainer.getString("id").equals("TileEntityBarrel")){
-			ForgeDirection newBarrelOrientation = this.getBarrelOrientationOnPlacement(player);
+			ForgeDirection newBarrelRotation    = Utils.getDirectionFacingEntity(player, false);
+			ForgeDirection oldBarrelRotation    = ForgeDirection.getOrientation(nbtContainer.getInteger("rotation")); 
+			ForgeDirection newBarrelOrientation = Utils.getDirectionFacingEntity(player, BetterBarrels.allowVerticalPlacement);
 			ForgeDirection oldBarrelOrientation = ForgeDirection.getOrientation(nbtContainer.getInteger("orientation")); 
 			int[] newSideArray = new int[6];
 			int[] oldSideArray = nbtContainer.getIntArray("sideUpgrades");
-			
-			int numberRotations = 0;
-			while (newBarrelOrientation != oldBarrelOrientation){
-				numberRotations += 1;
-				oldBarrelOrientation = oldBarrelOrientation.getRotation(ForgeDirection.UP);
+			int[] newSideMetaArray = new int[6];
+			int[] oldSideMetaArray = nbtContainer.getIntArray("sideMeta");
+
+			/* Note: the barrel should never have these values set as unknown, but this will prevent the code from crashing or infinite looping */
+			if (oldBarrelRotation == ForgeDirection.UNKNOWN) oldBarrelRotation = ForgeDirection.SOUTH;
+			if (oldBarrelOrientation == ForgeDirection.UNKNOWN) oldBarrelOrientation = ForgeDirection.SOUTH;
+
+			/* Normalize the barrel so it is upright and front facing player*/
+			if (oldBarrelOrientation == ForgeDirection.UP || oldBarrelOrientation == ForgeDirection.DOWN) {
+				ForgeDirection rot = oldBarrelRotation.getRotation(oldBarrelOrientation);
+				for (int i = 0; i < 6; i++) {
+					int j = ForgeDirection.getOrientation(i).getRotation(rot).ordinal();
+					newSideArray[j] = oldSideArray[i];
+					newSideMetaArray[j] = oldSideMetaArray[i];
+				}
+				oldBarrelOrientation = oldBarrelRotation;
+				oldSideArray = newSideArray.clone();
+				oldSideMetaArray = newSideMetaArray.clone();
 			}
 
-			for (int i = 0; i < 6; i++){
+			int numberRotationsVAxis = 0;
+			while (newBarrelRotation != oldBarrelRotation) {
+				numberRotationsVAxis += 1;
+				oldBarrelRotation = oldBarrelRotation.getRotation(ForgeDirection.UP);
+			}
+
+			for (int i = 0; i < 6; i++) {
 				ForgeDirection idir = ForgeDirection.getOrientation(i);
-				for (int rot = 0; rot < numberRotations; rot++){
+				for (int rot = 0; rot < numberRotationsVAxis; rot++) {
 					idir = idir.getRotation(ForgeDirection.UP);
 				}
+				int j = idir.ordinal();
 				newSideArray[idir.ordinal()] = oldSideArray[i];
+				newSideMetaArray[idir.ordinal()] = oldSideMetaArray[i];
 			}
-			
+
+			/* if new orientation is up/down, rotate appropriately */
+			if (newBarrelOrientation == ForgeDirection.UP || newBarrelOrientation == ForgeDirection.DOWN) {
+				oldSideArray = newSideArray.clone();
+				oldSideMetaArray = newSideMetaArray.clone();
+				ForgeDirection rot = newBarrelRotation.getRotation(newBarrelOrientation.getOpposite());
+				for (int i = 0; i < 6; i++) {
+					int j = ForgeDirection.getOrientation(i).getRotation(rot).ordinal();
+					newSideArray[j] = oldSideArray[i];
+					newSideMetaArray[j] = oldSideMetaArray[i];
+				}
+			}
+
 			nbtContainer.setInteger("orientation", newBarrelOrientation.ordinal());
+			nbtContainer.setInteger("rotation", newBarrelRotation.ordinal());
 			nbtContainer.setIntArray("sideUpgrades", newSideArray);
+			nbtContainer.setIntArray("sideMeta", newSideMetaArray);
 		}
 		
 		world.setBlock(targX, targY, targZ, storedBlock, blockMeta, 1 + 2);
@@ -323,8 +361,6 @@ public class ItemBarrelMover extends Item {
 		world.markBlockForUpdate(targX, targY, targZ);		
 		
 		return true;
-		
-		
 	}
 	
 	private void fixIC2Orientation(TileEntity entity, EntityPlayer player, int targY){

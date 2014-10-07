@@ -83,6 +83,9 @@ public class BetterBarrels {
 	
 	public static int blockBarrelRendererID = -1;
 
+	public static boolean allowVerticalPlacement = true;
+	public static float verticalPlacementRange   = 1f; 
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		config = new Configuration(event.getSuggestedConfigurationFile());
@@ -126,6 +129,9 @@ public class BetterBarrels {
 			}
 			stacksSize = config.get(Configuration.CATEGORY_GENERAL, "stacksSize", BetterBarrels.stacksSize, "How many stacks the base barrel and each upgrade will provide").getInt();
 			upgradeItemStr = config.get(Configuration.CATEGORY_GENERAL, "tierUpgradeItem", BetterBarrels.upgradeItemStr, "The name of the item to use for the strutural tier upgrade recipes. Default is \"minecraft:fence\" for Vanilla Fence. The format is Ore.name for an ore dictionary lookup, or itemDomain:itemname[:meta] for a direct item, not this is case-sensitive.").getString();
+
+			allowVerticalPlacement = config.getBoolean("allowVerticalPlacement", Configuration.CATEGORY_GENERAL, true, "If true, barrels can be initially placed and dollyed so that their front side can be on the top or bottom. The front side is the side with the initial sticker applied.");
+			verticalPlacementRange = config.getFloat("verticalPlacementRange", Configuration.CATEGORY_GENERAL, 0.79f, 0f, 1f, "This is used when testing a players aim for block placement.  If the aim value is greater than or equal to this setting, it is determined you are attempting to place a block facing down.  The reverse is true for placing blocks facing up. 0 = dead ahead, 1 = directly above.");
 
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			//highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);

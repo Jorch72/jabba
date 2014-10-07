@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
-
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {
 		Tessellator tessellator = Tessellator.instance;
@@ -41,17 +40,24 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 		renderer.renderFaceXPos(block, 0.0D, 0.0D, 0.0D, iconLabel);
 		tessellator.draw();
 	}
-	
+
+	private static int[][] forgeFacingtoMCTopBottomRotate = {{ 0, 0, 0, 3, 1, 2, 0 },{ 0, 0, 3, 0, 1, 2, 0 }};
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block tile, int modelId, RenderBlocks renderer) {
 		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
+
+		renderer.uvRotateBottom = forgeFacingtoMCTopBottomRotate[0][barrel.rotation.ordinal()];
+		renderer.uvRotateTop = forgeFacingtoMCTopBottomRotate[1][barrel.rotation.ordinal()];
 
 		barrel.overlaying = false;
 		boolean renderedBarrel = renderer.renderStandardBlock(tile, x, y, z);
 		barrel.overlaying = true;
 		boolean renderedOverlay = renderer.renderStandardBlock(tile, x, y, z);
 		barrel.overlaying = false;
-		
+
+		renderer.uvRotateBottom = 0;
+		renderer.uvRotateTop = 0;
+
 		return renderedBarrel || renderedOverlay;
 	}
 	
@@ -64,5 +70,4 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 	public int getRenderId() {
 		return BetterBarrels.blockBarrelRendererID;
 	}
-
 }

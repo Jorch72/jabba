@@ -4,8 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.Level;
-
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -14,7 +13,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
+
+import org.apache.logging.log4j.Level;
 
 public class Utils {
 	public static void dropItemInWorld(TileEntity source, EntityPlayer player, ItemStack stack, double speedfactor) {
@@ -61,6 +63,30 @@ public class Utils {
 		droppedEntity.motionZ *= speedfactor;
 
 		source.getWorldObj().spawnEntityInWorld(droppedEntity);
+	}
+
+	public static ForgeDirection getDirectionFacingEntity(EntityLivingBase player, boolean allowVertical) {
+		Vec3 playerLook = player.getLookVec();
+
+		if (allowVertical) {
+			if (playerLook.yCoord <=  -BetterBarrels.verticalPlacementRange) {
+				return ForgeDirection.UP;
+			} else if (playerLook.yCoord >=  BetterBarrels.verticalPlacementRange) {
+				return ForgeDirection.DOWN;
+			}
+		}
+
+		if (Math.abs(playerLook.xCoord) >= Math.abs(playerLook.zCoord)) {
+			if (playerLook.xCoord > 0)
+				return ForgeDirection.WEST;
+			else
+				return ForgeDirection.EAST;
+		} else {
+			if (playerLook.zCoord > 0)
+				return ForgeDirection.NORTH;
+			else
+				return ForgeDirection.SOUTH;			
+		}
 	}
 
 	public static class Material {
