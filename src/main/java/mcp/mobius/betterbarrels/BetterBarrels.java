@@ -144,7 +144,6 @@ public class BetterBarrels {
 				config.save();
 		}
 		
-		RecipeHandler.instance().registerOres();
 		proxy.registerEventHandler();	
 		
 		//log.setLevel(Level.FINEST);
@@ -186,6 +185,7 @@ public class BetterBarrels {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		RecipeHandler.instance().registerOres();
 		RecipeHandler.instance().registerLateRecipes();
 		StructuralLevel.initializeStructuralMaterials();
 		proxy.postInit();
