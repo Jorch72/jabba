@@ -2,6 +2,7 @@ package mcp.mobius.betterbarrels;
 
 import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -26,6 +27,13 @@ public class RecipeHandler {
 		OreDictionary.registerOre("obsidian",   Blocks.obsidian);
 		OreDictionary.registerOre("whiteStone", Blocks.end_stone);
 		OreDictionary.registerOre("transdimBlock", Blocks.ender_chest);
+
+		Block CBEnderChest = Block.getBlockFromName("EnderStorage:enderChest");
+		if (CBEnderChest != null) {
+			for (int meta=0; meta < 4096; meta++) {
+				OreDictionary.registerOre("transdimBlock", new ItemStack(CBEnderChest, 1, meta));
+			}
+		}
 	}
 
 	private ItemStack upgradeItem = null;
