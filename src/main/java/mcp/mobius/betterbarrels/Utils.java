@@ -204,7 +204,9 @@ public class Utils {
 			if (foundField != null) {
 				try {
 					returnValue = returnType.cast(foundField.get(targetObject));
+					BetterBarrels.debug("Reflected field [" + foundField.getName() + "] and found value [" + returnValue + "], had a backup value of " + errorValue);
 				} catch (Throwable t) {
+					BetterBarrels.log.error("Unable to cast found field [" + foundField.getName() + "] to return type [" + returnType.getName() + "]. Defaulting to provided error value.");
 				}
 			}
 			return returnValue;
