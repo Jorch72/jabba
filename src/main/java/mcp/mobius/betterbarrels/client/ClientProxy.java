@@ -60,14 +60,15 @@ public class ClientProxy extends BaseProxy {
 	}
 
 	@Override
-	public void registerEventHandler(){
+	public void registerEventHandler() {
 		//TODO : Turned off registering end of rendering event to check for fps drop
 
 		MinecraftForge.EVENT_BUS.register(new BBEventHandler());
 
 	}
 
-	public void postInit(){
+	@Override
+	public void postInit() {
 		((IReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new IResourceManagerReloadListener() {
 			private boolean ranOnce = false;
 
@@ -79,12 +80,13 @@ public class ClientProxy extends BaseProxy {
 					ranOnce = true;
 					return;
 				}
+
 				StructuralLevel.loadBaseTextureData();
 				if (StructuralLevel.LEVELS != null) {
 					for (int level = 1; level < StructuralLevel.LEVELS.length; level++) {
 						StructuralLevel.LEVELS[level].discoverMaterialName();
-						StringTranslate.inject(new ByteArrayInputStream(("item.upgrade.structural." + String.valueOf(level) + ".name=" + StatCollector.translateToLocal("item.upgrade.structural") + " " +  StructuralLevel.romanNumeral(level) + " (" +  StructuralLevel.LEVELS[level].name + ")").getBytes()));
 						StructuralLevel.LEVELS[level].generateIcons();
+						StringTranslate.inject(new ByteArrayInputStream(("item.upgrade.structural." + String.valueOf(level) + ".name=" + StatCollector.translateToLocal("item.upgrade.structural") + " " +  StructuralLevel.romanNumeral(level) + " (" +  StructuralLevel.LEVELS[level].name + ")").getBytes()));
 					}
 				}
 				StructuralLevel.unloadBaseTextureData();
