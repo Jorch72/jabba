@@ -2,11 +2,11 @@
 Short Description
 ============================
 
-JABBA dynamically creates textures for the barrels and items during runtime whenever a resource pack is (re)loaded. It does so to avoid doing these calculations during the render loop. This helps speed up rendering when there are *many* barrels visible on screen.
+JABBA dynamically creates textures for the barrels and items during runtime whenever a resource pack is (re)loaded. It does so to avoid doing these calculations during the render loop. This helps speed up rendering on lower end computers or when there are many barrels visible on screen at once.
 
 The textures that are colored by code are the border pieces(eg: barrel_side_border.png)  These pieces should be created with a neutral midtone grey as they will have colors overlaid on top of them. The other pieces can be colored as wished.
 
-When the textures are being built, any non transparent portion of the background is overlaid on top of the colored border texture.  If in Photoshop or GIMP this would be the same as having the background and border textures on two separate layers, with the border texture being the lower layer.
+When the textures are being built, any non transparent portion of the background is overlaid on top of the colored border texture.  If in Photoshop or GIMP this would be the same as having the background and border textures on two separate layers, with the colored border texture being the lower layer.
 
 IMPORTANT:
 **** All related textures must match in dimensional size. ****
@@ -45,6 +45,7 @@ If the YIQ value is greater than or equal to 128 use black text, otherwise use w
 ============================
 Some Standard Colors
 ============================
+*NOTE* These are the average color of the item, not the expected color if used as a dye. Since most items have a black border they will be darker/muted somewhat.
 
 Default MC texture pack calculated colors:
 Color for [Oak Wood Planks]: {R: 156, G: 127, B: 78}
