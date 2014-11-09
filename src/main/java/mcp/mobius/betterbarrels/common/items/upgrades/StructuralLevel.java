@@ -1,8 +1,11 @@
 package mcp.mobius.betterbarrels.common.items.upgrades;
 
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
+
+import javax.imageio.ImageIO;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.Utils;
@@ -12,6 +15,8 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.resources.IResource;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -65,16 +70,12 @@ public class StructuralLevel {
 		BetterBarrels.debug("03 - Created structural entry for [" + (this.material.isOreDict() ? this.material.name : (this.material.modDomain + ":" + this.material.name + ":" + this.material.meta)) + "] with " + this.maxCoreSlots + " slots.");
 	}
 
-	public void initializeMaterial() {
-		if(this.needsMaterialInitialization) {
-			this.materialStack = this.material.getStack();
-		}
-	}
-
 	public static void initializeStructuralMaterials() {
 		BetterBarrels.debug("04 - Looking up structural materials in the Ore Dictionary");
 		for (StructuralLevel level : StructuralLevel.LEVELS) {
-			level.initializeMaterial();
+			if(level.needsMaterialInitialization) {
+				level.materialStack = level.material.getStack();
+			}
 		}
 	}
 
@@ -180,13 +181,46 @@ public class StructuralLevel {
 
 	@SideOnly(Side.CLIENT)
 	private static class AccessibleTextureAtlasSprite extends TextureAtlasSprite {
-		AccessibleTextureAtlasSprite(String par1Str) {
+		protected int textureType;
+
+		AccessibleTextureAtlasSprite(String par1Str, int textype) {
 			super(par1Str);
+			textureType = textype;
 		}
 
 		private static Method fixPixels = Utils.ReflectionHelper.getMethod(TextureAtlasSprite.class, new String[]{"a", "func_147961_a", "fixTransparentPixels"}, new Class[]{int[][].class}, Level.ERROR, "Unable to locate required method 'fixTransparentPixels' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
 		private static Method setupAnisotropic = Utils.ReflectionHelper.getMethod(TextureAtlasSprite.class, new String[]{"a", "func_147960_a", "prepareAnisotropicFiltering"}, new Class[]{int[][].class, int.class, int.class}, Level.ERROR, "Unable to locate required method 'prepareAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
 		private static Field useAnisotropic = Utils.ReflectionHelper.getField(TextureAtlasSprite.class, new String[]{"k", "field_147966_k", "useAnisotropicFiltering"}, Level.ERROR, "Unable to locate required field 'useAnisotropicFiltering' for texture generation.  Please post this error at the error tracker along with a copy of your ForgeModLoader-client-0.log.");
+		private static Field texmapMipMapLevels = Utils.ReflectionHelper.getField(TextureMap.class, new String[]{"j", "field_147636_j", "mipmapLevels"});
+		private static Field texmapAnisotropic = Utils.ReflectionHelper.getField(TextureMap.class, new String[]{"k", "field_147637_k", "anisotropicFiltering"});
+
+		@Override
+		public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) {
+			if (textureType == 1 || location.getResourcePath().endsWith("0")) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		@Override
+		public boolean load(IResourceManager manager, ResourceLocation location) {
+			// just load up one of the base textures to reserve space on the texture sheet
+			try {
+				boolean useanisotropicFiltering = textureType == 0 ? (texmapAnisotropic.getInt(Minecraft.getMinecraft().getTextureMapBlocks()) > 1F): false;
+				int mipmapLevels = textureType == 0 ? texmapMipMapLevels.getInt(Minecraft.getMinecraft().getTextureMapBlocks()): 0;
+
+                BufferedImage[] abufferedimage = new BufferedImage[1 + mipmapLevels];
+                abufferedimage[0] = ImageIO.read(manager.getResource(new ResourceLocation(location.getResourceDomain(), (textureType == 0 ? "textures/blocks/barrel_top_border.png": "textures/items/capaupg_base.png"))).getInputStream());
+
+                this.loadSprite(abufferedimage, null, useanisotropicFiltering);
+
+				return false; // yes, this is opposite of what the javadoc states... the place it is used is also flipped
+			} catch (Throwable t) {
+				BetterBarrels.log.error(t);
+			}
+			return true;
+		}
 
 		@SuppressWarnings("unchecked")
 		public void replaceTextureData(int[] pixels, int mipmapLevels) throws Exception {
@@ -210,11 +244,12 @@ public class StructuralLevel {
 
 	@SideOnly(Side.CLIENT)
 	private static AccessibleTextureAtlasSprite registerIcon(IIconRegister par1IconRegister, String key) {
-		AccessibleTextureAtlasSprite ret = new AccessibleTextureAtlasSprite(key);
-		if (((TextureMap)par1IconRegister).setTextureEntry(key, ret)) {
+		TextureMap texmap = (TextureMap)par1IconRegister;
+		AccessibleTextureAtlasSprite ret = new AccessibleTextureAtlasSprite(key, texmap.getTextureType());
+		if (texmap.setTextureEntry(key, ret)) {
 			return ret;
 		} else {
-			return (AccessibleTextureAtlasSprite)((TextureMap)par1IconRegister).getTextureExtry(key);
+			return (AccessibleTextureAtlasSprite)(texmap.getTextureExtry(key));
 		}
 	}
 
@@ -225,17 +260,10 @@ public class StructuralLevel {
 
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister par1IconRegister, int ordinal) {
-		if (ordinal > 0) {
-			this.iconBlockSide = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/side/" + String.valueOf(ordinal));
-			this.iconBlockLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/label/" + String.valueOf(ordinal));
-			this.iconBlockTop = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/top/" + String.valueOf(ordinal));
-			this.iconBlockTopLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":blanks/toplabel/" + String.valueOf(ordinal));
-		} else {
-			this.iconBlockSide = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_side_" + String.valueOf(ordinal));
-			this.iconBlockTop = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_top_" + String.valueOf(ordinal));
-			this.iconBlockLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_label_" + String.valueOf(ordinal));
-			this.iconBlockTopLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_labeltop_" + String.valueOf(ordinal));
-		}
+		this.iconBlockSide = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_side_" + String.valueOf(ordinal));
+		this.iconBlockTop = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_top_" + String.valueOf(ordinal));
+		this.iconBlockLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_label_" + String.valueOf(ordinal));
+		this.iconBlockTopLabel = StructuralLevel.registerIcon(par1IconRegister, BetterBarrels.modid + ":barrel_labeltop_" + String.valueOf(ordinal));
 	}
 
 	public static String romanNumeral(int num) {
@@ -391,11 +419,7 @@ public class StructuralLevel {
 	@SideOnly(Side.CLIENT)
 	private static int[] getPixelsForTexture(boolean item, ResourceLocation resourcelocation) {
 		BetterBarrels.debug("09 - Entering texture load method for texture : " + resourcelocation.toString());
-		/*TextureMap map = (TextureMap)Minecraft.getMinecraft().renderEngine.getTexture(item ? TextureMap.locationItemsTexture: TextureMap.locationBlocksTexture);
-      for (String field: new String[] {}) {
-
-      }*/
-		ResourceLocation resourcelocation1 = new ResourceLocation(resourcelocation.getResourceDomain(), String.format("%s/%s%s", new Object[] {(item ? "textures/items": "textures/blocks")/*map.basePath*/, resourcelocation.getResourcePath(), ".png"}));
+		ResourceLocation resourcelocation1 = new ResourceLocation(resourcelocation.getResourceDomain(), String.format("%s/%s%s", new Object[] {(item ? "textures/items": "textures/blocks"), resourcelocation.getResourcePath(), ".png"}));
 		BetterBarrels.debug("11 - Modified resource path : " + resourcelocation1.toString());
 		int[] pixels = null;
 		try {
