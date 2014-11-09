@@ -335,6 +335,7 @@ public class BlockBarrel extends BlockContainer{
 		return side == 0 ? new IconFlipped(ret, true, false): ret;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
