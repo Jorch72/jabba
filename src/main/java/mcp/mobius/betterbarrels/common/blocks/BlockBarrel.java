@@ -256,6 +256,11 @@ public class BlockBarrel extends BlockContainer{
 	// Will allow for torches to be placed on non-labeled sides
 	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+		if (side == ForgeDirection.DOWN) {
+			// prevent barrels from "blocking" chests from opening beneath them
+			return false;
+		}
+
 		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
 
 		if (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.FRONT || barrel.sideUpgrades[side.ordinal()] == UpgradeSide.STICKER) {
