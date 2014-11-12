@@ -25,8 +25,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.server.FMLServerHandler;
 
 public class ItemBarrelMover extends Item {
 	protected IIcon   text_empty = null;
@@ -125,7 +125,7 @@ public class ItemBarrelMover extends Item {
 			return false;
 		}
 
-		if (FMLServerHandler.instance().getServer().isBlockProtected(world, x, y, z, player)) {
+		if (FMLCommonHandler.instance().getMinecraftServerInstance().isBlockProtected(world, x, y, z, player)) {
 			return false;
 		}
 
