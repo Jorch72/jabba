@@ -277,11 +277,6 @@ public class BlockBarrel extends BlockContainer{
 		return super.canCreatureSpawn(type, world, x, y, z);
 	}
 
-	/*@Override
-	public boolean canPlaceTorchOnTop(World world, int x, int y, int z) {
-		return isSideSolid(world, x, y, z, ForgeDirection.UP);
-	}*/
-
 	/* Rendering stuff */
 	@Override
 	public int getRenderType() {
