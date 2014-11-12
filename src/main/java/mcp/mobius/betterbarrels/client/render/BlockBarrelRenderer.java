@@ -1,8 +1,8 @@
 package mcp.mobius.betterbarrels.client.render;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
+import mcp.mobius.betterbarrels.common.StructuralLevel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
-import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,11 +17,11 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {
 		Tessellator tessellator = Tessellator.instance;
-		
+
 		IIcon iconSide, iconTop, iconLabel;
-		iconSide     = StructuralLevel.LEVELS[0].getIconSide();
-		iconTop      = StructuralLevel.LEVELS[0].getIconTop();
-		iconLabel    = StructuralLevel.LEVELS[0].getIconLabel();
+		iconSide     = StructuralLevel.LEVELS[0].clientData.getIconSide();
+		iconTop      = StructuralLevel.LEVELS[0].clientData.getIconTop();
+		iconLabel    = StructuralLevel.LEVELS[0].clientData.getIconLabel();
 
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 
@@ -60,7 +60,7 @@ public class BlockBarrelRenderer implements ISimpleBlockRenderingHandler {
 
 		return renderedBarrel || renderedOverlay;
 	}
-	
+
 	@Override
 	public boolean shouldRender3DInInventory(int modelID) {
 		return true;

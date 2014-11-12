@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import mcp.mobius.betterbarrels.common.BaseProxy;
+import mcp.mobius.betterbarrels.common.StructuralLevel;
 import mcp.mobius.betterbarrels.common.blocks.BlockBarrel;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
 import mcp.mobius.betterbarrels.common.items.ItemBarrelHammer;
@@ -17,7 +18,6 @@ import mcp.mobius.betterbarrels.common.items.dolly.ItemDiamondMover;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeSide;
 import mcp.mobius.betterbarrels.common.items.upgrades.ItemUpgradeStructural;
-import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -63,8 +63,8 @@ public class BetterBarrels {
 	public static boolean  highRezTexture     = true;
 	public static boolean  showUpgradeSymbols = true;
 	public static boolean  diamondDollyActive = true;	
-	public static int[] colorOverrides        = new int[]{0, 0};
 	public static int stacksSize              = 64;
+	public static int maxCraftableTier        = StructuralLevel.defaultUpgradeMaterialsList.length;
 	public static String upgradeItemStr       = "minecraft:fence";
 
 	public static Block blockBarrel      = null;
@@ -96,37 +96,20 @@ public class BetterBarrels {
 			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
 			limiterDelay        = config.get(Configuration.CATEGORY_GENERAL, "packetLimiterDelay", 500, "Controls the minimum delay (in ms) between two server/client sync. Lower values mean closer to realtime, and more network usage.").getInt();			
 			
-			StructuralLevel.upgradeMaterialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.upgradeMaterialsList, "A structural tier will be created for each material in this list, even if not craftable").getStringList();
-			if(StructuralLevel.upgradeMaterialsList.length > 18) {
+			String[] materialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.defaultUpgradeMaterialsList, "A structural tier will be created for each material in this list, even if not craftable").getStringList();
+			if(materialsList.length > 18) { //limit max upgrade size to 18 due to internal int storage type on barrel
 				String[] trimedList = new String[18];
-				for(int i=0;i<18;i++)
-					trimedList[i] = StructuralLevel.upgradeMaterialsList[i];
-				StructuralLevel.upgradeMaterialsList = trimedList;
+				for(int i=0; i<18; i++)
+					trimedList[i] = materialsList[i];
+				materialsList = trimedList;
 				config.get(Configuration.CATEGORY_GENERAL, "materialList", trimedList).set(trimedList);
 			}
-			debug("00 - Loaded materials list: " + Arrays.toString(StructuralLevel.upgradeMaterialsList));
-			StructuralLevel.maxCraftableTier = Math.min(18, Math.min(StructuralLevel.upgradeMaterialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", StructuralLevel.upgradeMaterialsList.length, "Maximum tier to generate crafting recipes for").getInt()));
-			StructuralLevel.maxCraftableTier = Math.min(18, Math.min(StructuralLevel.upgradeMaterialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", StructuralLevel.upgradeMaterialsList.length).getInt()));
-			debug("01 - Max craftable tier: " + StructuralLevel.maxCraftableTier);
+			debug("00 - Loaded materials list: " + Arrays.toString(materialsList));
+			StructuralLevel.createLevelArray(materialsList);
+			maxCraftableTier = Math.min(18, Math.min(materialsList.length, config.get(Configuration.CATEGORY_GENERAL, "maxCraftableTier", materialsList.length, "Maximum tier to generate crafting recipes for").getInt()));
+			BetterBarrels.debug("01 - Max craftable tier: " + maxCraftableTier);
+			proxy.initialiseClientData(config.get(Configuration.CATEGORY_GENERAL, "colorOverrides", new int[]{0, 0}, "This list contains paired numbers: first is the tier level this color applies to, second is the color. The color value is the RGB color as a single int").getIntList());
 
-			colorOverrides = config.get(Configuration.CATEGORY_GENERAL, "colorOverrides", BetterBarrels.colorOverrides, "This list contains paired numbers: first is the tier level this color applies to, second is the color. The color value is the RGB color as a single int").getIntList();
-			if (colorOverrides != null) {
-				if (colorOverrides.length % 2 == 0) {
-					StructuralLevel.structuralColorOverrides = new int[StructuralLevel.upgradeMaterialsList.length];
-					for(int i = 0; i < StructuralLevel.structuralColorOverrides.length; i++)
-						StructuralLevel.structuralColorOverrides[i] = -1;
-					for(int i = 0; i < colorOverrides.length; i += 2) {
-						if(colorOverrides[i] == 0) continue;
-						if(colorOverrides[i] > 0 && colorOverrides[i] < StructuralLevel.structuralColorOverrides.length) {
-							StructuralLevel.structuralColorOverrides[colorOverrides[i]-1] = (0xFF << 24) | colorOverrides[i+1];
-						} else {
-							BetterBarrels.log.warn("Attempting to override the structural tier color for non existant tier: " + colorOverrides[i]);
-						}
-					}
-				} else {
-					BetterBarrels.log.warn("Color override list is not formatted in pairs, ignoring");
-				}
-			}
 			stacksSize = config.get(Configuration.CATEGORY_GENERAL, "stacksSize", BetterBarrels.stacksSize, "How many stacks the base barrel and each upgrade will provide").getInt();
 			upgradeItemStr = config.get(Configuration.CATEGORY_GENERAL, "tierUpgradeItem", BetterBarrels.upgradeItemStr, "The name of the item to use for the strutural tier upgrade recipes. Default is \"minecraft:fence\" for Vanilla Fence. The format is Ore.name for an ore dictionary lookup, or itemDomain:itemname[:meta] for a direct item, not this is case-sensitive.").getString();
 
@@ -175,7 +158,6 @@ public class BetterBarrels {
 	
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
-		StructuralLevel.createLevelArray();
 		RecipeHandler.instance().registerRecipes();
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
 		FMLCommonHandler.instance().bus().register(ServerTickHandler.INSTANCE); 
@@ -187,7 +169,6 @@ public class BetterBarrels {
 	public void postInit(FMLPostInitializationEvent event) {
 		RecipeHandler.instance().registerOres();
 		RecipeHandler.instance().registerLateRecipes();
-		StructuralLevel.initializeStructuralMaterials();
 		proxy.postInit();
 	}	
 

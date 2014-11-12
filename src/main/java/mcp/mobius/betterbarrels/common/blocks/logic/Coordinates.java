@@ -26,13 +26,15 @@ public final class Coordinates{
 		return world.getTileEntity(MathHelper.floor_double(this.x), MathHelper.floor_double(this.y) , MathHelper.floor_double(this.z));
 	}
 	
+	@Override
 	public boolean equals(Object o)  {
 		if (o == null) return false;
 		Coordinates c = (Coordinates)o;
 		return (this.dim == c.dim) && (this.x == c.x) && (this.y == c.y) && (this.z == c.z);
 	}
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
 		return MathHelper.floor_double(this.dim + 31 * this.x + 877 * this.y + 3187 * this.z);
 	}
 	

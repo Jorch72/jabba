@@ -1,6 +1,6 @@
 package mcp.mobius.betterbarrels;
 
-import mcp.mobius.betterbarrels.common.items.upgrades.StructuralLevel;
+import mcp.mobius.betterbarrels.common.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -84,7 +84,7 @@ public class RecipeHandler {
 		UpgradeCore prevStorage = UpgradeCore.STORAGE;
 		for (UpgradeCore core : UpgradeCore.values()) {
 			if(core.type == UpgradeCore.Type.STORAGE && core.slotsUsed > 1) {
-				if (core.slotsUsed > StructuralLevel.LEVELS[StructuralLevel.maxCraftableTier].getMaxCoreSlots())
+				if (core.slotsUsed > StructuralLevel.LEVELS[BetterBarrels.maxCraftableTier].getMaxCoreSlots())
 					break;
 				addCoreUpgradeUpgrade(core.ordinal(), prevStorage.ordinal());
 				prevStorage = core;
@@ -101,7 +101,7 @@ public class RecipeHandler {
 			upgradeItem = new ItemStack(Blocks.fence);
 		}
 
-		for (int i = 0, max = Math.min(StructuralLevel.LEVELS.length-1, StructuralLevel.maxCraftableTier); i < max; i++) {
+		for (int i = 0, max = Math.min(StructuralLevel.LEVELS.length-1, BetterBarrels.maxCraftableTier); i < max; i++) {
 			this.addStructuralUpgrade(i, StructuralLevel.LEVELS[i+1].material.getStack());
 		}
 	}
