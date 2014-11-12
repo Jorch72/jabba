@@ -26,6 +26,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.server.FMLServerHandler;
 
 public class ItemBarrelMover extends Item {
 	protected IIcon   text_empty = null;
@@ -120,13 +121,19 @@ public class ItemBarrelMover extends Item {
 
 	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
-		//if (world.isRemote) {return false;}
+		if (world.isRemote) {
+			return false;
+		}
 
-		if (!world.isRemote && (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Container"))) {
+		if (FMLServerHandler.instance().getServer().isBlockProtected(world, x, y, z, player)) {
+			return false;
+		}
+
+		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("Container")) {
 			return this.pickupContainer(stack, player, world, x, y, z);
 		}
 
-		if (!world.isRemote && (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))) {
+		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container")) {
 			return this.placeContainer(stack, player, world, x, y, z, side);
 		}
 
