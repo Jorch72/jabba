@@ -3,6 +3,7 @@ package mcp.mobius.betterbarrels;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -92,7 +93,9 @@ public class Utils {
 	public static class Material {
 		public String name;
 		public String modDomain;
-		public int meta = -1;
+		public int meta = 0;
+		ArrayList<ItemStack> ores = null;
+		static final ItemStack portalStack = new ItemStack(Blocks.portal);
 
 		public Material(String in) {
 			if (in.contains("Ore.")) {
@@ -128,12 +131,17 @@ public class Utils {
 		}
 
 		public ItemStack getStack() {
-			ItemStack ret = new ItemStack(Blocks.portal);
+			ItemStack ret = portalStack;
 			if (this.isOreDict()) {
-				ArrayList<ItemStack> ores = OreDictionary.getOres(this.name);
+				if (ores == null) {
+					ores = OreDictionary.getOres(this.name);
+				}
 
 				if (ores.size() > 0) {
-					ret = ores.get(0);
+					if(meta >= ores.size()) {
+						meta = -1;
+					}
+					ret = ores.get(meta >= 0 ? meta: 0);
 				}
 				BetterBarrels.debug("05 - Looking up [" + this.name + "] and found: " + ret.getDisplayName());
 			} else {
@@ -211,5 +219,37 @@ public class Utils {
 			}
 			return returnValue;
 		}
+	}
+
+	public static String romanNumeral(int num) {
+		LinkedHashMap<String, Integer> numeralConversion = new LinkedHashMap<String, Integer>();
+		numeralConversion.put("M", 1000);
+		numeralConversion.put("CM", 900);
+		numeralConversion.put("D", 500);
+		numeralConversion.put("CD", 400);
+		numeralConversion.put("C", 100);
+		numeralConversion.put("XC", 90);
+		numeralConversion.put("L", 50);
+		numeralConversion.put("XL", 40);
+		numeralConversion.put("X", 10);
+		numeralConversion.put("IX", 9);
+		numeralConversion.put("V", 5);
+		numeralConversion.put("IV", 4);
+		numeralConversion.put("I", 1);
+
+		String result = new String();
+
+		while (numeralConversion.size() > 0) {
+			String romanKey = (String)numeralConversion.keySet().toArray()[0];
+			Integer arabicValue = (Integer)numeralConversion.values().toArray()[0];
+			if (num < arabicValue) {
+				numeralConversion.remove(romanKey);
+			} else {
+				num -= arabicValue;
+				result += romanKey;
+			}
+		}
+
+		return result;
 	}
 }
