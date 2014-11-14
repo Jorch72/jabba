@@ -26,7 +26,8 @@ public enum LocalizedChat {
    HAMMER_STORAGE,
    HAMMER_STRUCTURAL,
    HAMMER_VOID,
-   HAMMER_CREATIVE;
+   HAMMER_CREATIVE,
+   DOLLY_TOO_COMPLEX;
 
    public final String localizationKey;
 

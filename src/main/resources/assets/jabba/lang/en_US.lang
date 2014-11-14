@@ -66,6 +66,7 @@ text.jabba.hammer_storage=Your hammer begins to grow.
 text.jabba.hammer_structural=Your hammer becomes a precision tool to destruct.
 text.jabba.hammer_void=Your hammer seems to disappear.
 text.jabba.hammer_creative=You seem to suddenly have an endless supply of hammers.
+text.jabba.dolly_too_complex=This object is too dense to pick up. Reduce its complexity if you need to move it.
 
 itemGroup.jabba=Better Barrels
 

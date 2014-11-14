@@ -1,5 +1,7 @@
 package mcp.mobius.betterbarrels.common.items.dolly;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +9,9 @@ import java.util.HashMap;
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.Utils;
 import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
+import mcp.mobius.betterbarrels.common.LocalizedChat;
 import mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel;
+import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -35,6 +39,8 @@ public class ItemBarrelMover extends Item {
 	protected static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
 	protected static ArrayList<String> classExtensionsNames = new ArrayList<String>();
 	protected static HashMap<String, Class> classMap        = new HashMap<String, Class>();
+
+	protected Method tagCompoundWrite = Utils.ReflectionHelper.getMethod(NBTTagCompound.class, new String[]{"a", "func_74734_a", "write"}, new Class[]{java.io.DataOutput.class});
 
 	static {
 		classExtensionsNames.add("cpw.mods.ironchest.TileEntityIronChest");
@@ -451,11 +457,25 @@ public class ItemBarrelMover extends Item {
 
 		containerTE.writeToNBT(nbtContainer);
 
-		nbtTarget.setString("Block",     GameData.blockRegistry.getNameForObject(storedBlock));
+		nbtTarget.setString("Block",     GameData.getBlockRegistry().getNameForObject(storedBlock));
 		nbtTarget.setInteger("Meta",      blockMeta);
 		nbtTarget.setString("TEClass",    containerTE.getClass().getName());
 		nbtTarget.setBoolean("isSpawner", containerTE instanceof TileEntityMobSpawner);
 		nbtTarget.setTag("NBT",   nbtContainer); //TODO: Check this, seems the nbt classes were streamlined somewhat
+
+		if (tagCompoundWrite != null) {
+			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+			try {
+				tagCompoundWrite.invoke(nbtTarget, new DataOutputStream(byteStream));
+
+				if (byteStream.toByteArray().length > 1048576) {
+					// 1MB limit... MC limits at 2MB, but anything above this really starts to slow down the game
+					BarrelPacketHandler.INSTANCE.sendLocalizedChat(player, LocalizedChat.DOLLY_TOO_COMPLEX);
+					return false;
+				}
+			} catch (Throwable t) {
+			}
+		}
 
 		if (!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());
