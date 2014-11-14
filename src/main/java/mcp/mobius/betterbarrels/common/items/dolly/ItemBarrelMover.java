@@ -33,14 +33,19 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameData;
 
 public class ItemBarrelMover extends Item {
-	protected IIcon   text_empty = null;
-	protected IIcon   text_filled = null;
+	protected IIcon text_empty  = null;
+	protected IIcon text_filled = null;
+	protected DollyType type = DollyType.NORMAL;
 
 	protected static ArrayList<Class>  classExtensions      = new ArrayList<Class>();
 	protected static ArrayList<String> classExtensionsNames = new ArrayList<String>();
 	protected static HashMap<String, Class> classMap        = new HashMap<String, Class>();
 
 	protected Method tagCompoundWrite = Utils.ReflectionHelper.getMethod(NBTTagCompound.class, new String[]{"a", "func_74734_a", "write"}, new Class[]{java.io.DataOutput.class});
+
+	protected enum DollyType {
+		NORMAL, DIAMOND;
+	}
 
 	static {
 		classExtensionsNames.add("cpw.mods.ironchest.TileEntityIronChest");
@@ -75,7 +80,6 @@ public class ItemBarrelMover extends Item {
 		classExtensionsNames.add("com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityDrawers");
 		classExtensionsNames.add("com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityCompDrawers");
 
-
 		for (String s : classExtensionsNames) {
 			try {
 				classExtensions.add(Class.forName(s));
@@ -92,24 +96,28 @@ public class ItemBarrelMover extends Item {
 		this.setMaxStackSize(1);
 		//this.setHasSubtypes(true);
 		//this.setMaxDamage(0);
-		this.setUnlocalizedName("dolly.normal.empty");
 		this.setCreativeTab(JabbaCreativeTab.tab);
 		this.setNoRepair();
 	}
 
 	@Override
 	public void registerIcons(IIconRegister par1IconRegister) {
-		this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_empty");
+		this.itemIcon    = par1IconRegister.registerIcon(BetterBarrels.modid + ":dolly_" + this.type.name().toLowerCase()  + "_empty");
 		this.text_empty  = this.itemIcon;
-		this.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":" + "dolly_filled");
+		this.text_filled = par1IconRegister.registerIcon(BetterBarrels.modid + ":dolly_" + this.type.name().toLowerCase() + "_filled");
+	}
+
+	@Override
+	public String getUnlocalizedName() {
+		return getUnlocalizedName(null);
 	}
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
-			return "item.dolly.normal.full";
+		if (stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
+			return "item.dolly." + this.type.name().toLowerCase() + ".full";
 		else
-			return "item.dolly.normal.empty";
+			return "item.dolly." + this.type.name().toLowerCase() + ".empty";
 	}
 
 	@Override
@@ -582,54 +590,54 @@ public class ItemBarrelMover extends Item {
 
 	private ForgeDirection fromMCToForge(short side) {
 		switch (side) {
-		case 0:
-			return ForgeDirection.DOWN;
-		case 1:
-			return ForgeDirection.UP;
-		case 2:
-			return ForgeDirection.EAST;
-		case 3:
-			return ForgeDirection.WEST;
-		case 4:
-			return ForgeDirection.NORTH;
-		case 5:
-			return ForgeDirection.SOUTH;
+			case 0:
+				return ForgeDirection.DOWN;
+			case 1:
+				return ForgeDirection.UP;
+			case 2:
+				return ForgeDirection.EAST;
+			case 3:
+				return ForgeDirection.WEST;
+			case 4:
+				return ForgeDirection.NORTH;
+			case 5:
+				return ForgeDirection.SOUTH;
 		}
 		return ForgeDirection.UNKNOWN;
 	}
 
 	private short fromForgeToMC(ForgeDirection side) {
 		switch (side) {
-		case DOWN:
-			return (short)0;
-		case UP:
-			return (short)1;
-		case EAST:
-			return (short)2;
-		case WEST:
-			return (short)3;
-		case NORTH:
-			return (short)4;
-		case SOUTH:
-			return (short)5;
-		case UNKNOWN:
-			return (short)-1;
+			case DOWN:
+				return (short)0;
+			case UP:
+				return (short)1;
+			case EAST:
+				return (short)2;
+			case WEST:
+				return (short)3;
+			case NORTH:
+				return (short)4;
+			case SOUTH:
+				return (short)5;
+			case UNKNOWN:
+				return (short)-1;
 		}
 		return -1;
 	}
 
 	private short fromForgeToBiblio(ForgeDirection side) {
 		switch (side) {
-		case EAST:
-			return (short)2;
-		case WEST:
-			return (short)0;
-		case NORTH:
-			return (short)1;
-		case SOUTH:
-			return (short)3;
-		default:
-			return (short)-1;
+			case EAST:
+				return (short)2;
+			case WEST:
+				return (short)0;
+			case NORTH:
+				return (short)1;
+			case SOUTH:
+				return (short)3;
+			default:
+				return (short)-1;
 		}
 	}
 }
