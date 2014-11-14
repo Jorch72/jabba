@@ -86,7 +86,7 @@ public class Utils {
 			if (playerLook.zCoord > 0)
 				return ForgeDirection.NORTH;
 			else
-				return ForgeDirection.SOUTH;			
+				return ForgeDirection.SOUTH;
 		}
 	}
 

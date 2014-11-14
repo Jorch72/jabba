@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 public class Message0x03SideupgradeUpdate extends SimpleChannelInboundHandler<Message0x03SideupgradeUpdate> implements IBarrelMessage {
 	public int  x,y,z;
 	public int[] sideUpgrades = new int[6];
-	public int[] sideMetadata = new int[6];	
+	public int[] sideMetadata = new int[6];
 
 	public Message0x03SideupgradeUpdate() {}
 	public Message0x03SideupgradeUpdate(TileEntityBarrel barrel) {
@@ -23,7 +23,7 @@ public class Message0x03SideupgradeUpdate extends SimpleChannelInboundHandler<Me
 		for (int i = 0; i < 6; i++)
 			this.sideMetadata[i] = barrel.sideMetadata[i];
 	}
-	
+
 	@Override
 	public void encodeInto(ChannelHandlerContext ctx, IBarrelMessage msg, ByteBuf target) throws Exception {
 		target.writeInt(x);
@@ -45,10 +45,10 @@ public class Message0x03SideupgradeUpdate extends SimpleChannelInboundHandler<Me
 		msg.z = dat.readInt();
 
 		for (int i = 0; i < 6; i++)
-			msg.sideUpgrades[i] = dat.readInt();			
+			msg.sideUpgrades[i] = dat.readInt();
 
 		for (int i = 0; i < 6; i++)
-			msg.sideMetadata[i] = dat.readInt();			
+			msg.sideMetadata[i] = dat.readInt();
 	}
 
 	@Override

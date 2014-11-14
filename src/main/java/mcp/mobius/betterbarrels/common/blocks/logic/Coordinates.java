@@ -13,19 +13,19 @@ public final class Coordinates{
 		this.dim = dim; this.x = x; this.y = y; this.z = z;
 	}
 
-    public Coordinates(NBTTagCompound tag){
-		this.dim = tag.getInteger("dim"); 
-		this.x = tag.getDouble("x"); 
-		this.y = tag.getDouble("y"); 
+	public Coordinates(NBTTagCompound tag){
+		this.dim = tag.getInteger("dim");
+		this.x = tag.getDouble("x");
+		this.y = tag.getDouble("y");
 		this.z = tag.getDouble("z");
 	}
 
-    public TileEntity getEntityAt(){
+	public TileEntity getEntityAt(){
 		IBlockAccess world = DimensionManager.getWorld(this.dim);
 		if (world == null) return null;
 		return world.getTileEntity(MathHelper.floor_double(this.x), MathHelper.floor_double(this.y) , MathHelper.floor_double(this.z));
 	}
-	
+
 	@Override
 	public boolean equals(Object o)  {
 		if (o == null) return false;
@@ -33,11 +33,11 @@ public final class Coordinates{
 		return (this.dim == c.dim) && (this.x == c.x) && (this.y == c.y) && (this.z == c.z);
 	}
 
-    @Override
+	@Override
 	public int hashCode() {
 		return MathHelper.floor_double(this.dim + 31 * this.x + 877 * this.y + 3187 * this.z);
 	}
-	
+
 	public NBTTagCompound writeToNBT(){
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setInteger("dim", this.dim);
