@@ -25,26 +25,26 @@ public class Utils {
 		double stackCoordX = 0.0D, stackCoordY = 0.0D, stackCoordZ = 0.0D;
 
 		switch (hitOrientation) {
-		case 0:
-			stackCoordX = source.xCoord + 0.5D;
-			stackCoordY = source.yCoord + 0.5D;
-			stackCoordZ = source.zCoord - 0.25D;
-			break;
-		case 1:
-			stackCoordX = source.xCoord + 1.25D;
-			stackCoordY = source.yCoord + 0.5D;
-			stackCoordZ = source.zCoord + 0.5D;
-			break;
-		case 2:
-			stackCoordX = source.xCoord + 0.5D;
-			stackCoordY = source.yCoord + 0.5D;
-			stackCoordZ = source.zCoord + 1.25D;
-			break;
-		case 3:
-			stackCoordX = source.xCoord - 0.25D;
-			stackCoordY = source.yCoord + 0.5D;
-			stackCoordZ = source.zCoord + 0.5D;
-			break;
+			case 0:
+				stackCoordX = source.xCoord + 0.5D;
+				stackCoordY = source.yCoord + 0.5D;
+				stackCoordZ = source.zCoord - 0.25D;
+				break;
+			case 1:
+				stackCoordX = source.xCoord + 1.25D;
+				stackCoordY = source.yCoord + 0.5D;
+				stackCoordZ = source.zCoord + 0.5D;
+				break;
+			case 2:
+				stackCoordX = source.xCoord + 0.5D;
+				stackCoordY = source.yCoord + 0.5D;
+				stackCoordZ = source.zCoord + 1.25D;
+				break;
+			case 3:
+				stackCoordX = source.xCoord - 0.25D;
+				stackCoordY = source.yCoord + 0.5D;
+				stackCoordZ = source.zCoord + 0.5D;
+				break;
 		}
 
 		EntityItem droppedEntity = new EntityItem(source.getWorldObj(), stackCoordX, stackCoordY, stackCoordZ, stack);

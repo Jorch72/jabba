@@ -1,6 +1,5 @@
 package mcp.mobius.betterbarrels.common.items.dolly;
 
-import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -28,7 +27,7 @@ public class ItemDiamondMover extends ItemBarrelMover {
 		}
 
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container")) {
-			boolean isSpawner = stack.getTagCompound().getCompoundTag("Container").getBoolean("isSpawner"); 
+			boolean isSpawner = stack.getTagCompound().getCompoundTag("Container").getBoolean("isSpawner");
 			boolean ret = this.placeContainer(stack, player, world, x, y, z, side);
 			if (isSpawner) {
 				if (ret)

@@ -1,8 +1,8 @@
 package mcp.mobius.betterbarrels.common.items.dolly.api;
 
-import mcp.mobius.betterbarrels.BetterBarrels;
-
 import java.util.HashMap;
+
+import mcp.mobius.betterbarrels.BetterBarrels;
 
 public enum MovableRegistrar {
 	INSTANCE;

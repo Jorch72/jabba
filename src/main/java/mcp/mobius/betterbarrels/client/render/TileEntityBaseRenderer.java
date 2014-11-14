@@ -72,15 +72,15 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 		GL11.glDisable(GL11.GL_LIGHTING);
 
 		switch (align){
-		case 0:
-			this.func_147498_b().drawString(renderString, 0, 0, color);
-			break;
-		case 1:
-			this.func_147498_b().drawString(renderString, -stringWidth / 2, 0, color);
-			break;
-		case 2:
-			this.func_147498_b().drawString(renderString, -stringWidth, 0, color);
-			break;
+			case 0:
+				this.func_147498_b().drawString(renderString, 0, 0, color);
+				break;
+			case 1:
+				this.func_147498_b().drawString(renderString, -stringWidth / 2, 0, color);
+				break;
+			case 2:
+				this.func_147498_b().drawString(renderString, -stringWidth, 0, color);
+				break;
 		}
 
 		GL11.glDepthMask(true);

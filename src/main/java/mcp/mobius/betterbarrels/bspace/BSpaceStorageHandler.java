@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.zip.ZipException;
 
-import org.apache.logging.log4j.Level;
-
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.ServerTickHandler;
 import mcp.mobius.betterbarrels.common.blocks.IBarrelStorage;
@@ -25,6 +23,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.DimensionManager;
+
+import org.apache.logging.log4j.Level;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
@@ -323,9 +324,9 @@ public class BSpaceStorageHandler {
 		catch(Exception e)
 		{
 			//if (!saveDir.exists() && MinecraftServer.getServer().isHardcore())
-				System.out.printf("JABBA state directory missing. Skipping saving state. If you are in hardcore mode, this is a perfectly normal situation, otherwise, please report to my bugtracker.\n");
-				//else
-				//	throw new RuntimeException(e);
+			System.out.printf("JABBA state directory missing. Skipping saving state. If you are in hardcore mode, this is a perfectly normal situation, otherwise, please report to my bugtracker.\n");
+			//else
+			//	throw new RuntimeException(e);
 		}
 	}
 
