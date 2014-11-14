@@ -134,135 +134,135 @@ public class BarrelCoreUpgrades {
 
 	public void removeUpgrade(ItemStack stack, EntityPlayer player, ForgeDirection side) {
 		switch (HammerMode.getMode(stack)) {
-		default:
-		case NORMAL:
-			int indexLastUpdate = findUpgradeIndex(UpgradeCore.Type.STORAGE, false, true);
-			if (indexLastUpdate != -1) {
+			default:
+			case NORMAL:
+				int indexLastUpdate = findUpgradeIndex(UpgradeCore.Type.STORAGE, false, true);
+				if (indexLastUpdate != -1) {
 
-				UpgradeCore core = this.upgradeList.get(indexLastUpdate);
+					UpgradeCore core = this.upgradeList.get(indexLastUpdate);
 
-				if (core.type == UpgradeCore.Type.VOID && BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
-					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-					return;
-				}
+					if (core.type == UpgradeCore.Type.VOID && BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+						return;
+					}
 
-				this.upgradeList.remove(indexLastUpdate);
-				createAndDropItem(BetterBarrels.itemUpgradeCore, core.ordinal(), player);
+					this.upgradeList.remove(indexLastUpdate);
+					createAndDropItem(BetterBarrels.itemUpgradeCore, core.ordinal(), player);
 
-				this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
-				this.hasHopper = this.hasUpgrade(UpgradeCore.HOPPER);
-				this.hasEnder = this.hasUpgrade(UpgradeCore.ENDER);
-				barrel.setVoid(this.hasUpgrade(UpgradeCore.VOID));
-				barrel.setCreative(this.hasUpgrade(UpgradeCore.CREATIVE));
+					this.hasRedstone = this.hasUpgrade(UpgradeCore.REDSTONE);
+					this.hasHopper = this.hasUpgrade(UpgradeCore.HOPPER);
+					this.hasEnder = this.hasUpgrade(UpgradeCore.ENDER);
+					barrel.setVoid(this.hasUpgrade(UpgradeCore.VOID));
+					barrel.setCreative(this.hasUpgrade(UpgradeCore.CREATIVE));
 
-				if (core.type == UpgradeCore.Type.ENDER) {
-					removeEnder(player);
-				}
+					if (core.type == UpgradeCore.Type.ENDER) {
+						removeEnder(player);
+					}
 
-				if (this.hasHopper)
-					barrel.startTicking();
-				else
-					barrel.stopTicking();
+					if (this.hasHopper)
+						barrel.startTicking();
+					else
+						barrel.stopTicking();
 
-				barrel.removeUpgradeFacades(player);
-			} else if (this.upgradeList.size() > 0) {
-				removeStorage(player);
-			} else if (this.levelStructural > 0) {
-				createAndDropItem(BetterBarrels.itemUpgradeStructural, this.levelStructural - 1, player);
-				this.levelStructural -= 1;
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
-		case REDSTONE:
-			if (this.hasUpgrade(UpgradeCore.REDSTONE)) {
-				removeAndDropUpgrade(UpgradeCore.REDSTONE, player);
-				this.hasRedstone = false;
-				barrel.removeUpgradeFacades(player);
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
-		case BSPACE:
-			if (this.hasUpgrade(UpgradeCore.ENDER)) {
-				removeAndDropUpgrade(UpgradeCore.ENDER, player);
-				this.hasEnder = false;
-				removeEnder(player);
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
-		case HOPPER:
-			if (this.hasUpgrade(UpgradeCore.HOPPER)) {
-				barrel.stopTicking();
-				removeAndDropUpgrade(UpgradeCore.HOPPER, player);
-				this.hasHopper = false;
-				barrel.removeUpgradeFacades(player);
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
-		case STORAGE:
-			if (this.hasUpgradeType(UpgradeCore.Type.STORAGE)) {
-				if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
-					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-					break;
-				}
-				removeStorage(player);
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
-		case STRUCTURAL:
-			if (this.levelStructural > 0) {
-				if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
-					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-					break;
-				}
-
-				int newLevel = this.levelStructural - 1;
-				int newTotalSlots = 0;
-				for (int i = 0; i < newLevel; i++)
-					newTotalSlots += MathHelper.floor_double(Math.pow(2, i));
-
-				if (newTotalSlots < this.getUsedSlots()) {
-					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REMOVE);
-				} else {
+					barrel.removeUpgradeFacades(player);
+				} else if (this.upgradeList.size() > 0) {
+					removeStorage(player);
+				} else if (this.levelStructural > 0) {
 					createAndDropItem(BetterBarrels.itemUpgradeStructural, this.levelStructural - 1, player);
-					this.levelStructural = newLevel;
+					this.levelStructural -= 1;
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
 				}
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
-		case VOID:
-			if (this.hasUpgrade(UpgradeCore.VOID)) {
-				if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
-					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-					break;
+				break;
+			case REDSTONE:
+				if (this.hasUpgrade(UpgradeCore.REDSTONE)) {
+					removeAndDropUpgrade(UpgradeCore.REDSTONE, player);
+					this.hasRedstone = false;
+					barrel.removeUpgradeFacades(player);
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
 				}
-
-				removeAndDropUpgrade(UpgradeCore.VOID, player);
-				barrel.setVoid(false);
-
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
-		case CREATIVE:
-			if (this.hasUpgrade(UpgradeCore.CREATIVE)) {
-				if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
-					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
-					break;
+				break;
+			case BSPACE:
+				if (this.hasUpgrade(UpgradeCore.ENDER)) {
+					removeAndDropUpgrade(UpgradeCore.ENDER, player);
+					this.hasEnder = false;
+					removeEnder(player);
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
 				}
+				break;
+			case HOPPER:
+				if (this.hasUpgrade(UpgradeCore.HOPPER)) {
+					barrel.stopTicking();
+					removeAndDropUpgrade(UpgradeCore.HOPPER, player);
+					this.hasHopper = false;
+					barrel.removeUpgradeFacades(player);
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+				}
+				break;
+			case STORAGE:
+				if (this.hasUpgradeType(UpgradeCore.Type.STORAGE)) {
+					if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+						break;
+					}
+					removeStorage(player);
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+				}
+				break;
+			case STRUCTURAL:
+				if (this.levelStructural > 0) {
+					if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+						break;
+					}
 
-				removeAndDropUpgrade(UpgradeCore.CREATIVE, player);
-				barrel.setCreative(false);
+					int newLevel = this.levelStructural - 1;
+					int newTotalSlots = 0;
+					for (int i = 0; i < newLevel; i++)
+						newTotalSlots += MathHelper.floor_double(Math.pow(2, i));
 
-			} else {
-				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
-			}
-			break;
+					if (newTotalSlots < this.getUsedSlots()) {
+						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.UPGRADE_REMOVE);
+					} else {
+						createAndDropItem(BetterBarrels.itemUpgradeStructural, this.levelStructural - 1, player);
+						this.levelStructural = newLevel;
+					}
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+				}
+				break;
+			case VOID:
+				if (this.hasUpgrade(UpgradeCore.VOID)) {
+					if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+						break;
+					}
+
+					removeAndDropUpgrade(UpgradeCore.VOID, player);
+					barrel.setVoid(false);
+
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+				}
+				break;
+			case CREATIVE:
+				if (this.hasUpgrade(UpgradeCore.CREATIVE)) {
+					if (BSpaceStorageHandler.instance().hasLinks(barrel.id)) {
+						BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BSPACE_PREVENT);
+						break;
+					}
+
+					removeAndDropUpgrade(UpgradeCore.CREATIVE, player);
+					barrel.setCreative(false);
+
+				} else {
+					BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.BONK);
+				}
+				break;
 		}
 	}
 

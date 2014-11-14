@@ -227,17 +227,17 @@ public class BlockBarrel extends BlockContainer{
 
 	private int redstoneToMC(int redSide) {
 		switch (redSide) {
-		default:
-		case -1:
-			return 1;
-		case 0:
-			return 2;
-		case 1:
-			return 5;
-		case 2:
-			return 3;
-		case 3:
-			return 4;
+			default:
+			case -1:
+				return 1;
+			case 0:
+				return 2;
+			case 1:
+				return 5;
+			case 2:
+				return 3;
+			case 3:
+				return 4;
 		}
 	}
 
