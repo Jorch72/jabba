@@ -17,5 +17,5 @@ public final class ItemImmut {
 	@Override
 	public int hashCode() {
 		return this.meta + this.id * 32768;
-	}	
+	}
 }

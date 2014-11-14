@@ -20,18 +20,18 @@ public class BBEventHandler {
 		if (!event.world.isRemote && event.world.provider.dimensionId == 0)
 			BSpaceStorageHandler.instance().loadFromFile();
 	}
-	
+
 	@SubscribeEvent
 	public void onItemTooltip(ItemTooltipEvent event){
 		if (event.itemStack.getItem() instanceof ItemUpgradeCore){
 			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots.used") + UpgradeCore.values()[event.itemStack.getItemDamage()].slotsUsed);
 		}
-		
+
 		if (event.itemStack.getItem() instanceof ItemUpgradeStructural){
 			int nslots = 0;
 			for (int i = 0; i < event.itemStack.getItemDamage() + 1; i++)
-				nslots += MathHelper.floor_double(Math.pow(2, i));			
-			
+				nslots += MathHelper.floor_double(Math.pow(2, i));
+
 			event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.slots.provided") + nslots);
 		}
 
@@ -46,10 +46,10 @@ public class BBEventHandler {
 				}
 				int meta = tag.getInteger("Meta");
 				ItemStack stack = new ItemStack(storedBlock, 0, meta);
-				event.toolTip.add(1, stack.getDisplayName());				
+				event.toolTip.add(1, stack.getDisplayName());
 			} else {
 				event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.empty"));
 			}
 		}
-	}	
+	}
 }

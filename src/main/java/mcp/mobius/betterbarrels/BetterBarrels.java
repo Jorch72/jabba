@@ -45,13 +45,13 @@ public class BetterBarrels {
 	}
 
 	public static final String modid = "JABBA";
-	
+
 	public static Logger log = LogManager.getLogger(modid);
 
-    // The instance of your mod that Forge uses.
+	// The instance of your mod that Forge uses.
 	@Instance(modid)
 	public static BetterBarrels instance;
-	
+
 	// Says where the client and server 'proxy' code is loaded.
 	@SidedProxy(clientSide="mcp.mobius.betterbarrels.client.ClientProxy", serverSide="mcp.mobius.betterbarrels.common.BaseProxy")
 	public static BaseProxy proxy;
@@ -62,14 +62,14 @@ public class BetterBarrels {
 	public static boolean  fullBarrelTexture  = true;
 	public static boolean  highRezTexture     = true;
 	public static boolean  showUpgradeSymbols = true;
-	public static boolean  diamondDollyActive = true;	
+	public static boolean  diamondDollyActive = true;
 	public static int stacksSize              = 64;
 	public static int maxCraftableTier        = StructuralLevel.defaultUpgradeMaterialsList.length;
 	public static String upgradeItemStr       = "minecraft:fence";
 
 	public static Block blockBarrel      = null;
 	public static Block blockMiniBarrel  = null;
-	public static Block blockBarrelShelf = null;	
+	public static Block blockBarrelShelf = null;
 	public static Item itemUpgradeStructural = null;
 	public static Item itemUpgradeCore   = null;
 	public static Item itemUpgradeSide   = null;
@@ -78,24 +78,24 @@ public class BetterBarrels {
 	public static Item itemTuningFork    = null;
 	public static Item itemLockingPlanks = null;
 	public static Item itemHammer = null;
-	
-	public static long limiterDelay = 500;	
-	
+
+	public static long limiterDelay = 500;
+
 	public static int blockBarrelRendererID = -1;
 
 	public static boolean allowVerticalPlacement = true;
-	public static float verticalPlacementRange   = 1f; 
+	public static float verticalPlacementRange   = 1f;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		config = new Configuration(event.getSuggestedConfigurationFile());
-		
+
 		try {
 			config.load();
 
 			diamondDollyActive  = config.get(Configuration.CATEGORY_GENERAL, "diamondDollyActive", true).getBoolean(true);
-			limiterDelay        = config.get(Configuration.CATEGORY_GENERAL, "packetLimiterDelay", 500, "Controls the minimum delay (in ms) between two server/client sync. Lower values mean closer to realtime, and more network usage.").getInt();			
-			
+			limiterDelay        = config.get(Configuration.CATEGORY_GENERAL, "packetLimiterDelay", 500, "Controls the minimum delay (in ms) between two server/client sync. Lower values mean closer to realtime, and more network usage.").getInt();
+
 			String[] materialsList = config.get(Configuration.CATEGORY_GENERAL, "materialList", StructuralLevel.defaultUpgradeMaterialsList, "A structural tier will be created for each material in this list, even if not craftable").getStringList();
 			if(materialsList.length > 18) { //limit max upgrade size to 18 due to internal int storage type on barrel
 				String[] trimedList = new String[18];
@@ -121,14 +121,14 @@ public class BetterBarrels {
 			//showUpgradeSymbols = config.get(Configuration.CATEGORY_GENERAL, "showUpgradeSymbols", false).getBoolean(false);
 		} catch (Exception e) {
 			FMLLog.log(org.apache.logging.log4j.Level.ERROR, e, "BlockBarrel has a problem loading it's configuration");
-			FMLLog.severe(e.getMessage());	
+			FMLLog.severe(e.getMessage());
 		} finally {
 			if (config.hasChanged())
 				config.save();
 		}
-		
-		proxy.registerEventHandler();	
-		
+
+		proxy.registerEventHandler();
+
 		//log.setLevel(Level.FINEST);
 		blockBarrel           = new BlockBarrel();
 		itemUpgradeStructural = new ItemUpgradeStructural();
@@ -138,10 +138,10 @@ public class BetterBarrels {
 		itemMoverDiamond      = new ItemDiamondMover();
 		itemHammer            = new ItemBarrelHammer();
 		itemTuningFork        = new ItemTuningFork();
-		
+
 		GameRegistry.registerBlock(blockBarrel, "barrel");
 		//GameRegistry.registerBlock(blockMiniBarrel);
-		//GameRegistry.registerBlock(blockBarrelShelf);		
+		//GameRegistry.registerBlock(blockBarrelShelf);
 		//GameRegistry.registerTileEntity(TileEntityMiniBarrel.class,  "TileEntityMiniBarrel");
 		//GameRegistry.registerTileEntity(TileEntityBarrelShelf.class, "TileEntityBarrelShelf");
 
@@ -155,14 +155,14 @@ public class BetterBarrels {
 
 		BarrelPacketHandler.INSTANCE.ordinal();
 	}
-	
+
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		RecipeHandler.instance().registerRecipes();
 		GameRegistry.registerTileEntity(TileEntityBarrel.class, "TileEntityBarrel");
-		FMLCommonHandler.instance().bus().register(ServerTickHandler.INSTANCE); 
+		FMLCommonHandler.instance().bus().register(ServerTickHandler.INSTANCE);
 		proxy.registerRenderers();
-        FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");        
+		FMLInterModComms.sendMessage("Waila", "register", "mcp.mobius.betterbarrels.BBWailaProvider.callbackRegister");
 	}
 
 	@EventHandler
@@ -170,7 +170,7 @@ public class BetterBarrels {
 		RecipeHandler.instance().registerOres();
 		RecipeHandler.instance().registerLateRecipes();
 		proxy.postInit();
-	}	
+	}
 
 	@EventHandler
 	public void serverStopping(FMLServerStoppingEvent event) {

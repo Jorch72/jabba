@@ -5,8 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChatComponentStyle;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 
 public class Message0x09LocalizedChat extends SimpleChannelInboundHandler<Message0x09LocalizedChat> implements IBarrelMessage {

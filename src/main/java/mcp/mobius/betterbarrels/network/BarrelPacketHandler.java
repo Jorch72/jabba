@@ -25,7 +25,7 @@ import cpw.mods.fml.relauncher.Side;
 public enum BarrelPacketHandler {
 	INSTANCE;
 
-	public EnumMap<Side, FMLEmbeddedChannel> channels;	
+	public EnumMap<Side, FMLEmbeddedChannel> channels;
 
 	private BarrelPacketHandler() {
 		this.channels = NetworkRegistry.INSTANCE.newChannel("JABBA", new BarrelCodec());
@@ -58,8 +58,8 @@ public enum BarrelPacketHandler {
 		FMLEmbeddedChannel channel = this.channels.get(Side.SERVER);
 		String codec = channel.findChannelHandlerNameForType(BarrelCodec.class);
 
-		channel.pipeline().addAfter(codec, "TERequest", new Message0x01TERequest());    	
-	}*/   
+		channel.pipeline().addAfter(codec, "TERequest", new Message0x01TERequest());
+	}*/
 
 	private class BarrelCodec extends FMLIndexedMessageToMessageCodec<IBarrelMessage> {
 		public BarrelCodec() {
@@ -89,7 +89,7 @@ public enum BarrelPacketHandler {
 	public void sendTo(IBarrelMessage message, EntityPlayerMP player) {
 		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
 		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(player);
-		channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);    	
+		channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}
 
 	public void sendToDimension(IBarrelMessage message, int dimensionId) {
@@ -98,16 +98,16 @@ public enum BarrelPacketHandler {
 		channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}
 
-    public void sendToAllAround(IBarrelMessage message, NetworkRegistry.TargetPoint point) {
-        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALLAROUNDPOINT);
-        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(point);
-        channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-    }
+	public void sendToAllAround(IBarrelMessage message, NetworkRegistry.TargetPoint point) {
+		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALLAROUNDPOINT);
+		channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(point);
+		channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+	}
 
-    /*public void sendToServer(IBarrelMessage message) {
+	/*public void sendToServer(IBarrelMessage message) {
 		channels.get(Side.CLIENT).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
 		channels.get(Side.CLIENT).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-	}*/   
+	}*/
 
 	public static void sendLocalizedChat(EntityPlayer player, LocalizedChat message, Integer ... extraNumbers) {
 		if (player instanceof EntityPlayerMP) {
@@ -116,56 +116,56 @@ public enum BarrelPacketHandler {
 		}
 	}
 
-	 public void writeNBTTagCompoundToBuffer(ByteBuf target, NBTTagCompound tag) throws IOException {
-		 if (tag == null) {
-			 target.writeShort(-1);
-		 } else {
-			 byte[] abyte = CompressedStreamTools.compress(tag);
-			 target.writeShort((short)abyte.length);
-			 target.writeBytes(abyte);
-		 }
-	 }
+	public void writeNBTTagCompoundToBuffer(ByteBuf target, NBTTagCompound tag) throws IOException {
+		if (tag == null) {
+			target.writeShort(-1);
+		} else {
+			byte[] abyte = CompressedStreamTools.compress(tag);
+			target.writeShort((short)abyte.length);
+			target.writeBytes(abyte);
+		}
+	}
 
-	 public NBTTagCompound readNBTTagCompoundFromBuffer(ByteBuf dat) throws IOException {
-		 short short1 = dat.readShort();
+	public NBTTagCompound readNBTTagCompoundFromBuffer(ByteBuf dat) throws IOException {
+		short short1 = dat.readShort();
 
-		 if (short1 < 0) {
-			 return null;
-		 } else {
-			 byte[] abyte = new byte[short1];
-			 dat.readBytes(abyte);
-			 return CompressedStreamTools.func_152457_a(abyte, NBTSizeTracker.field_152451_a);
-		 }
-	 }
+		if (short1 < 0) {
+			return null;
+		} else {
+			byte[] abyte = new byte[short1];
+			dat.readBytes(abyte);
+			return CompressedStreamTools.func_152457_a(abyte, NBTSizeTracker.field_152451_a);
+		}
+	}
 
-	 public void writeItemStackToBuffer(ByteBuf target, ItemStack stack) throws IOException {
-		 if (stack == null) {
-			 target.writeShort(-1);
-		 } else {
-			 target.writeShort(Item.getIdFromItem(stack.getItem()));
-			 target.writeByte(stack.stackSize);
-			 target.writeShort(stack.getItemDamage());
-			 NBTTagCompound nbttagcompound = null;
+	public void writeItemStackToBuffer(ByteBuf target, ItemStack stack) throws IOException {
+		if (stack == null) {
+			target.writeShort(-1);
+		} else {
+			target.writeShort(Item.getIdFromItem(stack.getItem()));
+			target.writeByte(stack.stackSize);
+			target.writeShort(stack.getItemDamage());
+			NBTTagCompound nbttagcompound = null;
 
-			 if (stack.getItem().isDamageable() || stack.getItem().getShareTag()) {
-				 nbttagcompound = stack.stackTagCompound;
-			 }
+			if (stack.getItem().isDamageable() || stack.getItem().getShareTag()) {
+				nbttagcompound = stack.stackTagCompound;
+			}
 
-			 this.writeNBTTagCompoundToBuffer(target, nbttagcompound);
-		 }
-	 }
+			this.writeNBTTagCompoundToBuffer(target, nbttagcompound);
+		}
+	}
 
-	 public ItemStack readItemStackFromBuffer(ByteBuf dat) throws IOException {
-		 ItemStack itemstack = null;
-		 short short1 = dat.readShort();
+	public ItemStack readItemStackFromBuffer(ByteBuf dat) throws IOException {
+		ItemStack itemstack = null;
+		short short1 = dat.readShort();
 
-		 if (short1 >= 0) {
-			 byte b0 = dat.readByte();
-			 short short2 = dat.readShort();
-			 itemstack = new ItemStack(Item.getItemById(short1), b0, short2);
-			 itemstack.stackTagCompound = this.readNBTTagCompoundFromBuffer(dat);
-		 }
+		if (short1 >= 0) {
+			byte b0 = dat.readByte();
+			short short2 = dat.readShort();
+			itemstack = new ItemStack(Item.getItemById(short1), b0, short2);
+			itemstack.stackTagCompound = this.readNBTTagCompoundFromBuffer(dat);
+		}
 
-		 return itemstack;
-	 }
+		return itemstack;
+	}
 }

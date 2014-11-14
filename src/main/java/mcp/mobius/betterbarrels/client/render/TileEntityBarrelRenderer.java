@@ -20,7 +20,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	protected static ItemStack coreStorage  = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 0);
 	protected static ItemStack coreEnder    = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 1);
 	protected static ItemStack coreRedstone = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 2);
-	protected static ItemStack coreHopper   = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 3);  
+	protected static ItemStack coreHopper   = new ItemStack(BetterBarrels.itemUpgradeCore, 0, 3);
 	protected static ItemStack coreVoid     = new ItemStack(BetterBarrels.itemUpgradeCore, 0, UpgradeCore.VOID.ordinal());
 	protected static ItemStack coreCreative = new ItemStack(BetterBarrels.itemUpgradeCore, 0, UpgradeCore.CREATIVE.ordinal());
 
@@ -51,7 +51,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 			int color = StructuralLevel.LEVELS[barrelEntity.coreUpgrades.levelStructural].clientData.getTextColor();
 
 			for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS) {
-				boolean isTopBottom = forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP; 
+				boolean isTopBottom = forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP;
 				if (hasItem &&  this.isItemDisplaySide(barrelEntity, forgeSide)) {
 					this.setLight(barrelEntity, forgeSide);
 
@@ -63,7 +63,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 
 			if (isHammer) {
 				for (ForgeDirection forgeSide: ForgeDirection.VALID_DIRECTIONS) {
-					boolean isTopBottom = forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP; 
+					boolean isTopBottom = forgeSide == ForgeDirection.DOWN || forgeSide == ForgeDirection.UP;
 					this.setLight(barrelEntity, forgeSide);
 					if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.REDSTONE) {
 						int index = barrelEntity.sideMetadata[forgeSide.ordinal()] +  2 * 16;
@@ -83,7 +83,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 								else
 									this.renderTextOnBlock(freeSlots, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2.0F, 248F, 134.0F, 90F, color, TileEntityBaseRenderer.ALIGNCENTER);
 							}
-						}						
+						}
 
 						if (barrelEntity.coreUpgrades.nStorageUpg > 0) {
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreStorage, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2.0F, 256.0F - 32F, 0);
@@ -128,7 +128,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 
 		int maxstacksize = barrel.getStorage().getItem().getMaxStackSize();
 		//int amount  = Math.min(barrel.storage.getAmount(), (int)Math.pow(2, barrel.upgradeCapacity) * barrel.storage.getBaseStacks() * barrel.storage.getItem().stackSize);
-		int amount = barrel.getStorage().getAmount(); 
+		int amount = barrel.getStorage().getAmount();
 
 		if (barrel.coreUpgrades.hasCreative) {
 			outstring = "-";
@@ -159,8 +159,8 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 	}
 
 	protected boolean isItemDisplaySide(TileEntityBarrel barrel, ForgeDirection forgeSide) {
-		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.NONE)    return false;			
-		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.FRONT)   return true;		
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.NONE)    return false;
+		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.FRONT)   return true;
 		if (barrel.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.STICKER) return true;
 		return false;
 	}

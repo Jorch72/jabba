@@ -19,7 +19,7 @@ public class BaseProxy {
 			EntityPlayerMP playerMP = (EntityPlayerMP)player;
 			playerMP.sendContainerToPlayer(playerMP.inventoryContainer);
 		}
-	}	
+	}
 
 	public void postInit() {}
 

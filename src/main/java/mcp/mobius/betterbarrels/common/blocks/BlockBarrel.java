@@ -56,7 +56,7 @@ public class BlockBarrel extends BlockContainer{
 		return new TileEntityBarrel();
 	}
 
-	@Override    
+	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		BlockBarrel.text_sidehopper  = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_hopper");
 		BlockBarrel.text_siders      = iconRegister.registerIcon(BetterBarrels.modid + ":" + "facade_redstone");
@@ -103,13 +103,13 @@ public class BlockBarrel extends BlockContainer{
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			((TileEntityBarrel)tileEntity).leftClick(player);
 		}
-	}     
+	}
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float var7, float var8, float var9) {
 		if (!world.isRemote) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
-			((TileEntityBarrel)tileEntity).rightClick(player, side);        	
+			((TileEntityBarrel)tileEntity).rightClick(player, side);
 		}
 		return true;
 	}
@@ -137,14 +137,14 @@ public class BlockBarrel extends BlockContainer{
 			if (stack.hasTagCompound()) {
 				items.getEntityItem().setTagCompound((NBTTagCompound)stack.getTagCompound().copy());
 			}
-		}  		
+		}
 	}
 
 	@Override
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int par5) {
 		if (world.isRemote) return;
 
-		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);		
+		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
 
 		// We drop the structural upgrades
 		if ((barrelEntity != null) && (barrelEntity.coreUpgrades.levelStructural > 0)) {
@@ -154,7 +154,7 @@ public class BlockBarrel extends BlockContainer{
 				this.dropStack(world, droppedStack, x, y, z);
 				currentUpgrade -= 1;
 			}
-		}    	
+		}
 
 		// We drop the core upgrades
 		if (barrelEntity != null) {
@@ -162,7 +162,7 @@ public class BlockBarrel extends BlockContainer{
 				ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeCore, 1, core.ordinal());
 				this.dropStack(world, droppedStack, x, y, z);
 			}
-		}     	
+		}
 
 		// We drop the side upgrades
 		if (barrelEntity != null) {
@@ -173,7 +173,7 @@ public class BlockBarrel extends BlockContainer{
 					this.dropStack(world, droppedStack, x, y, z);
 				}
 			}
-		}    	
+		}
 
 		// We drop the stacks
 		if ((barrelEntity != null) && (barrelEntity.getStorage().hasItem()) && (!barrelEntity.getLinked())) {
@@ -190,7 +190,7 @@ public class BlockBarrel extends BlockContainer{
 
 				droppedstack = barrelEntity.getStorage().getStack();
 			}
-		}		
+		}
 
 		try {
 			BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
@@ -283,7 +283,7 @@ public class BlockBarrel extends BlockContainer{
 		BetterBarrels.proxy.checkRenderers();
 
 		return BetterBarrels.blockBarrelRendererID;
-	}   
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -345,7 +345,7 @@ public class BlockBarrel extends BlockContainer{
 			return true;
 		} else if (barrel.sideUpgrades[side] == UpgradeSide.REDSTONE) {
 			return true;
-		} else if (sideIsLabel) { 
+		} else if (sideIsLabel) {
 			return ghosting || linked;
 		}
 

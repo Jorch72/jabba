@@ -37,7 +37,7 @@ public class StructuralLevelClientData {
 	private StructuralLevel level;
 	private int textColor = 0xFFFFFFFF;
 	private String name;
-	private int colorOverride = -1; 
+	private int colorOverride = -1;
 
 	public StructuralLevelClientData(StructuralLevel inlevel) {
 		this.level = inlevel;
@@ -88,7 +88,7 @@ public class StructuralLevelClientData {
 
 	// Begin the crazy icon stuff
 	/* Basic process:
-	 * 
+	 *
 	 * register dummy icons, this is to get entries and values(position offsets, etc..) into the texture sheet
 	 * use opengl functions to access the texture sheet and read the base pieces
 	 * manipulate as desired

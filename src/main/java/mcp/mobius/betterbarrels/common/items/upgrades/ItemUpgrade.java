@@ -15,5 +15,5 @@ public class ItemUpgrade extends Item implements IOverlayItem{
 	@Override
 	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
 		return true;
-	}	
+	}
 }
