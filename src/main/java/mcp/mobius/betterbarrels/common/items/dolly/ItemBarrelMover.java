@@ -474,7 +474,9 @@ public class ItemBarrelMover extends Item {
 		if (tagCompoundWrite != null) {
 			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 			try {
-				tagCompoundWrite.invoke(nbtTarget, new DataOutputStream(byteStream));
+				DataOutputStream outStream = new DataOutputStream(byteStream);
+				tagCompoundWrite.invoke(nbtTarget, outStream);
+				outStream.close();
 
 				if (byteStream.toByteArray().length > 1048576) {
 					// 1MB limit... MC limits at 2MB, but anything above this really starts to slow down the game
