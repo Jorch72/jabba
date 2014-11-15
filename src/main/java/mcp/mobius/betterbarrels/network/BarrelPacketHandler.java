@@ -109,7 +109,7 @@ public enum BarrelPacketHandler {
 		channels.get(Side.CLIENT).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}*/
 
-	public static void sendLocalizedChat(EntityPlayer player, LocalizedChat message, Integer ... extraNumbers) {
+	public static void sendLocalizedChat(EntityPlayer player, LocalizedChat message, Object ... extraNumbers) {
 		if (player instanceof EntityPlayerMP) {
 			BarrelPacketHandler.INSTANCE.sendTo(new Message0x09LocalizedChat(message, extraNumbers), (EntityPlayerMP)player);
 		} else {
