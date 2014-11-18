@@ -324,7 +324,7 @@ public class BSpaceStorageHandler {
 		catch(Exception e)
 		{
 			//if (!saveDir.exists() && MinecraftServer.getServer().isHardcore())
-			System.out.printf("JABBA state directory missing. Skipping saving state. If you are in hardcore mode, this is a perfectly normal situation, otherwise, please report to my bugtracker.\n");
+			BetterBarrels.log.info("JABBA state directory missing. Skipping saving state. If you are in hardcore mode, this is a perfectly normal situation, otherwise, please report to my bugtracker.\n");
 			//else
 			//	throw new RuntimeException(e);
 		}
