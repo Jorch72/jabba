@@ -16,6 +16,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ClientChatUtils {
+	private static final char sectionChar = 0x00A7;
+
 	private static EnumChatFormatting getFormattingFromChar(char c) {
 		for (EnumChatFormatting format: EnumChatFormatting.values()) {
 			if (format.getFormattingCode() == c)
@@ -71,7 +73,7 @@ public class ClientChatUtils {
 	}
 
 	private static void createChatComponent(IChatComponent parent, String piece) {
-		int formatIdx = piece.indexOf('§');
+		int formatIdx = piece.indexOf(sectionChar);
 
 		if (formatIdx >= 0) {
 			// First add the unformatted part to the final message
@@ -87,13 +89,13 @@ public class ClientChatUtils {
 			for (codePos = 1; codePos < formattedPiece.length(); codePos++) {
 				applyStyleFormat(style, getFormattingFromChar(formattedPiece.charAt(codePos)));
 
-				if (codePos + 2 < formattedPiece.length() && formattedPiece.charAt(++codePos) != '§') {
+				if (codePos + 2 < formattedPiece.length() && formattedPiece.charAt(++codePos) != sectionChar) {
 					break;
 				}
 			}
 
 			String rest = formattedPiece.substring(codePos);
-			int endFormatIdx = rest.indexOf('§');
+			int endFormatIdx = rest.indexOf(sectionChar);
 			boolean childParent = false;
 			if (endFormatIdx >= 0) {
 				if (endFormatIdx + 2 <= rest.length()) {
