@@ -384,7 +384,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 			}
 		}
 
-		stack.stackSize -= 1;
+		if (!player.capabilities.isCreativeMode) {
+			stack.stackSize -= 1;
+		}
+
 		this.markDirty();
 		BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x03SideupgradeUpdate(this), this.worldObj.provider.dimensionId);
 	}
