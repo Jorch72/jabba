@@ -596,7 +596,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		IBarrelStorage tempStore = this.getStorage();
 
 		// send if: forced, no previous sent packet, no item(emptying barrel), if the amount differs, or if the item differs
-		if (force || lastContentMessage == null || !tempStore.hasItem() || lastContentMessage.amount != tempStore.getAmount() || !tempStore.sameItem(lastContentMessage.stack)) {
+		if (force || lastContentMessage == null /*|| !tempStore.hasItem()*/ || lastContentMessage.amount != tempStore.getAmount() || !tempStore.sameItem(lastContentMessage.stack)) {
 			lastContentMessage = new Message0x01ContentUpdate(this);
 
 			BarrelPacketHandler.INSTANCE.sendToAllAround(lastContentMessage, new TargetPoint(this.worldObj.provider.dimensionId, this.xCoord, this.yCoord, this.zCoord, 500));
@@ -617,9 +617,9 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		return false;
 	}
 
-	/*/////////////////////////////////////*/
-	/* IInventory Interface Implementation */
-	/*/////////////////////////////////////*/
+	/********************************************/
+	/* ISidedInventory Interface Implementation */
+	/********************************************/
 
 	@Override
 	public int getSizeInventory() {
@@ -632,6 +632,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		this.markDirty();
 		return stack;
 	}
+
 	@Override
 	public ItemStack decrStackSize(int islot, int quantity) {
 		TileEntity ent = this.worldObj.getTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
@@ -644,51 +645,47 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		this.markDirty();
 		return stack;
 	}
+
 	@Override
 	public void setInventorySlotContents(int islot, ItemStack stack) {
 		this.getStorage().setInventorySlotContents(islot, stack);
 		this.markDirty();
 	}
+
 	@Override
-	public ItemStack getStackInSlotOnClosing(int var1) {return null;}
+	public ItemStack getStackInSlotOnClosing(int var1) {
+		return null;
+	}
+
 	@Override
-	public String getInventoryName() {return "mcp.mobius.betterbarrel";}
+	public String getInventoryName() {
+		return "mcp.mobius.betterbarrel";
+	}
+
 	@Override
-	public int getInventoryStackLimit() {return 64;}
+	public int getInventoryStackLimit() {
+		return this.getStorage().getInventoryStackLimit();
+	}
+
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer var1) {return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;}
+	public boolean isUseableByPlayer(EntityPlayer var1) {
+		return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;
+	}
+
 	@Override
 	public void openInventory() {}
+
 	@Override
 	public void closeInventory() {}
 
-
-
 	@Override
-	public boolean hasCustomInventoryName() {return false;}
-	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {return this.getStorage().isItemValidForSlot(i, itemstack);}
-
-	@Override
-	public ItemStack getStoredItemType() {
-		return this.getStorage().getStoredItemType();
+	public boolean hasCustomInventoryName() {
+		return false;
 	}
 
 	@Override
-	public void setStoredItemCount(int amount) {
-		this.getStorage().setStoredItemCount(amount);
-		this.markDirty();
-	}
-
-	@Override
-	public void setStoredItemType(ItemStack type, int amount) {
-		this.getStorage().setStoredItemType(type, amount);
-		this.markDirty();
-	}
-
-	@Override
-	public int getMaxStoredCount() {
-		return this.getStorage().getMaxStoredCount();
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+		return this.getStorage().isItemValidForSlot(i, itemstack);
 	}
 
 	@Override
@@ -713,5 +710,32 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
 		// TODO : Prevent sides with an hopper upgrade to react as a valid slot.
 		return this.getStorage().canExtractItem(slot, itemstack, side);
+	}
+
+
+	/*********************************************/
+	/* IDeepStorageUnit Interface Implementation */
+	/*********************************************/
+
+	@Override
+	public ItemStack getStoredItemType() {
+		return this.getStorage().getStoredItemType();
+	}
+
+	@Override
+	public void setStoredItemCount(int amount) {
+		this.getStorage().setStoredItemCount(amount);
+		this.markDirty();
+	}
+
+	@Override
+	public void setStoredItemType(ItemStack type, int amount) {
+		this.getStorage().setStoredItemType(type, amount);
+		this.markDirty();
+	}
+
+	@Override
+	public int getMaxStoredCount() {
+		return this.getStorage().getMaxStoredCount();
 	}
 }
