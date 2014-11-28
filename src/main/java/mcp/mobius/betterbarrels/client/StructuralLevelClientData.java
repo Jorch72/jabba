@@ -351,7 +351,7 @@ public class StructuralLevelClientData {
 	}
 
 	public boolean generateIcons() {
-		BetterBarrels.debug("17 - Entering Texture Generation for Structural Tier with Material: " + this.name);
+		BetterBarrels.debug("17 - Entering Texture Generation for Structural Tier: " + this.level);
 		int terrainTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationBlocksTexture).getGlTextureId();
 		int itemTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.locationItemsTexture).getGlTextureId();
 		if (terrainTextureId != 0 && itemTextureId != 0) {
