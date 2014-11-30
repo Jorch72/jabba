@@ -167,11 +167,11 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	}
 
 	/* REDSTONE HANDLING */
+	static final int[] sideSwitch = {1,0,3,2,5,4};
 	public int getRedstonePower(int side){
 		if (!this.coreUpgrades.hasRedstone)
 			return 0;
 
-		int[] sideSwitch = {1,0,3,2,5,4};
 		side = sideSwitch[side];
 
 		IBarrelStorage store = this.getStorage();

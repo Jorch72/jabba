@@ -148,14 +148,14 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 		GL11.glScalef(size, size, 1.0f);
 	}
 
+	static final int orientRotation[] = {0,0,0,2,3,1,0};
 	protected float getRotationYForSide(ForgeDirection side, ForgeDirection orientation){
-		int orientRotation[] = {0,0,0,2,3,1,0};
-		int sideRotation[]  = {orientRotation[orientation.ordinal()],orientRotation[orientation.ordinal()],0,2,3,1};
+		int sideRotation[] = {orientRotation[orientation.ordinal()],orientRotation[orientation.ordinal()],0,2,3,1};
 		return sideRotation[side.ordinal()] * 90F;
 	}
 
+	static final int sideRotation[] = {1,3,0,0,0,0};
 	protected float getRotationXForSide(ForgeDirection side){
-		int sideRotation[]  = {1,3,0,0,0,0};
 		return sideRotation[side.ordinal()] * 90F;
 	}
 
