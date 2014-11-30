@@ -529,8 +529,8 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		}
 
 		// Fix for the content
-		this.getStorage().setGhosting(storage.isGhosting());
 		this.getStorage().setStoredItemType(storage.getItem(), storage.getAmount());
+		this.getStorage().setGhosting(storage.isGhosting());
 
 		// We get a new id
 		this.id = BSpaceStorageHandler.instance().getNextBarrelID();
