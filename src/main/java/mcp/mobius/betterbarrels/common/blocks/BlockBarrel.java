@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -251,6 +252,25 @@ public class BlockBarrel extends BlockContainer{
 		return false;
 	}
 
+	@Override
+	public boolean hasComparatorInputOverride() {
+		return true;
+	}
+
+	@Override
+	public int getComparatorInputOverride(World world, int x, int y, int z, int dir) {
+		IBarrelStorage store = ((TileEntityBarrel)world.getTileEntity(x, y, z)).getStorage();
+		int currentAmount = store.getAmount();
+		int maxStorable = store.getMaxStoredCount();
+
+		if (currentAmount == 0)
+			return 0;
+		else if (currentAmount == maxStorable)
+			return 15;
+		else
+			return MathHelper.floor_float(((float)currentAmount / (float)maxStorable) * 14) + 1;
+	}
+
 	/* End Redstone Stuff */
 
 	// Will allow for torches to be placed on non-labeled sides
@@ -274,7 +294,8 @@ public class BlockBarrel extends BlockContainer{
 	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z) {
 		//return false;
 		// this method may be useful for certain planned upgrades ;)
-		return super.canCreatureSpawn(type, world, x, y, z);
+		// for now, skipping some superclass logic...
+		return isSideSolid(world, x, y, z, ForgeDirection.UP);
 	}
 
 	/* Rendering stuff */
