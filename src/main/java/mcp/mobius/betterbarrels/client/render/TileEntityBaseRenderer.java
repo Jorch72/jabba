@@ -29,9 +29,9 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 	protected FontRenderer   renderFont    = mc.fontRenderer;
 
 	protected static ResourceLocation itemsSheetRes    = new ResourceLocation("jabba", "textures/sheets/items.png");
-	protected static ResourceLocation blocksSheetRes   = new ResourceLocation("jabba", "textures/sheets/blocks.png");
-	protected static ResourceLocation blocks32SheetRes = new ResourceLocation("jabba", "textures/sheets/blocks32.png");
-	protected static ResourceLocation blankRes         = new ResourceLocation("jabba", "blank.png");
+	//protected static ResourceLocation blocksSheetRes   = new ResourceLocation("jabba", "textures/sheets/blocks.png");
+	//protected static ResourceLocation blocks32SheetRes = new ResourceLocation("jabba", "textures/sheets/blocks32.png");
+	//protected static ResourceLocation blankRes         = new ResourceLocation("jabba", "blank.png");
 
 	protected int   boundTexIndex;
 

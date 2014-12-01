@@ -62,8 +62,6 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 	public BarrelCoreUpgrades coreUpgrades;
 
-	public LogicHopper logicHopper    = LogicHopper.instance();
-
 	public TileEntityBarrel() {
 		coreUpgrades = new BarrelCoreUpgrades(this);
 	}
@@ -145,22 +143,21 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	public void updateEntity() {
 		if (this.worldObj.isRemote) return;
 
-		this.nTicks += 1;
-		if (this.nTicks % 8 == 0){
-			if (this.logicHopper.run(this)){
+		if (++this.nTicks % 8 == 0) {
+			if (LogicHopper.INSTANCE.run(this)) {
 				this.markDirty();
 			}
 			this.nTicks = 0;
 		}
 	}
 
-	void startTicking(){
+	void startTicking() {
 		this.isTicking = true;
 		if (!this.worldObj.loadedTileEntityList.contains(this))
 			this.worldObj.addTileEntity(this);
 	}
 
-	void stopTicking(){
+	void stopTicking() {
 		this.isTicking = false;
 		if (this.worldObj.loadedTileEntityList.contains(this))
 			this.worldObj.loadedTileEntityList.remove(this);
@@ -217,26 +214,30 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 		ItemStack stack = player.getHeldItem();
 
-		if (!player.isSneaking() && stack != null && (stack.getItem() instanceof ItemBarrelHammer))
-			this.configSide(stack, player, ForgeDirection.getOrientation(side));
-		else if (!player.isSneaking())
-			this.manualStackAdd(player);
-		else if (player.isSneaking() && stack == null)
-			this.switchLocked();
-		else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeSide)
-			this.applySideUpgrade(stack, player, ForgeDirection.getOrientation(side));
-		else if (player.isSneaking() && stack.getItem() instanceof ItemUpgradeCore)
-			coreUpgrades.applyUpgrade(stack, player);
-		else if (player.isSneaking() && (stack.getItem() instanceof ItemUpgradeStructural))
-			coreUpgrades.applyStructural(stack, player);
-		else if (player.isSneaking() && (stack.getItem() instanceof ItemBarrelHammer))
-			this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
-		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() == 0))
-			this.tuneFork(stack, player, ForgeDirection.getOrientation(side));
-		else if (player.isSneaking() && (stack.getItem() instanceof ItemTuningFork) && (stack.getItemDamage() != 0))
-			this.tuneBarrel(stack, player, ForgeDirection.getOrientation(side));
-		else
-			this.manualStackAdd(player);
+		if (!player.isSneaking()) {
+			if (stack != null && (stack.getItem() instanceof ItemBarrelHammer))
+				this.configSide(stack, player, ForgeDirection.getOrientation(side));
+			else
+				this.manualStackAdd(player);
+		} else {
+			if (stack == null)
+				this.switchLocked();
+			else if (stack.getItem() instanceof ItemUpgradeSide)
+				this.applySideUpgrade(stack, player, ForgeDirection.getOrientation(side));
+			else if (stack.getItem() instanceof ItemUpgradeCore)
+				coreUpgrades.applyUpgrade(stack, player);
+			else if (stack.getItem() instanceof ItemUpgradeStructural)
+				coreUpgrades.applyStructural(stack, player);
+			else if (stack.getItem() instanceof ItemBarrelHammer)
+				this.removeUpgrade(stack, player, ForgeDirection.getOrientation(side));
+			else if (stack.getItem() instanceof ItemTuningFork) {
+				if (stack.getItemDamage() == 0)
+					this.tuneFork(stack, player, ForgeDirection.getOrientation(side));
+				else
+					this.tuneBarrel(stack, player, ForgeDirection.getOrientation(side));
+			} else
+				this.manualStackAdd(player);
+		}
 	}
 
 	/* THE TUNING FORK */
@@ -311,11 +312,25 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	private void configSide(ItemStack stack, EntityPlayer player, ForgeDirection side){
 		int type = this.sideUpgrades[side.ordinal()];
 
-		if (type == UpgradeSide.REDSTONE){
+		boolean sendChange = false;
+
+		if (type == UpgradeSide.REDSTONE) {
 			this.sideMetadata[side.ordinal()] = this.sideMetadata[side.ordinal()] + 1;
 			if (this.sideMetadata[side.ordinal()] > UpgradeSide.RS_PROP)
 				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
+			sendChange = true;
+		}
 
+		if (type == UpgradeSide.HOPPER) {
+			//hack: using rs property values until side upgrade overhaul occurs
+			if (this.sideMetadata[side.ordinal()] == UpgradeSide.RS_FULL)
+				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_EMPT;
+			else
+				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
+			sendChange = true;
+		}
+
+		if(sendChange) {
 			this.markDirty();
 			BarrelPacketHandler.INSTANCE.sendToDimension(new Message0x03SideupgradeUpdate(this), this.worldObj.provider.dimensionId);
 		}

@@ -298,8 +298,8 @@ public class StorageLocal implements IBarrelStorage {
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack itemstack, int side) {
-		if (slot == 0)         return false;
-		if (!this.hasItem())   return false;
+		if (slot == 0) return false;
+		if (!this.hasItem()) return false;
 		if (itemstack == null) return true;
 		return this.sameItem(itemstack); // perhaps append?:  && this.totalAmount >= itemstack.stackSize
 	}
