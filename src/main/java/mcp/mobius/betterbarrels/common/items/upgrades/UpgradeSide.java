@@ -12,8 +12,8 @@ public class UpgradeSide {
 	public static int REDSTONE = 0x4;
 
 	/* UPGRADE META */
-	public static int RS_FULL  = 0x0;
-	public static int RS_EMPT  = 0x1;
+	public static int RS_FULL  = 0x0; //hack: doubling as hopper output "fill neighbor"
+	public static int RS_EMPT  = 0x1; //hack: doubling as hopper input "empty neighbor"
 	public static int RS_PROP  = 0x2;
 
 

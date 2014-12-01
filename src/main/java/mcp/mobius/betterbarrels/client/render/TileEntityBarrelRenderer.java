@@ -69,7 +69,10 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 						int index = barrelEntity.sideMetadata[forgeSide.ordinal()] +  2 * 16;
 						this.renderIconOnBlock(index, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2F, 256.0F - 32F, 0, -0.01F);
 					}
-
+					else if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.HOPPER) {
+						int index = barrelEntity.sideMetadata[forgeSide.ordinal()] +  2 * 16;
+						this.renderIconOnBlock(index, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2F, 256.0F - 32F, 0, -0.01F);
+					}
 					else if (this.isItemDisplaySide(barrelEntity, forgeSide)) {
 						int offsetY = 256 - 32;
 
@@ -94,17 +97,14 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreRedstone, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2.0F, 0.0F, offsetY);
 							offsetY -= 35;
 						}
-
 						if (barrelEntity.coreUpgrades.hasHopper) {
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreHopper, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2.0F, 0.0F, offsetY);
 							offsetY -= 35;
 						}
-
 						if (barrelEntity.coreUpgrades.hasEnder) {
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreEnder, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2.0F, 0.0F, offsetY);
 							offsetY -= 35;
 						}
-
 						if (barrelEntity.coreUpgrades.hasVoid) {
 							this.renderStackOnBlock(TileEntityBarrelRenderer.coreVoid, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2.0F, 0.0F, offsetY);
 							offsetY -= 35;
