@@ -145,10 +145,13 @@ public class BlockBarrel extends BlockContainer{
 	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int par5) {
 		if (world.isRemote) return;
 
-		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
+		//gets the TE in the world without creating it. since we're doing destruction cleanup, we don't want to create just to destroy
+		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getChunkFromBlockCoords(x, z).getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
+		//TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
+		if (barrelEntity == null) return;
 
 		// We drop the structural upgrades
-		if ((barrelEntity != null) && (barrelEntity.coreUpgrades.levelStructural > 0)) {
+		if (barrelEntity.coreUpgrades.levelStructural > 0) {
 			int currentUpgrade = barrelEntity.coreUpgrades.levelStructural;
 			while (currentUpgrade > 0) {
 				ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
@@ -158,26 +161,22 @@ public class BlockBarrel extends BlockContainer{
 		}
 
 		// We drop the core upgrades
-		if (barrelEntity != null) {
-			for (UpgradeCore core : barrelEntity.coreUpgrades.upgradeList) {
-				ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeCore, 1, core.ordinal());
+		for (UpgradeCore core : barrelEntity.coreUpgrades.upgradeList) {
+			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeCore, 1, core.ordinal());
+			this.dropStack(world, droppedStack, x, y, z);
+		}
+
+		// We drop the side upgrades
+		for (int i = 0; i < 6; i++) {
+			Item upgrade = UpgradeSide.mapItem[barrelEntity.sideUpgrades[i]];
+			if (upgrade != null) {
+				ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeSide.mapMeta[barrelEntity.sideUpgrades[i]]);
 				this.dropStack(world, droppedStack, x, y, z);
 			}
 		}
 
-		// We drop the side upgrades
-		if (barrelEntity != null) {
-			for (int i = 0; i < 6; i++) {
-				Item upgrade = UpgradeSide.mapItem[barrelEntity.sideUpgrades[i]];
-				if (upgrade != null) {
-					ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeSide.mapMeta[barrelEntity.sideUpgrades[i]]);
-					this.dropStack(world, droppedStack, x, y, z);
-				}
-			}
-		}
-
 		// We drop the stacks
-		if ((barrelEntity != null) && (barrelEntity.getStorage().hasItem()) && (!barrelEntity.getLinked())) {
+		if (barrelEntity.getStorage().hasItem() && !barrelEntity.getLinked()) {
 			barrelEntity.updateEntity();
 			int ndroppedstacks = 0;
 			ItemStack droppedstack = barrelEntity.getStorage().getStack();
