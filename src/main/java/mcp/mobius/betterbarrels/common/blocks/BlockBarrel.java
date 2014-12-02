@@ -198,6 +198,9 @@ public class BlockBarrel extends BlockContainer{
 		} catch (Exception e) {
 			BetterBarrels.log.info("Tried to remove the barrel from the index without a valid entity");
 		}
+
+		// All finished here, let's ensure the TE is cleaned up...
+		world.removeTileEntity(x, y, z);
 	}
 
 	@Override
