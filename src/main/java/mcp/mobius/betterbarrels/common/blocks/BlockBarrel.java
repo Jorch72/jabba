@@ -9,6 +9,7 @@ import mcp.mobius.betterbarrels.common.JabbaCreativeTab;
 import mcp.mobius.betterbarrels.common.StructuralLevel;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeCore;
 import mcp.mobius.betterbarrels.common.items.upgrades.UpgradeSide;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -142,7 +143,7 @@ public class BlockBarrel extends BlockContainer{
 	}
 
 	@Override
-	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int par5) {
+	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		if (world.isRemote) return;
 
 		//gets the TE in the world without creating it. since we're doing destruction cleanup, we don't want to create just to destroy
