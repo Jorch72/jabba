@@ -107,23 +107,23 @@ public class StorageLocal implements IBarrelStorage {
 					);
 
 			if (!oreDictCache.containsKey(orePair)) {
-				int[] oreIDBarrels = OreDictionary.getOreIDs(this.itemTemplate);
-				int[] oreIDStacks = OreDictionary.getOreIDs(stack);
+				int[] oreIDsBarrel = OreDictionary.getOreIDs(this.itemTemplate);
+				int[] oreIDsStack = OreDictionary.getOreIDs(stack);
 
 				boolean equivalent = false;
 
-				if (oreIDBarrels.length > 0 && oreIDStacks.length > 0) {
-					for (int barrelWalker = 0; barrelWalker < oreIDBarrels.length; barrelWalker++) {
-						for (int stackWalker = 0; stackWalker < oreIDStacks.length; stackWalker++) {
-							int oreIDBarrel = oreIDBarrels[barrelWalker];
+				if (oreIDsBarrel.length > 0 && oreIDsStack.length > 0) {
+					for (int barrelOreID : oreIDsBarrel) {
+						String oreNameBarrel = OreDictionary.getOreName(barrelOreID);
+						boolean stackIsMetal = oreNameBarrel.startsWith("ingot") ||
+								oreNameBarrel.startsWith("ore") ||
+								oreNameBarrel.startsWith("dust") ||
+								oreNameBarrel.startsWith("nugget");
+						
+						if (!stackIsMetal) continue;
 
-							String oreNameBarrel = OreDictionary.getOreName(oreIDBarrel);
-							boolean stackIsMetal = oreNameBarrel.startsWith("ingot") ||
-									oreNameBarrel.startsWith("ore") ||
-									oreNameBarrel.startsWith("dust") ||
-									oreNameBarrel.startsWith("nugget");
-
-							equivalent = stackIsMetal && (oreIDBarrel == oreIDStacks[stackWalker]);
+						for (int stackOreID : oreIDsStack) {
+							equivalent = barrelOreID == stackOreID;
 							if (equivalent) {
 								break;
 							}
