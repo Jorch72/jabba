@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import java.io.IOException;
 import java.util.EnumMap;
 
+import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.common.LocalizedChat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,7 +29,7 @@ public enum BarrelPacketHandler {
 	public EnumMap<Side, FMLEmbeddedChannel> channels;
 
 	private BarrelPacketHandler() {
-		this.channels = NetworkRegistry.INSTANCE.newChannel("JABBA", new BarrelCodec());
+		this.channels = NetworkRegistry.INSTANCE.newChannel(BetterBarrels.modid, new BarrelCodec());
 		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
 			addClientHandlers();
 			//addServerHandlers();
