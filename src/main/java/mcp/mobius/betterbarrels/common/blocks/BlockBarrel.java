@@ -147,7 +147,7 @@ public class BlockBarrel extends BlockContainer{
 		if (world.isRemote) return;
 
 		//gets the TE in the world without creating it. since we're doing destruction cleanup, we don't want to create just to destroy
-		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getChunkFromBlockCoords(x, z).getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
+		TileEntityBarrel barrelEntity = (TileEntityBarrel)Utils.getTileEntityWithoutCreating(world, x, y, z);
 		//TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
 		if (barrelEntity == null) return;
 

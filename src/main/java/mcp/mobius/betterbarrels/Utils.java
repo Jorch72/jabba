@@ -14,6 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.ChunkCache;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -251,5 +254,33 @@ public class Utils {
 		}
 
 		return result;
+	}
+
+	/* Best Effort attempts to get the TE in the world without creating it.
+	 *
+	 *  Note: this will return null if the TE does not exist, so be sure to check against
+	 *
+	 *  For the IBlockAccess it will call one of the two known methods, if it encounters another
+	 *   implementation from another mod it will pass along to the standard getTileEntity, thus probably
+	 *   creating one it it does not exist.
+	 */
+	private static Field chunkCacheWorld = ReflectionHelper.getField(ChunkCache.class, new String[]{"e", "field_72815_e", "worldObj"}); 
+	public static TileEntity getTileEntityPreferNotCreating(IBlockAccess blockAccess, int x, int y, int z) {
+		if (blockAccess instanceof World)
+			return getTileEntityWithoutCreating((World)blockAccess, x, y, z);
+		else if (blockAccess instanceof ChunkCache)
+			return getTileEntityWithoutCreating((ChunkCache)blockAccess, x, y, z);
+		else
+			return blockAccess.getTileEntity(x, y, z);
+	}
+	public static TileEntity getTileEntityWithoutCreating(ChunkCache chunkCache, int x, int y, int z) {
+		try {
+			return getTileEntityWithoutCreating((World)chunkCacheWorld.get(chunkCache), x, y, z);
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+	public static TileEntity getTileEntityWithoutCreating(World world, int x, int y, int z) {
+		return world.getChunkFromBlockCoords(x, z).getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
 	}
 }
