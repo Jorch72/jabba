@@ -100,7 +100,7 @@ public class ClientChatUtils {
 			if (endFormatIdx >= 0) {
 				if (endFormatIdx + 2 <= rest.length()) {
 					if (rest.charAt(endFormatIdx + 1) == 'r') {
-						endFormatIdx += 2;
+						//endFormatIdx += 2;
 					} else {
 						childParent = true;
 						endFormatIdx--;
