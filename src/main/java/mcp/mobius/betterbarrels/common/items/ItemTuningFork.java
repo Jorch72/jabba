@@ -20,6 +20,7 @@ public class ItemTuningFork extends Item implements IOverlayItem{
 		this.setMaxDamage(30); // Time it stays tuned, in sec.
 		this.setMaxStackSize(1);
 		this.setUnlocalizedName("fork");
+		this.setNoRepair();
 		this.setCreativeTab(JabbaCreativeTab.tab);
 	}
 
