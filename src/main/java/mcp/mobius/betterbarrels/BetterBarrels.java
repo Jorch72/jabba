@@ -36,12 +36,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid=BetterBarrels.modid, name="JABBA", version="1.1.5", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name=BetterBarrels.modid, version="1.2.0", dependencies="after:Waila;after:NotEnoughItems")
 public class BetterBarrels {
 
-	private static boolean DEBUG_TEXTURES = false || Boolean.parseBoolean(System.getProperty("mcp.mobius.debugJabbaTextures","false"));
+	private static boolean DEBUG = Boolean.parseBoolean(System.getProperty("mcp.mobius.debugJabba","false"));
 	public static void debug(String msg) {
-		if (DEBUG_TEXTURES)
+		if (DEBUG)
 			log.log(Level.WARN, msg);
 	}
 

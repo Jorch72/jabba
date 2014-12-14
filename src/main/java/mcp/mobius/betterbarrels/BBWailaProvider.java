@@ -8,7 +8,10 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 public class BBWailaProvider implements IWailaDataProvider {
 	@Override
@@ -56,8 +59,11 @@ public class BBWailaProvider implements IWailaDataProvider {
 		registrar.registerBodyProvider(new BBWailaProvider(), TileEntityBarrel.class);
 	}
 
+	@Override
+	public NBTTagCompound getNBTData(TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
+		return tag;
+	}
 }
-
 
 //registrar.addConfig("Better barrels", "bb.itemtype", "Barrel content");
 //registrar.addConfig("Better barrels", "bb.itemnumb", "Items quantity");
