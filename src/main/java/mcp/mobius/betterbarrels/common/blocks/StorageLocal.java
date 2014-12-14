@@ -119,7 +119,7 @@ public class StorageLocal implements IBarrelStorage {
 								oreNameBarrel.startsWith("ore") ||
 								oreNameBarrel.startsWith("dust") ||
 								oreNameBarrel.startsWith("nugget");
-						
+
 						if (!stackIsMetal) continue;
 
 						for (int stackOreID : oreIDsStack) {
