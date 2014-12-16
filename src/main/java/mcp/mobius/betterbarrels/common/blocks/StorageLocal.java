@@ -174,6 +174,12 @@ public class StorageLocal implements IBarrelStorage {
 		this.deleteExcess     = tag.hasKey("deleteExcess") ? tag.getBoolean("deleteExcess") : false;
 		this.alwaysProvide    = tag.hasKey("alwaysProvide") ? tag.getBoolean("alwaysProvide") : false;
 		this.setItem(this.itemTemplate);
+		
+		// Sanity Check!
+		if (itemTemplate != null && totalAmount < 0) {
+			totalAmount = 0;
+			if (!keepLastItem) keepLastItem = true;
+		}
 	}
 
 	/* MANUAL STACK */
