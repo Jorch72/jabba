@@ -125,10 +125,10 @@ public abstract class TileEntityBaseRenderer extends TileEntitySpecialRenderer {
 		GL11.glPushMatrix();
 
 		this.alignRendering(side, orientation, barrelPos);
-		this.moveRendering(size, posx, posy, zdepth);
+		this.moveRendering(size/2, posx, posy, zdepth);
 
 		this.texManager.bindTexture(itemsSheetRes);
-		this.drawTexturedModalRect(0, 0, 16*(index%16), 16*(index/16), 16, 16);
+		this.drawTexturedModalRect(0, 0, 32*(index%16), 32*(index/16), 32, 32);
 
 		GL11.glPopMatrix();
 	}
