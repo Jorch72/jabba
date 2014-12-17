@@ -410,8 +410,15 @@ public class StorageLocal implements IBarrelStorage {
 				this.outputStack.stackSize = Math.min(this.outputStack.stackSize, this.stackAmount);
 		}
 
+		//Sanity Check!
+		if (this.totalAmount < 0) {
+			this.totalAmount = 0;
+		} else if (this.totalAmount > this.totalCapacity) {
+			this.totalAmount = this.totalCapacity;
+		}
+
 		// Handle emptying of the barrel
-		if (this.totalAmount <= 0 && !this.keepLastItem) {
+		if (this.totalAmount == 0 && !this.keepLastItem) {
 			this.setItem(null);
 			this.outputStack  = null;
 			this.prevOutputStack  = null;
