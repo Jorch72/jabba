@@ -26,8 +26,8 @@ public enum LogicHopper {
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
 			if (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.HOPPER) {
 				//shortcut out if no work
-				if (barrel.sideMetadata[side.ordinal()] == UpgradeSide.RS_FULL && (!store.hasItem() || store.getAmount() == 0)) continue;
-				if (barrel.sideMetadata[side.ordinal()] == UpgradeSide.RS_EMPT && (store.getAmount() == store.getMaxStoredCount())) continue;
+				if (barrel.sideMetadata[side.ordinal()] == UpgradeSide.RS_FULL && (!store.hasItem() || store.getAmount() <= 0)) continue;
+				if (barrel.sideMetadata[side.ordinal()] == UpgradeSide.RS_EMPT && (store.getAmount() >= store.getMaxStoredCount())) continue;
 
 				TileEntity targetEntity = barrel.getWorldObj().getTileEntity(barrel.xCoord + side.offsetX, barrel.yCoord + side.offsetY, barrel.zCoord + side.offsetZ);
 				if (isStorage(targetEntity)) {
