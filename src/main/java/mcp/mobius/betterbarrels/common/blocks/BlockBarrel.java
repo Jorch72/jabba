@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -148,7 +149,6 @@ public class BlockBarrel extends BlockContainer{
 
 		//gets the TE in the world without creating it. since we're doing destruction cleanup, we don't want to create just to destroy
 		TileEntityBarrel barrelEntity = (TileEntityBarrel)Utils.getTileEntityWithoutCreating(world, x, y, z);
-		//TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
 		if (barrelEntity == null) return;
 
 		// We drop the structural upgrades
@@ -217,7 +217,8 @@ public class BlockBarrel extends BlockContainer{
 
 	@Override
 	public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntityBarrel barrel = (TileEntityBarrel)world.getTileEntity(x, y, z);
+		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityPreferNotCreating(world, x, y, z);
+		if (barrel == null) return 0;
 		return barrel.getRedstonePower(side);
 	}
 
@@ -239,9 +240,9 @@ public class BlockBarrel extends BlockContainer{
 
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
+		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityPreferNotCreating(world, x, y, z);
 
-		if (barrel.sideUpgrades[redstoneToMC(side)] == UpgradeSide.REDSTONE) {
+		if (barrel != null && barrel.sideUpgrades[redstoneToMC(side)] == UpgradeSide.REDSTONE) {
 			return true;
 		}
 		return false;
@@ -254,7 +255,10 @@ public class BlockBarrel extends BlockContainer{
 
 	@Override
 	public int getComparatorInputOverride(World world, int x, int y, int z, int dir) {
-		IBarrelStorage store = ((TileEntityBarrel)world.getTileEntity(x, y, z)).getStorage();
+		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityWithoutCreating(world, x, y, z);
+		if (barrel == null) return 0;
+
+		IBarrelStorage store = barrel.getStorage();
 		int currentAmount = store.getAmount();
 		int maxStorable = store.getMaxStoredCount();
 
@@ -276,9 +280,9 @@ public class BlockBarrel extends BlockContainer{
 			return false;
 		}
 
-		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
+		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityPreferNotCreating(world, x, y, z);
 
-		if (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.FRONT || barrel.sideUpgrades[side.ordinal()] == UpgradeSide.STICKER) {
+		if (barrel != null && (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.FRONT || barrel.sideUpgrades[side.ordinal()] == UpgradeSide.STICKER)) {
 			return false;
 		}
 
@@ -304,7 +308,9 @@ public class BlockBarrel extends BlockContainer{
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x, y, z);
+		TileEntityBarrel barrel = (TileEntityBarrel) Utils.getTileEntityPreferNotCreating(world, x, y, z);
+
+		if (barrel == null) return Blocks.planks.getIcon(world, x, y, z, side);
 
 		int levelStructural = barrel.coreUpgrades.levelStructural;
 
@@ -349,7 +355,7 @@ public class BlockBarrel extends BlockContainer{
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
 
-		TileEntityBarrel barrel = (TileEntityBarrel) world.getTileEntity(x - dir.offsetX, y - dir.offsetY, z - dir.offsetZ);
+		TileEntityBarrel barrel = (TileEntityBarrel) Utils.getTileEntityPreferNotCreating(world, x - dir.offsetX, y - dir.offsetY, z - dir.offsetZ);
 		if (barrel == null || !barrel.overlaying)
 			return super.shouldSideBeRendered(world, x, y, z, side);
 
