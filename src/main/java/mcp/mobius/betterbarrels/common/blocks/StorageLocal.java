@@ -413,8 +413,6 @@ public class StorageLocal implements IBarrelStorage {
 		//Sanity Check!
 		if (this.totalAmount < 0) {
 			this.totalAmount = 0;
-		} else if (this.totalAmount > this.totalCapacity) {
-			this.totalAmount = this.totalCapacity;
 		}
 
 		// Handle emptying of the barrel
