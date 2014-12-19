@@ -18,6 +18,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class StorageLocal implements IBarrelStorage {
 	private ItemStack inputStack      = null;	// Slot 0
+	private ItemStack prevInputStack  = null;	// Slot 0
 	private ItemStack outputStack     = null;	// Slot 1
 	private ItemStack prevOutputStack = null;
 	private ItemStack itemTemplate      = null;
@@ -79,15 +80,14 @@ public class StorageLocal implements IBarrelStorage {
 			this.itemTemplate = stack.copy();
 			this.itemTemplate.stackSize = 0;
 			this.stackAmount = stack.getMaxStackSize();
-			this.totalCapacity = this.maxstacks * this.stackAmount;
 			this.cachedBarrelOreItem = new ItemImmut(Item.getIdFromItem(this.itemTemplate.getItem()), this.itemTemplate.getItemDamage());
 		} else {
 			this.itemTemplate = null;
 			this.renderingTemplate = null;
 			this.stackAmount = 64;
-			this.totalCapacity = this.maxstacks * 64;
 			this.cachedBarrelOreItem = null;
 		}
+		totalCapacity = maxstacks * stackAmount;
 	}
 
 	@Override
@@ -174,7 +174,7 @@ public class StorageLocal implements IBarrelStorage {
 		this.deleteExcess     = tag.hasKey("deleteExcess") ? tag.getBoolean("deleteExcess") : false;
 		this.alwaysProvide    = tag.hasKey("alwaysProvide") ? tag.getBoolean("alwaysProvide") : false;
 		this.setItem(this.itemTemplate);
-		
+
 		// Sanity Check!
 		if (itemTemplate != null && totalAmount < 0) {
 			totalAmount = 0;
@@ -185,27 +185,27 @@ public class StorageLocal implements IBarrelStorage {
 	/* MANUAL STACK */
 	@Override
 	public int addStack(ItemStack stack) {
-		boolean skip = stack == null || !this.sameItem(stack);
-		if (this.itemTemplate == null && this.keepLastItem && stack != null) skip = false;
+		boolean skip = stack == null || !sameItem(stack);
+		if (itemTemplate == null && keepLastItem && stack != null) skip = false;
 
 		if (skip) return 0;
 
 		int deposit;
-		if (!this.hasItem()) {
-			this.setItem(stack);
-			this.totalAmount = stack.stackSize;
+
+		if (inputStack == null) {
+			inputStack = stack;
 			deposit = stack.stackSize;
-			stack.stackSize -= deposit;
 		} else {
-			deposit = Math.min(stack.stackSize, totalCapacity - this.totalAmount);
-			stack.stackSize  -= deposit;
-			this.totalAmount += deposit;
+			deposit = Math.min(stack.stackSize, stackAmount - inputStack.stackSize);
+			inputStack.stackSize += deposit;
 		}
-		if (this.deleteExcess) {
-			deposit += stack.stackSize;
-			stack.stackSize = 0;
-		}
-		this.markDirty();
+
+		markDirty();
+
+		stack.stackSize -= deposit;
+
+		deposit = deleteExcess ? stackAmount : deposit;
+
 		return deposit;
 	}
 
@@ -229,7 +229,7 @@ public class StorageLocal implements IBarrelStorage {
 
 			retStack = this.itemTemplate.copy();
 			if (!this.alwaysProvide)
-				this.totalAmount  -= amount;
+				this.outputStack.stackSize -= amount;
 			retStack.stackSize = amount;
 		}
 
@@ -265,11 +265,15 @@ public class StorageLocal implements IBarrelStorage {
 	@Override
 	public void setAmount(int amount) { this.totalAmount = amount; }
 
+	protected void recalcCapacities() {
+		maxstacks = basestacks * (upgCapacity + 1);
+		totalCapacity = maxstacks * stackAmount;
+	}
+
 	@Override
 	public void setBaseStacks(int basestacks) {
 		this.basestacks = basestacks;
-		this.maxstacks  = basestacks * (this.upgCapacity + 1);
-		this.totalCapacity = maxstacks * this.stackAmount;
+		recalcCapacities();
 	}
 
 	@Override
@@ -278,21 +282,20 @@ public class StorageLocal implements IBarrelStorage {
 	@Override
 	public void addStorageUpgrade() {
 		this.upgCapacity += 1;
-		this.maxstacks    = this.basestacks * (this.upgCapacity + 1);
-		this.totalCapacity = maxstacks * this.stackAmount;
+		recalcCapacities();
 	}
 
 	@Override
 	public void rmStorageUpgrade() {
 		this.upgCapacity -= 1;
-		this.maxstacks    = this.basestacks * (this.upgCapacity + 1);
-		this.totalCapacity = maxstacks * this.stackAmount;
+		recalcCapacities();
 	}
 
 	// ISidedInventory Interface //
+	private static final int[] accessibleSides = new int[]{0,1};
 	@Override
 	public int[] getAccessibleSlotsFromSide(int var1) {
-		return new int[]{0,1};
+		return accessibleSides;
 	}
 
 	@Override
@@ -380,51 +383,57 @@ public class StorageLocal implements IBarrelStorage {
 		// TODO : Might need to do some cleanup here
 
 		// Handle Input
-		if (this.inputStack != null) {
-			if (this.itemTemplate == null)
-				this.setItem(this.inputStack);
+		if (inputStack != null) {
+			if (itemTemplate == null)
+				setItem(inputStack);
 
-			if ((this.totalCapacity - this.totalAmount) > 0) {
-				this.totalAmount += this.inputStack.stackSize;
+			if ((totalCapacity - totalAmount) > 0) {
+				if (prevInputStack == null) totalAmount += inputStack.stackSize;
+				else totalAmount += inputStack.stackSize - prevInputStack.stackSize;
+
+				//Sanity Check!
 				if (totalAmount > totalCapacity) totalAmount = totalCapacity;
 			}
-			this.inputStack = null;
+			if (deleteExcess || (totalCapacity - totalAmount) >= stackAmount) {
+				// Provides logic shortcutting for when the barrel is not void and not (near)full
+				inputStack = null;
+				prevInputStack = null;
+			} else {
+				// fake stack stuff so the inventory appears full in certain mods that do not support the DSU...
+				inputStack.stackSize = stackAmount - (totalCapacity - totalAmount);
+				prevInputStack = inputStack.copy();
+			}
 		}
 
 		// Handle changes in output
-		if (!this.alwaysProvide && this.prevOutputStack != null) {
-			if (this.outputStack != null)
-				this.totalAmount -= (this.prevOutputStack.stackSize - this.outputStack.stackSize);
-			else
-				this.totalAmount -= prevOutputStack.stackSize;
-		}
+		if (!alwaysProvide && prevOutputStack != null) {
+			if (outputStack != null) totalAmount -= prevOutputStack.stackSize - outputStack.stackSize;
+			else totalAmount -= prevOutputStack.stackSize;
 
-		// Make sure an output stack exists
-		if (this.itemTemplate != null) {
-			if (outputStack == null)
-				this.outputStack = this.itemTemplate.copy();
-
-			//Adjust output stack to the correct size
-			this.outputStack.stackSize = this.alwaysProvide ? this.totalCapacity : this.totalAmount;
-			if (!BetterBarrels.exposeFullStorageSize)
-				this.outputStack.stackSize = Math.min(this.outputStack.stackSize, this.stackAmount);
-		}
-
-		//Sanity Check!
-		if (this.totalAmount < 0) {
-			this.totalAmount = 0;
+			//Sanity Check!
+			if (totalAmount < 0) totalAmount = 0;
 		}
 
 		// Handle emptying of the barrel
-		if (this.totalAmount == 0 && !this.keepLastItem) {
-			this.setItem(null);
-			this.outputStack  = null;
-			this.prevOutputStack  = null;
-			this.inputStack   = null;
-		}
+		if (totalAmount == 0 && !keepLastItem) {
+			setItem(null);
+			outputStack = null;
+			prevOutputStack = null;
+			inputStack = null;
+			prevInputStack = null;
+		} else if (itemTemplate != null) {
+			// Make sure an output stack exists if we are supposed to have one
+			if (outputStack == null)
+				outputStack = itemTemplate.copy();
 
-		// Copy current output stack to previous to check for changes
-		this.prevOutputStack = this.outputStack != null ? this.outputStack.copy() : null;
+			//Adjust output stack to the correct size
+			outputStack.stackSize = alwaysProvide ? totalCapacity : totalAmount;
+			if (!BetterBarrels.exposeFullStorageSize)
+				outputStack.stackSize = Math.min(outputStack.stackSize, stackAmount);
+
+			// Copy current output stack to previous to check for changes
+			prevOutputStack = outputStack.copy();
+		}
 	}
 
 	@Override
