@@ -1,3 +1,8 @@
+== v1.2.0a ==
+* Added fake input stack when barrel is not void and nearly full, allows mods which only handle normal inventories to detect the barrel being full.
+* Ensure that barrels do not have a negative stored count
+* Did a pass on BlockBarrel methods that use TE's to protect against NPE's and slightly improve speed.
+
 == v1.2.0 ==
 This version of JABBA is focused mainly on resolving bugs that have been exposed over the last few months. It does have some enhancements, but they are mostly behind the scenes work.
 
