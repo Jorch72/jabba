@@ -180,6 +180,13 @@ public class StorageLocal implements IBarrelStorage {
 			totalAmount = 0;
 			if (!keepLastItem) keepLastItem = true;
 		}
+
+		//Fake stack setup on load
+		if (!deleteExcess && (totalCapacity - totalAmount) < stackAmount) {
+			inputStack = itemTemplate.copy();
+			inputStack.stackSize = stackAmount - (totalCapacity - totalAmount);
+			prevInputStack = inputStack.copy();
+		}
 	}
 
 	/* MANUAL STACK */
@@ -400,6 +407,7 @@ public class StorageLocal implements IBarrelStorage {
 				prevInputStack = null;
 			} else {
 				// fake stack stuff so the inventory appears full in certain mods that do not support the DSU...
+				inputStack = itemTemplate.copy(); // don't rely upon passed in object
 				inputStack.stackSize = stackAmount - (totalCapacity - totalAmount);
 				prevInputStack = inputStack.copy();
 			}
