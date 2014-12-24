@@ -1,3 +1,7 @@
+== v1.2.0b ==
+* Fix: fake input stack is now created on world load for barrels that need it
+* Fix: first ghost update sent to a client will now not (fake) clear a locked barrel if it is emptied
+
 == v1.2.0a ==
 * Added fake input stack when barrel is not void and nearly full, allows mods which only handle normal inventories to detect the barrel being full.
 * Ensure that barrels do not have a negative stored count
