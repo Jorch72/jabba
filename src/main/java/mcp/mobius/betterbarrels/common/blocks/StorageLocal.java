@@ -251,9 +251,9 @@ public class StorageLocal implements IBarrelStorage {
 	public boolean isGhosting() { return this.keepLastItem; }
 	@Override
 	public void setGhosting(boolean locked) {
-		this.keepLastItem = locked;
-		if (this.totalAmount <= 0)
-			this.setItem(null);
+		keepLastItem = locked;
+		if (!locked && totalAmount <= 0)
+			setItem(null);
 	}
 
 	@Override
