@@ -351,6 +351,11 @@ public class BlockBarrel extends BlockContainer{
 	}
 
 	@Override
+	public IIcon getIcon(int p_149691_1_, int p_149691_2_) {
+		return BlockBarrel.text_linked;
+	}
+
+	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
