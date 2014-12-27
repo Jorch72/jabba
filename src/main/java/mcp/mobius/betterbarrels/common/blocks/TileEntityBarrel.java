@@ -198,7 +198,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		if (this.worldObj.isRemote) return;
 
 		ItemStack droppedStack = null;
-		if ((BetterBarrels.revereBehaviourClickLeft && !player.isSneaking()) || (!BetterBarrels.revereBehaviourClickLeft && player.isSneaking()))
+		if ((BetterBarrels.reverseBehaviourClickLeft && !player.isSneaking()) || (!BetterBarrels.reverseBehaviourClickLeft && player.isSneaking()))
 			droppedStack = this.getStorage().getStack(1);
 		else
 			droppedStack = this.getStorage().getStack();
