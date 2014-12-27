@@ -2,6 +2,7 @@
 * Fix: fake input stack is now created on world load for barrels that need it
 * Fix: first ghost update sent to a client will now not (fake) clear a locked barrel if it is emptied
 * Changed break texture from nothing to nearly nothing as a temp work around for a Chisel bug that is being looked into.
+* Dollied Monster Spawners now show the name of the entity they spawn in their item tooltip
 
 == v1.2.0a ==
 * Added fake input stack when barrel is not void and nearly full, allows mods which only handle normal inventories to detect the barrel being full.
