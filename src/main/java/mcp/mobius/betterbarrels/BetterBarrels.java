@@ -88,6 +88,7 @@ public class BetterBarrels {
 	public static float verticalPlacementRange   = 1f;
 
 	public static boolean exposeFullStorageSize = false;
+	public static boolean revereBehaviourClickLeft = false;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -120,6 +121,8 @@ public class BetterBarrels {
 			verticalPlacementRange = config.getFloat("verticalPlacementRange", Configuration.CATEGORY_GENERAL, 0.79f, 0f, 1f, "This is used when testing a players aim for block placement.  If the aim value is greater than or equal to this setting, it is determined you are attempting to place a block facing down.  The reverse is true for placing blocks facing up. 0 = dead ahead, 1 = directly above.");
 
 			exposeFullStorageSize = config.getBoolean("exposeFullStorageSize", "experimental", false, "If true, barrels will expose their full contents through the standard MC inventory interfaces. This will allow mods that do not support the DSU to see the full contents of the barrel. *** WARNING *** This will allow mods that do not properly handle inventories to empty out a barrel in one go. Use at your own risk. If you do find such a game breaking mod, please report to that mods' author and ask them to handle inventories better. Otherwise, please enjoy this experimental feature ^_^");
+
+			revereBehaviourClickLeft = config.getBoolean("revereBehaviourClickLeft", Configuration.CATEGORY_GENERAL, false, "If true, punching a barrel will remove one item and shift punching a stack.");
 
 			//fullBarrelTexture  = config.get(Configuration.CATEGORY_GENERAL, "fullBarrelTexture", true).getBoolean(true);
 			//highRezTexture     = config.get(Configuration.CATEGORY_GENERAL, "highRezTexture", false).getBoolean(false);
