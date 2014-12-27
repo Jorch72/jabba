@@ -45,8 +45,11 @@ public class BBEventHandler {
 					storedBlock = Block.getBlockFromName(tag.getString("Block"));
 				}
 				int meta = tag.getInteger("Meta");
-				ItemStack stack = new ItemStack(storedBlock, 0, meta);
-				event.toolTip.add(1, stack.getDisplayName());
+				String tip = new ItemStack(storedBlock, 0, meta).getDisplayName();
+				if (tag.getBoolean("isSpawner")) {
+					tip = String.format("%s (%s)", tip, tag.getCompoundTag("NBT").getString("EntityId"));
+				}
+				event.toolTip.add(1, tip);
 			} else {
 				event.toolTip.add(1, StatCollector.translateToLocal("text.jabba.tooltip.empty"));
 			}
