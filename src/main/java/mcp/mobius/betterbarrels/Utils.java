@@ -281,6 +281,9 @@ public class Utils {
 		}
 	}
 	public static TileEntity getTileEntityWithoutCreating(World world, int x, int y, int z) {
-		return world.getChunkFromBlockCoords(x, z).getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
+		if (world.blockExists(x, y, z)) // Method is supposed to be quick, so prevent chunk from being created if it does not yet exist
+			return world.getChunkFromBlockCoords(x, z).getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
+		else
+			return null;
 	}
 }
