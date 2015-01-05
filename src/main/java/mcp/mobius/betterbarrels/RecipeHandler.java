@@ -36,7 +36,7 @@ public class RecipeHandler {
 		}
 	}
 
-	private ItemStack upgradeItem = null;
+	private Object upgradeItem = null;
 
 	public void registerRecipes() {
 		// Unique Items
@@ -95,14 +95,14 @@ public class RecipeHandler {
 	public void registerLateRecipes() {
 		try {
 			Utils.Material mat = new Utils.Material(BetterBarrels.upgradeItemStr);
-			upgradeItem = mat.getStack();
+			upgradeItem = mat.getStack(true);
 		} catch (Throwable t) {
 			BetterBarrels.log.error("Requested item with id " + BetterBarrels.upgradeItemStr + " for tier upgrade recipes was not found, using the default of vanilla fence");
 			upgradeItem = new ItemStack(Blocks.fence);
 		}
 
 		for (int i = 0, max = Math.min(StructuralLevel.LEVELS.length-1, BetterBarrels.maxCraftableTier); i < max; i++) {
-			this.addStructuralUpgrade(i, StructuralLevel.LEVELS[i+1].material.getStack());
+			this.addStructuralUpgrade(i, StructuralLevel.LEVELS[i+1].material.getStack(true));
 		}
 	}
 

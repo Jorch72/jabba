@@ -134,8 +134,12 @@ public class Utils {
 		}
 
 		public ItemStack getStack() {
+			return (ItemStack)getStack(false);
+		}
+		public Object getStack(boolean raw) {
 			ItemStack ret = portalStack;
 			if (this.isOreDict()) {
+				if(raw) return name;
 				if (ores == null) {
 					ores = OreDictionary.getOres(this.name);
 				}
