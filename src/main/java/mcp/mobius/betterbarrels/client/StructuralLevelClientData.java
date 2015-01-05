@@ -432,46 +432,50 @@ public class StructuralLevelClientData {
 				foundSourceMaterial = true;
 			}
 
+			PixelARGB color;
 			if (foundSourceMaterial) {
-				// PixelARGB color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
-				PixelARGB color = averageColorFromArrayB(materialPixels);
+				//color = averageColorFromArray(materialPixels); // This makes iron... more red, kind of a neat rusty look, but meh
+				color = averageColorFromArrayB(materialPixels);
 				BetterBarrels.debug("Calculated Color for [" + this.name + "]: {R: " + color.R + ", G: " + color.G + ", B: " + color.B + "}");
+			} else {
+				color = new PixelARGB(255, 205, 205, 205);
+				BetterBarrels.debug("Using default color for " + name + " due to not being able to load its texture for color calculation.");
+			}
 
-				this.textColor = color.YIQContrastTextColor().combined;
+			this.textColor = color.YIQContrastTextColor().combined;
 
-				grainMergeArrayWithColor(labelBorderPixels, color);
-				grainMergeArrayWithColor(topBorderPixels, color);
-				grainMergeArrayWithColor(topLabelBorderPixels, color);
-				grainMergeArrayWithColor(sideBorderPixels, color);
-				grainMergeArrayWithColor(itemArrowPixels, color);
+			grainMergeArrayWithColor(labelBorderPixels, color);
+			grainMergeArrayWithColor(topBorderPixels, color);
+			grainMergeArrayWithColor(topLabelBorderPixels, color);
+			grainMergeArrayWithColor(sideBorderPixels, color);
+			grainMergeArrayWithColor(itemArrowPixels, color);
 
-				this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
+			this.textColor = averageColorFromArrayB(labelBorderPixels).YIQContrastTextColor().combined;
 
-				int mipmapLevels = Utils.ReflectionHelper.getFieldValue(Integer.class, Minecraft.getMinecraft().gameSettings.mipmapLevels, Minecraft.getMinecraft().getTextureMapBlocks(), TextureMap.class, new String[]{"j", "field_147636_j", "mipmapLevels"}, Level.WARN, "Unable to reflect Block TextureMap mipmapLevels. Defaulting to GameSettings mipmapLevels");
+			int mipmapLevels = Utils.ReflectionHelper.getFieldValue(Integer.class, Minecraft.getMinecraft().gameSettings.mipmapLevels, Minecraft.getMinecraft().getTextureMapBlocks(), TextureMap.class, new String[]{"j", "field_147636_j", "mipmapLevels"}, Level.WARN, "Unable to reflect Block TextureMap mipmapLevels. Defaulting to GameSettings mipmapLevels");
 
-				try {
-					mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
-					mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
-					mergeArraysBasedOnAlpha(topLabelBorderPixels, topLabelBackgroundPixels);
-					mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
-					mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
-					mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
+			try {
+				mergeArraysBasedOnAlpha(labelBorderPixels, labelBackgroundPixels);
+				mergeArraysBasedOnAlpha(topBorderPixels, topBackgroundPixels);
+				mergeArraysBasedOnAlpha(topLabelBorderPixels, topLabelBackgroundPixels);
+				mergeArraysBasedOnAlpha(sideBorderPixels, sideBackgroundPixels);
+				mergeArraysBasedOnAlpha(itemBasePixels, itemArrowPixels);
+				mergeArraysBasedOnAlpha(itemBasePixels, itemRomanPixels);
 
-					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-					GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
-					this.iconBlockLabel.replaceTextureData(labelBorderPixels, mipmapLevels);
-					this.iconBlockTop.replaceTextureData(topBorderPixels, mipmapLevels);
-					this.iconBlockTopLabel.replaceTextureData(topLabelBorderPixels, mipmapLevels);
-					this.iconBlockSide.replaceTextureData(sideBorderPixels, mipmapLevels);
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, terrainTextureId);
+				this.iconBlockLabel.replaceTextureData(labelBorderPixels, mipmapLevels);
+				this.iconBlockTop.replaceTextureData(topBorderPixels, mipmapLevels);
+				this.iconBlockTopLabel.replaceTextureData(topLabelBorderPixels, mipmapLevels);
+				this.iconBlockSide.replaceTextureData(sideBorderPixels, mipmapLevels);
 
-					GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
-					this.iconItem.replaceTextureData(itemBasePixels, 0);
-					GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
-					GL11.glPopAttrib();
-					return true;
-				} catch(Exception e) {
-					BetterBarrels.log.error("caught exception while generating icons: " + e.toString() + e.getMessage());
-				}
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, itemTextureId);
+				this.iconItem.replaceTextureData(itemBasePixels, 0);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTextureID);
+				GL11.glPopAttrib();
+				return true;
+			} catch(Exception e) {
+				BetterBarrels.log.error("caught exception while generating icons: " + e.toString() + e.getMessage());
 			}
 		}
 		return false;

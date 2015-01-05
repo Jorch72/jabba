@@ -1,11 +1,12 @@
 == v1.2.0b ==
-* Fix: fake input stack is now created on world load for barrels that need it
-* Fix: first ghost update sent to a client will now not (fake) clear a locked barrel if it is emptied
-* Changed break texture from nothing to nearly nothing as a temp work around for a Chisel bug that is being looked into.
-* Dollied Monster Spawners now show the name of the entity they spawn in their item tooltip
-* Added config option to reverse behaviour of left clicking so a click is one item and a shift click is a stack.
-* Fix: Recipes are now created using the OreDictionary name defined in the config file where appropriate.
-* Fix: Block texture generation correctly works on structural levels which are multiples of 10.
+* New: Dollied Monster Spawners now show the name of the entity they spawn in their item tool-tip
+* New: Added config option to reverse behaviour of left clicking so a click is one item and a shift click is a stack
+* Fix: Fake input stack is now created on world load for barrels that need it
+* Fix: First ghost update sent to a client will now not (fake) clear a locked barrel if it is emptied
+* Fix: Recipes are now created using the OreDictionary name defined in the config file where appropriate. (Regression fix)
+* Fix: Block world texture generation now correctly works on structural levels which are multiples of 10
+* Change: Adjusted break texture from nothing to nearly nothing as a temporary work around for a Chisel bug that is being looked into
+* Change: Tweaked texture generation to reduce incidences of blank textures
 
 == v1.2.0a ==
 * Added fake input stack when barrel is not void and nearly full, allows mods which only handle normal inventories to detect the barrel being full.
