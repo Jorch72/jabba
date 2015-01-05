@@ -145,7 +145,7 @@ public class StructuralLevelClientData {
 
 		@Override
 		public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) {
-			if (textureType == 1 || location.getResourcePath().endsWith("0")) {
+			if (textureType == 1 || location.getResourcePath().endsWith("_0")) {
 				return false;
 			} else {
 				return true;
