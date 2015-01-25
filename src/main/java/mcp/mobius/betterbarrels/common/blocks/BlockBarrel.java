@@ -75,14 +75,19 @@ public class BlockBarrel extends BlockContainer{
 		// We get the orientation and check if the TE is already properly created.
 		// If so we set the entity value to the correct orientation and set the block meta to 1 to kill the normal block rendering.
 
-		TileEntityBarrel barrelEntity = (TileEntityBarrel)world.getTileEntity(x, y, z);
+		TileEntity te = world.getTileEntity(x, y, z);
 
-		if (barrelEntity != null) {
-			barrelEntity.orientation = Utils.getDirectionFacingEntity(entity, BetterBarrels.allowVerticalPlacement);
-			barrelEntity.rotation = Utils.getDirectionFacingEntity(entity, false);
-
-			barrelEntity.sideUpgrades[barrelEntity.orientation.ordinal()] = UpgradeSide.FRONT;
+		if (te == null || !(te instanceof TileEntityBarrel)) {
+			BetterBarrels.log.error("TileEntity for barrel placed at (X:" + x + ", Y:" + y + ", Z:" + z + ") is " + (te == null ? "null!": "of the wrong type(" + te.getClass().getCanonicalName() + ")!"));
+			return;
 		}
+
+		TileEntityBarrel barrelEntity = (TileEntityBarrel)te;
+
+		barrelEntity.orientation = Utils.getDirectionFacingEntity(entity, BetterBarrels.allowVerticalPlacement);
+		barrelEntity.rotation = Utils.getDirectionFacingEntity(entity, false);
+
+		barrelEntity.sideUpgrades[barrelEntity.orientation.ordinal()] = UpgradeSide.FRONT;
 	}
 
 	@Override
@@ -148,55 +153,61 @@ public class BlockBarrel extends BlockContainer{
 		if (world.isRemote) return;
 
 		//gets the TE in the world without creating it. since we're doing destruction cleanup, we don't want to create just to destroy
-		TileEntityBarrel barrelEntity = (TileEntityBarrel)Utils.getTileEntityWithoutCreating(world, x, y, z);
-		if (barrelEntity == null) return;
+		TileEntity te = Utils.getTileEntityWithoutCreating(world, x, y, z);
+		if (te == null) {
+			return;
+		} else if (te instanceof TileEntityBarrel) {
+			TileEntityBarrel barrelEntity = (TileEntityBarrel)te;
 
-		// We drop the structural upgrades
-		if (barrelEntity.coreUpgrades.levelStructural > 0) {
-			int currentUpgrade = barrelEntity.coreUpgrades.levelStructural;
-			while (currentUpgrade > 0) {
-				ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
-				this.dropStack(world, droppedStack, x, y, z);
-				currentUpgrade -= 1;
+			// We drop the structural upgrades
+			if (barrelEntity.coreUpgrades.levelStructural > 0) {
+				int currentUpgrade = barrelEntity.coreUpgrades.levelStructural;
+				while (currentUpgrade > 0) {
+					ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeStructural, 1, currentUpgrade-1);
+					this.dropStack(world, droppedStack, x, y, z);
+					currentUpgrade -= 1;
+				}
 			}
-		}
 
-		// We drop the core upgrades
-		for (UpgradeCore core : barrelEntity.coreUpgrades.upgradeList) {
-			ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeCore, 1, core.ordinal());
-			this.dropStack(world, droppedStack, x, y, z);
-		}
-
-		// We drop the side upgrades
-		for (int i = 0; i < 6; i++) {
-			Item upgrade = UpgradeSide.mapItem[barrelEntity.sideUpgrades[i]];
-			if (upgrade != null) {
-				ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeSide.mapMeta[barrelEntity.sideUpgrades[i]]);
+			// We drop the core upgrades
+			for (UpgradeCore core : barrelEntity.coreUpgrades.upgradeList) {
+				ItemStack droppedStack = new ItemStack(BetterBarrels.itemUpgradeCore, 1, core.ordinal());
 				this.dropStack(world, droppedStack, x, y, z);
 			}
-		}
 
-		// We drop the stacks
-		if (barrelEntity.getStorage().hasItem() && !barrelEntity.getLinked()) {
-			barrelEntity.updateEntity();
-			int ndroppedstacks = 0;
-			ItemStack droppedstack = barrelEntity.getStorage().getStack();
-			// TODO : is this just an amount limiter to prevent too many items spawning into the world?
-			// limits max number of dropped stacks to 64, perhaps should be limited to 64 * storage upgrade count?
-			while ((droppedstack != null) && (ndroppedstacks <= 64)) { //TODO: shouldn't this be the max stack size of the barrel, not 64?
-				ndroppedstacks += 1;
-
-				if (droppedstack != null)
-					this.dropStack(world, droppedstack, x, y, z);
-
-				droppedstack = barrelEntity.getStorage().getStack();
+			// We drop the side upgrades
+			for (int i = 0; i < 6; i++) {
+				Item upgrade = UpgradeSide.mapItem[barrelEntity.sideUpgrades[i]];
+				if (upgrade != null) {
+					ItemStack droppedStack = new ItemStack(upgrade, 1, UpgradeSide.mapMeta[barrelEntity.sideUpgrades[i]]);
+					this.dropStack(world, droppedStack, x, y, z);
+				}
 			}
-		}
 
-		try {
-			BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
-		} catch (Exception e) {
-			BetterBarrels.log.info("Tried to remove the barrel from the index without a valid entity");
+			// We drop the stacks
+			if (barrelEntity.getStorage().hasItem() && !barrelEntity.getLinked()) {
+				barrelEntity.updateEntity();
+				int ndroppedstacks = 0;
+				ItemStack droppedstack = barrelEntity.getStorage().getStack();
+				// TODO : is this just an amount limiter to prevent too many items spawning into the world?
+				// limits max number of dropped stacks to 64, perhaps should be limited to 64 * storage upgrade count?
+				while ((droppedstack != null) && (ndroppedstacks <= 64)) { //TODO: shouldn't this be the max stack size of the barrel, not 64?
+					ndroppedstacks += 1;
+
+					if (droppedstack != null)
+						this.dropStack(world, droppedstack, x, y, z);
+
+					droppedstack = barrelEntity.getStorage().getStack();
+				}
+			}
+
+			try {
+				BSpaceStorageHandler.instance().unregisterEnderBarrel(barrelEntity.id);
+			} catch (Exception e) {
+				BetterBarrels.log.info("Tried to remove the barrel from the index without a valid entity");
+			}
+		} else {
+			BetterBarrels.log.error("TileEntity for barrel being broken at (X:" + x + ", Y:" + y + ", Z:" + z + ") is of the wrong type(" + te.getClass().getCanonicalName() + ")!");
 		}
 
 		// All finished here, let's ensure the TE is cleaned up...
@@ -217,9 +228,13 @@ public class BlockBarrel extends BlockContainer{
 
 	@Override
 	public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityPreferNotCreating(world, x, y, z);
-		if (barrel == null) return 0;
-		return barrel.getRedstonePower(side);
+		TileEntity te = Utils.getTileEntityPreferNotCreating(world, x, y, z);
+
+		if (te == null || !(te instanceof TileEntityBarrel)) {
+			return 0;
+		}
+
+		return ((TileEntityBarrel)te).getRedstonePower(side);
 	}
 
 	private int redstoneToMC(int redSide) {
@@ -240,9 +255,15 @@ public class BlockBarrel extends BlockContainer{
 
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityPreferNotCreating(world, x, y, z);
+		TileEntity te = Utils.getTileEntityPreferNotCreating(world, x, y, z);
 
-		if (barrel != null && barrel.sideUpgrades[redstoneToMC(side)] == UpgradeSide.REDSTONE) {
+		if (te == null || !(te instanceof TileEntityBarrel)) {
+			return super.canConnectRedstone(world, x, y, z, side);
+		}
+
+		TileEntityBarrel barrel = (TileEntityBarrel)te;
+
+		if (barrel.sideUpgrades[redstoneToMC(side)] == UpgradeSide.REDSTONE) {
 			return true;
 		}
 		return false;
@@ -255,10 +276,13 @@ public class BlockBarrel extends BlockContainer{
 
 	@Override
 	public int getComparatorInputOverride(World world, int x, int y, int z, int dir) {
-		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityWithoutCreating(world, x, y, z);
-		if (barrel == null) return 0;
+		TileEntity te = Utils.getTileEntityPreferNotCreating(world, x, y, z);
 
-		IBarrelStorage store = barrel.getStorage();
+		if (te == null || !(te instanceof TileEntityBarrel)) {
+			return 0;
+		}
+
+		IBarrelStorage store = ((TileEntityBarrel)te).getStorage();
 		int currentAmount = store.getAmount();
 		int maxStorable = store.getMaxStoredCount();
 
@@ -280,9 +304,15 @@ public class BlockBarrel extends BlockContainer{
 			return false;
 		}
 
-		TileEntityBarrel barrel = (TileEntityBarrel)Utils.getTileEntityPreferNotCreating(world, x, y, z);
+		TileEntity te = Utils.getTileEntityPreferNotCreating(world, x, y, z);
 
-		if (barrel != null && (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.FRONT || barrel.sideUpgrades[side.ordinal()] == UpgradeSide.STICKER)) {
+		if (te == null || !(te instanceof TileEntityBarrel)) {
+			return super.isSideSolid(world, x, y, z, side);
+		}
+
+		TileEntityBarrel barrel = (TileEntityBarrel)te;
+
+		if (barrel.sideUpgrades[side.ordinal()] == UpgradeSide.FRONT || barrel.sideUpgrades[side.ordinal()] == UpgradeSide.STICKER) {
 			return false;
 		}
 
@@ -308,9 +338,13 @@ public class BlockBarrel extends BlockContainer{
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntityBarrel barrel = (TileEntityBarrel) Utils.getTileEntityPreferNotCreating(world, x, y, z);
+		TileEntity te = Utils.getTileEntityPreferNotCreating(world, x, y, z);
 
-		if (barrel == null) return Blocks.planks.getIcon(world, x, y, z, side);
+		if (te == null || !(te instanceof TileEntityBarrel)) {
+			return Blocks.planks.getIcon(world, x, y, z, side);
+		}
+
+		TileEntityBarrel barrel = (TileEntityBarrel)te;
 
 		int levelStructural = barrel.coreUpgrades.levelStructural;
 
@@ -359,10 +393,13 @@ public class BlockBarrel extends BlockContainer{
 	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[side];
+		TileEntity te = Utils.getTileEntityPreferNotCreating(world, x - dir.offsetX, y - dir.offsetY, z - dir.offsetZ);
 
-		TileEntityBarrel barrel = (TileEntityBarrel) Utils.getTileEntityPreferNotCreating(world, x - dir.offsetX, y - dir.offsetY, z - dir.offsetZ);
-		if (barrel == null || !barrel.overlaying)
+		if (te == null || !(te instanceof TileEntityBarrel) || !((TileEntityBarrel)te).overlaying) {
 			return super.shouldSideBeRendered(world, x, y, z, side);
+		}
+
+		TileEntityBarrel barrel = (TileEntityBarrel)te;
 
 		boolean ghosting = barrel.getStorage().isGhosting();
 		boolean linked = barrel.getLinked();
