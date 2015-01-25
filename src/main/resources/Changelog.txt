@@ -4,6 +4,7 @@
 * Fix: First ghost update sent to a client will now not (fake) clear a locked barrel if it is emptied
 * Fix: Recipes are now created using the OreDictionary name defined in the config file where appropriate. (Regression fix)
 * Fix: Block world texture generation now correctly works on structural levels which are multiples of 10
+* Fix: Added additional protection against invalid calls to Block Methods
 * Change: Adjusted break texture from nothing to nearly nothing as a temporary work around for a Chisel bug that is being looked into
 * Change: Dollied Monster Spawners now show the name of the entity they spawn in their item tool-tip
 * Change: Tweaked texture generation to reduce incidences of blank textures
