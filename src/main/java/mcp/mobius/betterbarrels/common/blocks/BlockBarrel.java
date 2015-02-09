@@ -183,6 +183,10 @@ public class BlockBarrel extends BlockContainer{
 					this.dropStack(world, droppedStack, x, y, z);
 				}
 			}
+			
+			// These can potential affect dropped stack quantities, ensure they are removed before dropping items
+			barrelEntity.setCreative(false);
+			barrelEntity.setVoid(false);
 
 			// We drop the stacks
 			if (barrelEntity.getStorage().hasItem() && !barrelEntity.getLinked()) {
