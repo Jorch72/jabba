@@ -386,6 +386,10 @@ public class BarrelCoreUpgrades {
 			this.upgradeList.add(UpgradeCore.values()[savedUpgrades[i] + (saveVersion == 3 ? -1: 0)]);
 
 		this.levelStructural = NBTTag.getInteger("structural");
+		if (levelStructural >= StructuralLevel.LEVELS.length) {
+			levelStructural = StructuralLevel.LEVELS.length - 1;
+			BetterBarrels.log.warn("Barrel located at (X:" + barrel.xCoord + " , Y:" + barrel.yCoord + " , Z:" + barrel.zCoord + ")" + (barrel.getWorldObj() != null ? " located in dimension [" + barrel.getWorldObj().provider.dimensionId + "]": " which is not located in a dimension ?!?") + " is being downgraded due to its current structural level no longer existing. Reccomended to examine the barrel and fix as required.");
+		}
 		this.hasRedstone     = NBTTag.getBoolean("redstone");
 		this.hasHopper       = NBTTag.getBoolean("hopper");
 		this.hasEnder        = NBTTag.getBoolean("ender");
