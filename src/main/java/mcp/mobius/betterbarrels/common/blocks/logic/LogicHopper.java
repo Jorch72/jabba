@@ -109,6 +109,7 @@ public enum LogicHopper {
 		} else if (inventory instanceof ISidedInventory  && side.ordinal() > -1) {
 			ISidedInventory sinv = (ISidedInventory)inventory;
 			int[] islots = sinv.getAccessibleSlotsFromSide(side.ordinal());
+			int maxInventoryStackLimit = sinv.getInventoryStackLimit();
 			for (int slot : islots) {
 				if (!sinv.canInsertItem(slot, stack, side.ordinal())) continue;
 				ItemStack targetStack = sinv.getStackInSlot(slot);
@@ -119,7 +120,7 @@ public enum LogicHopper {
 					sinv.setInventorySlotContents(slot, targetStack);
 					stack.stackSize--;
 					return true;
-				} else if (targetStack.isItemEqual(stack) && targetStack.stackSize < targetStack.getMaxStackSize()) {
+				} else if (targetStack.isItemEqual(stack) && targetStack.stackSize < targetStack.getMaxStackSize() && targetStack.stackSize < maxInventoryStackLimit) {
 					targetStack.stackSize++;
 					stack.stackSize--;
 					return true;
@@ -128,6 +129,7 @@ public enum LogicHopper {
 		} else if (inventory instanceof IInventory) {
 			IInventory inv = (IInventory)inventory;
 			int nslots = inv.getSizeInventory();
+			int maxInventoryStackLimit = inv.getInventoryStackLimit();
 			for (int slot = 0; slot < nslots; slot++) {
 				ItemStack targetStack = inv.getStackInSlot(slot);
 
@@ -137,7 +139,7 @@ public enum LogicHopper {
 					inv.setInventorySlotContents(slot, targetStack);
 					stack.stackSize--;
 					return true;
-				} else if (targetStack.isItemEqual(stack) && targetStack.stackSize < targetStack.getMaxStackSize()) {
+				} else if (targetStack.isItemEqual(stack) && targetStack.stackSize < targetStack.getMaxStackSize() && targetStack.stackSize < maxInventoryStackLimit) {
 					targetStack.stackSize++;
 					stack.stackSize--;
 					return true;
