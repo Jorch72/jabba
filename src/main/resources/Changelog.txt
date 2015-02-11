@@ -7,6 +7,7 @@
 * Fix: Added additional protection against invalid calls to Block Methods
 * Fix: Barrels with Creative Upgrades on them will now properly drop their actual stored amount when broken
 * Fix: Any barrels that have a structural upgrade higher than the current max tier after editing the config will now be downgraded and marked in the log to prevent NPE's
+* Fix: Hopper upgrades should no longer stack items in inventories greater than the inventory normally allows.
 * Change: Adjusted break texture from nothing to nearly nothing as a temporary work around for a Chisel bug that is being looked into
 * Change: Dollied Monster Spawners now show the name of the entity they spawn in their item tool-tip
 * Change: Tweaked texture generation to reduce incidences of blank textures
