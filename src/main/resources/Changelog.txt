@@ -1,5 +1,6 @@
 == v1.2.0b ==
 * New: Added config option to reverse behaviour of left clicking so a click is one item and a shift click is a stack
+* New: Added dolly support for BluePower Machines by request of K-4U
 * Fix: Fake input stack is now created on world load for barrels that need it
 * Fix: First ghost update sent to a client will now not (fake) clear a locked barrel if it is emptied
 * Fix: Recipes are now created using the OreDictionary name defined in the config file where appropriate. (Regression fix)

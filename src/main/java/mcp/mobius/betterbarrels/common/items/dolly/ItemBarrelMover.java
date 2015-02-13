@@ -80,6 +80,8 @@ public class ItemBarrelMover extends Item {
 		classExtensionsNames.add("com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityDrawers");
 		classExtensionsNames.add("com.jaquadro.minecraft.storagedrawers.block.tile.TileEntityCompDrawers");
 
+		classExtensionsNames.add("com.bluepowermod.tile.TileBase");
+
 		for (String s : classExtensionsNames) {
 			try {
 				classExtensions.add(Class.forName(s));
@@ -274,6 +276,26 @@ public class ItemBarrelMover extends Item {
 		if (TEClassName.contains("com.jaquadro.minecraft.storagedrawers.block.tile") && nbtContainer.hasKey("Dir"))
 			nbtContainer.setInteger("Dir", (short)this.getBarrelOrientationOnPlacement(player).ordinal());
 
+		if (TEClassName.contains("com.bluepowermod.tile") && nbtContainer.hasKey("rotation")) {
+			try {
+				Class blockClazz = storedBlock.getClass();
+				Method allowVertical = null;
+				while (allowVertical == null && !blockClazz.equals(Object.class)) {
+					try {
+						allowVertical = blockClazz.getDeclaredMethod("canRotateVertical");
+					} catch (NoSuchMethodException e) {
+						blockClazz = blockClazz.getSuperclass();
+					}
+				}
+
+				allowVertical.setAccessible(true);
+				boolean vertAllowed = ((Boolean)allowVertical.invoke(storedBlock, (Object[])null)).booleanValue();
+				nbtContainer.setInteger("rotation", (short)Utils.getDirectionFacingEntity(player, vertAllowed).ordinal());
+			} catch (Exception e) {
+				BetterBarrels.log.warn("Unable to rotate BluePower machine. place machine will not be rotated to be facing player.");
+			}
+		}
+
 		/* Thermal Expension */
 		if (TEClassName.contains("thermalexpansion.block.machine") && nbtContainer.hasKey("side.facing")) {
 			ForgeDirection side_facing  = ForgeDirection.getOrientation(nbtContainer.getByte("side.facing"));
@@ -451,9 +473,11 @@ public class ItemBarrelMover extends Item {
 	}
 
 	protected boolean pickupContainer(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
+		TileEntity containerTE = world.getTileEntity(x, y, z);
+		if (containerTE == null) return false;
+
 		Block storedBlock = world.getBlock(x, y, z);
 		int blockMeta          = world.getBlockMetadata(x, y, z);
-		TileEntity containerTE = world.getTileEntity(x, y, z);
 		NBTTagCompound nbtContainer = new NBTTagCompound();
 		NBTTagCompound nbtTarget    = new NBTTagCompound();
 
@@ -487,11 +511,11 @@ public class ItemBarrelMover extends Item {
 			}
 		}
 
-		if (!stack.hasTagCompound())
+		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
-
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Container"))
+		} else if (stack.getTagCompound().hasKey("Container")) {
 			stack.getTagCompound().removeTag("Container");
+		}
 
 		stack.getTagCompound().setTag("Container", nbtTarget);
 
