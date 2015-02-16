@@ -35,7 +35,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid=BetterBarrels.modid, name=BetterBarrels.modid, version="1.2.0b", dependencies="after:Waila;after:NotEnoughItems")
+@Mod(modid=BetterBarrels.modid, name=BetterBarrels.modid, version="1.2.1", dependencies="after:Waila;after:NotEnoughItems")
 public class BetterBarrels {
 
 	private static boolean DEBUG = Boolean.parseBoolean(System.getProperty("mcp.mobius.debugJabba","false"));
