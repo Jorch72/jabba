@@ -40,7 +40,7 @@ public enum ServerTickHandler {
 		if (timer.isDone()) {
 			if (dirtyBarrels.size() > 0) {
 				for (TileEntityBarrel barrel : Arrays.copyOf(dirtyBarrels.keySet().toArray(), dirtyBarrels.size(), TileEntityBarrel[].class) ) {
-					if (barrel != null)
+					if (barrel != null && !barrel.isInvalid())
 						barrel.markDirtyExec();
 				}
 				dirtyBarrels.clear();
