@@ -1,3 +1,6 @@
+== v1.2.1a ==
+* Fix: Check that packets are only sent for valid Barrels
+
 == v1.2.1 ==
 * New: Added config option to reverse behaviour of left clicking so a click is one item and a shift click is a stack
 * New: Added dolly support for BluePower Machines by request of K-4U
