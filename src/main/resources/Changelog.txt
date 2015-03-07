@@ -1,5 +1,8 @@
 == v1.2.1a ==
 * Fix: Check that packets are only sent for valid Barrels
+* Fix: Make sure the name for a Structural Level exists when using color overrides
+* Fix: getStackInSlot no longer immediately notifies neighbors
+* Change: Ensure that QOL Storage upgrades are always reverse craftable
 
 == v1.2.1 ==
 * New: Added config option to reverse behaviour of left clicking so a click is one item and a shift click is a stack
