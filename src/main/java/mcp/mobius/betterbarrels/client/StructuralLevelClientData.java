@@ -427,6 +427,9 @@ public class StructuralLevelClientData {
 					}
 				}
 			} else {
+				// Grab the first name for the item, but the color from the override
+				// TODO: Change this later? maybe have name override also?
+				cacheStackAndName();
 				materialPixels = new int[1];
 				materialPixels[0] = colorOverride;
 				foundSourceMaterial = true;
