@@ -84,9 +84,9 @@ public class RecipeHandler {
 		UpgradeCore prevStorage = UpgradeCore.STORAGE;
 		for (UpgradeCore core : UpgradeCore.values()) {
 			if(core.type == UpgradeCore.Type.STORAGE && core.slotsUsed > 1) {
-				if (core.slotsUsed > StructuralLevel.LEVELS[BetterBarrels.maxCraftableTier].getMaxCoreSlots())
-					break;
-				addCoreUpgradeUpgrade(core.ordinal(), prevStorage.ordinal());
+				if (core.slotsUsed <= StructuralLevel.LEVELS[BetterBarrels.maxCraftableTier].getMaxCoreSlots())
+					addCoreUpgradeUpgrade(core.ordinal(), prevStorage.ordinal());
+				addCoreUpgradeUpgradeReverse(core.ordinal(), prevStorage.ordinal());
 				prevStorage = core;
 			}
 		}
@@ -111,6 +111,9 @@ public class RecipeHandler {
 				{new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
 			new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta),
 			new ItemStack(BetterBarrels.itemUpgradeCore, 1, sourceMeta)}));
+	}
+
+	private void addCoreUpgradeUpgradeReverse(int resultMeta, int sourceMeta) {
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(BetterBarrels.itemUpgradeCore, 3, sourceMeta), new Object[]
 				{new ItemStack(BetterBarrels.itemUpgradeCore, 1, resultMeta)}));
 	}
