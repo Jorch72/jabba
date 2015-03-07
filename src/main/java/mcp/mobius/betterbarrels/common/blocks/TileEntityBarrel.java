@@ -644,7 +644,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 	@Override
 	public ItemStack getStackInSlot(int islot) {
 		ItemStack stack = this.getStorage().getStackInSlot(islot);
-		this.markDirty();
+		ServerTickHandler.INSTANCE.markDirty(this);
 		return stack;
 	}
 
