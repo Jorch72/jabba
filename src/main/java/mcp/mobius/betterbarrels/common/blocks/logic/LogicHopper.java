@@ -131,6 +131,7 @@ public enum LogicHopper {
 			int nslots = inv.getSizeInventory();
 			int maxInventoryStackLimit = inv.getInventoryStackLimit();
 			for (int slot = 0; slot < nslots; slot++) {
+				if (!inv.isItemValidForSlot(slot, stack)) continue;
 				ItemStack targetStack = inv.getStackInSlot(slot);
 
 				if (targetStack == null) {
