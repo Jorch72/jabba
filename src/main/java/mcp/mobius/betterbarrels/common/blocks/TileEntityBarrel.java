@@ -1,6 +1,7 @@
 package mcp.mobius.betterbarrels.common.blocks;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import mcp.mobius.betterbarrels.BetterBarrels;
 import mcp.mobius.betterbarrels.ServerTickHandler;
@@ -24,6 +25,8 @@ import mcp.mobius.betterbarrels.network.Message0x04Structuralupdate;
 import mcp.mobius.betterbarrels.network.Message0x05CoreUpdate;
 import mcp.mobius.betterbarrels.network.Message0x06FullStorage;
 import mcp.mobius.betterbarrels.network.Message0x08LinkUpdate;
+import net.minecraft.command.IEntitySelector;
+import net.minecraft.entity.item.EntityMinecartHopper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ISidedInventory;
@@ -32,6 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityHopper;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
@@ -648,14 +652,27 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		return stack;
 	}
 
+	protected AxisAlignedBB aabbBlockBelow = null;
 	@Override
 	public ItemStack decrStackSize(int islot, int quantity) {
 		TileEntity ent = this.worldObj.getTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
 		ItemStack stack;
-		if (ent instanceof TileEntityHopper)
+		if (ent instanceof TileEntityHopper) {
 			stack = this.getStorage().decrStackSize_Hopper(islot, quantity);
-		else
+		} else if (ent == null) { // not a tile ent, check if a minecart hopper
+			if (aabbBlockBelow == null) {
+				aabbBlockBelow = AxisAlignedBB.getBoundingBox(xCoord, yCoord - 1, zCoord, xCoord + 1, yCoord, zCoord + 1);
+			}
+			List list = this.worldObj.selectEntitiesWithinAABB(EntityMinecartHopper.class, aabbBlockBelow, IEntitySelector.selectAnything);
+			if (list.size() > 0) {
+				stack = this.getStorage().decrStackSize_Hopper(islot, quantity);
+			} else {
+				// not a minecart hopper, assume something else...
+				stack = this.getStorage().decrStackSize(islot, quantity); 
+			}
+		} else { // at this point we know there is a valid tile below, and it's not a hopper 
 			stack = this.getStorage().decrStackSize(islot, quantity);
+		}
 
 		this.markDirty();
 		return stack;
