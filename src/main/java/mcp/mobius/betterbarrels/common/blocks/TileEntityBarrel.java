@@ -327,10 +327,10 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 
 		if (type == UpgradeSide.HOPPER) {
 			//hack: using rs property values until side upgrade overhaul occurs
-			if (this.sideMetadata[side.ordinal()] == UpgradeSide.RS_FULL)
-				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_EMPT;
+			if ((this.sideMetadata[side.ordinal()] & 1) == UpgradeSide.RS_FULL)
+				this.sideMetadata[side.ordinal()] = (sideMetadata[side.ordinal()] & 62) | UpgradeSide.RS_EMPT;
 			else
-				this.sideMetadata[side.ordinal()] = UpgradeSide.RS_FULL;
+				this.sideMetadata[side.ordinal()] = (sideMetadata[side.ordinal()] & 62) | UpgradeSide.RS_FULL;
 			sendChange = true;
 		}
 
@@ -395,7 +395,7 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 		else if (type == UpgradeSide.HOPPER){
 			if (coreUpgrades.hasHopper){
 				this.sideUpgrades[side.ordinal()] = UpgradeSide.HOPPER;
-				this.sideMetadata[side.ordinal()] = UpgradeSide.NONE;
+				this.sideMetadata[side.ordinal()] = 2;
 			}
 			else{
 				BarrelPacketHandler.sendLocalizedChat(player, LocalizedChat.FACADE_HOPPER);
@@ -518,6 +518,17 @@ public class TileEntityBarrel extends TileEntity implements ISidedInventory, IDe
 				this.startTicking();
 		}
 
+		// make sure any side upgrades are configured in a sane way
+		for (int side = 0 ; side < sideUpgrades.length; side++) {
+			switch (sideUpgrades[side]) {
+				case UpgradeSide.HOPPER:
+					int amount = sideMetadata[side] >> 1;
+					if (!(amount == 1 || amount == 2 || amount == 4 || amount == 8 || amount == 16)) {
+						sideMetadata[side] = (1 << 1) | (sideMetadata[side] & 1);
+					}
+					break;
+			}
+		}
 	}
 
 	/* V2 COMPATIBILITY METHODS */

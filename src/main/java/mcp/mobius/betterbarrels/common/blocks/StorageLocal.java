@@ -81,6 +81,9 @@ public class StorageLocal implements IBarrelStorage {
 			this.itemTemplate.stackSize = 0;
 			this.stackAmount = stack.getMaxStackSize();
 			this.cachedBarrelOreItem = new ItemImmut(Item.getIdFromItem(this.itemTemplate.getItem()), this.itemTemplate.getItemDamage());
+			// Force reset the render template
+			this.renderingTemplate = null;
+			this.getItemForRender();
 		} else {
 			this.itemTemplate = null;
 			this.renderingTemplate = null;
