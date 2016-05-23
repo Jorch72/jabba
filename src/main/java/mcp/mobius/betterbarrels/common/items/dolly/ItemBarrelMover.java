@@ -524,6 +524,9 @@ public class ItemBarrelMover extends Item {
 		//}
 
 		try {
+			if (containerTE instanceof TileEntityChest) {
+				((TileEntityChest)containerTE).closeInventory();
+			}
 			world.removeTileEntity(x, y, z);
 			world.setBlock(x, y, z, Blocks.air, 0, 1 + 2);
 		} catch (Exception e) {

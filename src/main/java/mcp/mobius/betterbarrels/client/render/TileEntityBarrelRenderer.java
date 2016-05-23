@@ -70,7 +70,7 @@ public class TileEntityBarrelRenderer extends TileEntityBaseRenderer {
 						this.renderIconOnBlock(index, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2F, 256.0F - 32F, 0, -0.01F);
 					}
 					else if (barrelEntity.sideUpgrades[forgeSide.ordinal()] == UpgradeSide.HOPPER) {
-						int index = barrelEntity.sideMetadata[forgeSide.ordinal()] +  2 * 16;
+						int index = (barrelEntity.sideMetadata[forgeSide.ordinal()] & 1) +  2 * 16;
 						this.renderIconOnBlock(index, forgeSide, isTopBottom ? rotation: orientation, barrelPos, 2F, 256.0F - 32F, 0, -0.01F);
 					}
 					else if (this.isItemDisplaySide(barrelEntity, forgeSide)) {

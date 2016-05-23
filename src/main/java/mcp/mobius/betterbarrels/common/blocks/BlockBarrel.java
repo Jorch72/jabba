@@ -114,7 +114,7 @@ public class BlockBarrel extends BlockContainer{
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float var7, float var8, float var9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
 		if (!world.isRemote) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			((TileEntityBarrel)tileEntity).rightClick(player, side);
